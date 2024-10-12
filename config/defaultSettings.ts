@@ -1,4 +1,4 @@
-import type { ProLayoutProps } from '@ant-design/pro-components';
+import { ProLayoutProps } from '@ant-design/pro-components';
 
 /**
  * @name

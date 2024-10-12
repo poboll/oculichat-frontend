@@ -7,13 +7,6 @@ import routes from './routes';
 
 const { REACT_APP_ENV = 'dev' } = process.env;
 
-/**
- * @name 使用公共路径
- * @description 部署时的路径，如果部署在非根目录下，需要配置这个变量
- * @doc https://umijs.org/docs/api/config#publicpath
- */
-const PUBLIC_PATH: string = '/';
-
 export default defineConfig({
   /**
    * @name 开启 hash 模式
@@ -21,8 +14,6 @@ export default defineConfig({
    * @doc https://umijs.org/docs/api/config#hash
    */
   hash: true,
-
-  publicPath: PUBLIC_PATH,
 
   /**
    * @name 兼容性设置
@@ -134,7 +125,7 @@ export default defineConfig({
    */
   headScripts: [
     // 解决首次加载时白屏的问题
-    { src: join(PUBLIC_PATH, 'scripts/loading.js'), async: true },
+    { src: '/scripts/loading.js', async: true },
   ],
   //================ pro 插件配置 =================
   presets: ['umi-presets-pro'],
@@ -157,12 +148,9 @@ export default defineConfig({
       projectName: 'swagger',
     },
   ],
-  /**
-   * @name 是否开启 mako
-   * @description 使用 mako 极速研发
-   * @doc https://umijs.org/docs/api/config#mako
-   */
-  mako: {},
+  mfsu: {
+    strategy: 'normal',
+  },
   esbuildMinifyIIFE: true,
   requestRecord: {},
 });
