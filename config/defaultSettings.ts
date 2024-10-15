@@ -15,9 +15,9 @@ const Settings: ProLayoutProps & {
   fixedHeader: false,
   fixSiderbar: true,
   colorWeak: false,
-  title: 'Ant Design Pro',
+  title: 'Cai-API 接口开放平台',
   pwa: true,
-  logo: 'https://gw.alipayobjects.com/zos/rmsportal/KDpgvguMpGfqaHPjicRK.svg',
+  logo: 'https://pic.imgdb.cn/item/67062df5d29ded1a8c75c23d.png',
   iconfontUrl: '',
   token: {
     // 参见ts声明，demo 见文档，通过token 修改样式

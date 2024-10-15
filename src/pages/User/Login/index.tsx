@@ -1,5 +1,4 @@
 import { Footer } from '@/components';
-import { login } from '@/services/ant-design-pro/api';
 import { getFakeCaptcha } from '@/services/ant-design-pro/login';
 import {
   AlipayCircleOutlined,
@@ -21,6 +20,7 @@ import Settings from '../../../../config/defaultSettings';
 import React, { useState } from 'react';
 import { flushSync } from 'react-dom';
 import { createStyles } from 'antd-style';
+import {userLoginUsingPost} from "@/services/cai-api-backend/userController";
 
 const useStyles = createStyles(({ token }) => {
   return {
@@ -96,49 +96,48 @@ const LoginMessage: React.FC<{
 };
 
 const Login: React.FC = () => {
-  const [userLoginState, setUserLoginState] = useState<API.LoginResult>({});
+  const [userLoginState] = useState<API.LoginResult>({});
   const [type, setType] = useState<string>('account');
-  const { initialState, setInitialState } = useModel('@@initialState');
+  const { setInitialState } = useModel('@@initialState');
   const { styles } = useStyles();
+  // 使用 useIntl 获取国际化实例
   const intl = useIntl();
-
-  const fetchUserInfo = async () => {
-    const userInfo = await initialState?.fetchUserInfo?.();
-    if (userInfo) {
-      flushSync(() => {
-        setInitialState((s) => ({
-          ...s,
-          currentUser: userInfo,
-        }));
-      });
-    }
-  };
-
-  const handleSubmit = async (values: API.LoginParams) => {
+  const handleSubmit = async (values: API.UserLoginRequest) => {
     try {
-      // 登录
-      const msg = await login({ ...values, type });
-      if (msg.status === 'ok') {
-        const defaultLoginSuccessMessage = intl.formatMessage({
-          id: 'pages.login.success',
-          defaultMessage: '登录成功！',
-        });
-        message.success(defaultLoginSuccessMessage);
-        await fetchUserInfo();
+      // 发送登录请求
+      const res = await userLoginUsingPost({ ...values });
+      // 检查登录请求的响应状态码
+      if (res.code === 0) {
+        // 登录成功提示
+        message.success('登录成功！');
+        // 获取URL中的查询参数，用于跳转
         const urlParams = new URL(window.location.href).searchParams;
-        history.push(urlParams.get('redirect') || '/');
+        const redirectUrl = urlParams.get('redirect') || '/';
+        // 避免跳转到登录页，如果目标是登录页，重定向到首页
+        const finalRedirectUrl = redirectUrl.includes('/user/login') ? '/' : redirectUrl;
+        // 同步设置全局状态为当前登录用户信息
+        flushSync(() => {
+          setInitialState((prevState) => ({
+            ...prevState,
+            loginUser: res.data,  // 设置 loginUser
+          }));
+        });
+        history.push(finalRedirectUrl);
+        // 打印日志信息，便于调试
+        console.log('Login response:', res);
+        console.log('Redirect URL:', finalRedirectUrl);
         return;
       }
-      console.log(msg);
-      // 如果失败去设置用户错误信息
-      setUserLoginState(msg);
+      // 登录失败处理，根据后端返回的错误码提供用户反馈
+      if (res.code === 40000 && res.message) {
+        message.error(res.message);  // 显示具体的错误信息
+      } else {
+        message.error('登录失败，请检查输入信息或稍后再试！');  // 未知错误
+      }
     } catch (error) {
-      const defaultLoginFailureMessage = intl.formatMessage({
-        id: 'pages.login.failure',
-        defaultMessage: '登录失败，请重试！',
-      });
-      console.log(error);
-      message.error(defaultLoginFailureMessage);
+      // 捕获并处理异常情况，提供错误提示
+      console.error('Login error:', error);
+      message.error('登录失败，请重试！');
     }
   };
   const { status, type: loginType } = userLoginState;
@@ -166,8 +165,8 @@ const Login: React.FC = () => {
             minWidth: 280,
             maxWidth: '75vw',
           }}
-          logo={<img alt="logo" src="/logo.svg" />}
-          title="Ant Design"
+          logo={<img alt="logo" src="/logo.gif" />}
+          title="Cai-API 接口开放平台"
           subTitle={intl.formatMessage({ id: 'pages.layouts.userLayout.title' })}
           initialValues={{
             autoLogin: true,
@@ -181,7 +180,7 @@ const Login: React.FC = () => {
             <ActionIcons key="icons" />,
           ]}
           onFinish={async (values) => {
-            await handleSubmit(values as API.LoginParams);
+            await handleSubmit(values as API.UserLoginRequest);
           }}
         >
           <Tabs
@@ -217,7 +216,7 @@ const Login: React.FC = () => {
           {type === 'account' && (
             <>
               <ProFormText
-                name="username"
+                name="userAccount"
                 fieldProps={{
                   size: 'large',
                   prefix: <UserOutlined />,
@@ -239,7 +238,7 @@ const Login: React.FC = () => {
                 ]}
               />
               <ProFormText.Password
-                name="password"
+                name="userPassword"
                 fieldProps={{
                   size: 'large',
                   prefix: <LockOutlined />,

@@ -1,13 +1,14 @@
 import { outLogin } from '@/services/ant-design-pro/api';
 import { LogoutOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
 import { history, useModel } from '@umijs/max';
-import { Spin } from 'antd';
+import {Avatar, Spin} from 'antd';
 import { createStyles } from 'antd-style';
 import { stringify } from 'querystring';
 import type { MenuInfo } from 'rc-menu/lib/interface';
 import React, { useCallback } from 'react';
 import { flushSync } from 'react-dom';
 import HeaderDropdown from '../HeaderDropdown';
+import {userLogoutUsingPost} from "@/services/cai-api-backend/userController";
 
 export type GlobalHeaderRightProps = {
   menu?: boolean;
@@ -16,8 +17,8 @@ export type GlobalHeaderRightProps = {
 
 export const AvatarName = () => {
   const { initialState } = useModel('@@initialState');
-  const { currentUser } = initialState || {};
-  return <span className="anticon">{currentUser?.name}</span>;
+  const { loginUser } = initialState || {};
+  return <span className="anticon">{loginUser?.userName}</span>;
 };
 
 const useStyles = createStyles(({ token }) => {
@@ -62,20 +63,38 @@ export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu, childre
 
   const { initialState, setInitialState } = useModel('@@initialState');
 
+  const defaultUserAvatar = 'https://pic.imgdb.cn/item/656c4215c458853aefb6be13.png'; // 默认头像
+  const defaultUserName = '在在'; // 默认用户名
+
   const onMenuClick = useCallback(
-    (event: MenuInfo) => {
+    async (event: MenuInfo) => {
       const { key } = event;
       if (key === 'logout') {
+        // 清空用户状态
         flushSync(() => {
-          setInitialState((s) => ({ ...s, currentUser: undefined }));
+          setInitialState((s) => ({ ...s, loginUser: undefined }));
         });
-        loginOut();
+        try {
+          // 异步等待登出请求完成
+          await userLogoutUsingPost();
+          // 执行跳转到登录页的逻辑
+          history.replace({
+            pathname: '/user/login',
+          });
+          // 刷新页面，确保所有状态被清除
+          window.location.reload();
+        } catch (error) {
+          console.error('Logout failed: ', error);
+        }
         return;
       }
+
+      // 处理其他菜单项的跳转
       history.push(`/account/${key}`);
     },
     [setInitialState],
   );
+
 
   const loading = (
     <span className={styles.action}>
@@ -93,9 +112,11 @@ export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu, childre
     return loading;
   }
 
-  const { currentUser } = initialState;
+  const { loginUser } = initialState;
+  const userName = loginUser?.userName || defaultUserName;
+  const userAvatar = loginUser?.userAvatar || defaultUserAvatar;
 
-  if (!currentUser || !currentUser.name) {
+  if (!loginUser || !loginUser.userName) {
     return loading;
   }
 
@@ -132,7 +153,15 @@ export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu, childre
         items: menuItems,
       }}
     >
-      {children}
+    <span className={styles.action}>
+      {/* 增加用户头像显示 */}
+      <Avatar
+        src={userAvatar || 'https://pic.imgdb.cn/item/656c4215c458853aefb6be13.png'}
+        alt="avatar"
+        style={{ marginRight: 8 }}
+      />
+      <span>{userName || '呜、还没设置唉'}</span>
+    </span>
     </HeaderDropdown>
   );
 };

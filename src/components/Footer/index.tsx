@@ -1,4 +1,4 @@
-import { GithubOutlined } from '@ant-design/icons';
+import { GithubOutlined, InfoCircleOutlined } from '@ant-design/icons'; // 导入 InfoCircleOutlined 图标
 import { DefaultFooter } from '@ant-design/pro-components';
 import React from 'react';
 
@@ -8,6 +8,7 @@ const Footer: React.FC = () => {
       style={{
         background: 'none',
       }}
+      copyright="在在"
       links={[
         {
           key: 'Ant Design Pro',
@@ -25,6 +26,16 @@ const Footer: React.FC = () => {
           key: 'Ant Design',
           title: 'Ant Design',
           href: 'https://ant.design',
+          blankTarget: true,
+        },
+        {
+          key: 'disclaimer',
+          title: (
+            <>
+              <InfoCircleOutlined /> 免责声明
+            </>
+          ),
+          href: '/disclaimer', // 免责声明页面链接
           blankTarget: true,
         },
       ]}
