@@ -54,7 +54,7 @@ export default {
   'pages.searchTable.titleUpdatedAt': '上次调度时间',
   'pages.searchTable.exception': '请输入异常原因！',
   'pages.searchTable.titleOption': '操作',
-  'pages.searchTable.config': '配置',
+  'pages.searchTable.config': '修改',
   'pages.searchTable.subscribeAlert': '订阅警报',
   'pages.searchTable.title': '查询表格',
   'pages.searchTable.new': '新建',
@@ -76,6 +76,6 @@ export default {
   "pages.interfaceTable.updateTime": "更新时间",
   "pages.interfaceTable.option": "操作",
   "pages.interfaceTable.status.off": "关闭",
-  "pages.interfaceTable.config": "配置",
+  "pages.interfaceTable.config": "修改",
   "pages.interfaceTable.subscribeAlert": "订阅警报",
 };

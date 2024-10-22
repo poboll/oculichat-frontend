@@ -37,19 +37,20 @@ export default [
       {
         path: '/admin',
         redirect: '/admin/sub-page',
+        component: './Admin',
       },
       {
         path: '/admin/sub-page',
         name: 'sub-page',
         component: './Admin',
       },
+      {
+        name: 'interface',
+        icon: 'table',
+        path: '/admin/interface_info',
+        component: './InterfaceInfo',
+      },
     ],
-  },
-  {
-    name: 'list.table-list',
-    icon: 'table',
-    path: '/list',
-    component: './TableList',
   },
   {
     path: '/',
