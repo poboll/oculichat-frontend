@@ -1,5 +1,6 @@
 import { Footer } from '@/components';
 import { getFakeCaptcha } from '@/services/ant-design-pro/login';
+import { userLoginUsingPost } from '@/services/cai-api-backend/userController';
 import {
   AlipayCircleOutlined,
   LockOutlined,
@@ -14,13 +15,12 @@ import {
   ProFormCheckbox,
   ProFormText,
 } from '@ant-design/pro-components';
-import { FormattedMessage, history, SelectLang, useIntl, useModel, Helmet } from '@umijs/max';
+import { FormattedMessage, Helmet, history, SelectLang, useIntl, useModel } from '@umijs/max';
 import { Alert, message, Tabs } from 'antd';
-import Settings from '../../../../config/defaultSettings';
+import { createStyles } from 'antd-style';
 import React, { useState } from 'react';
 import { flushSync } from 'react-dom';
-import { createStyles } from 'antd-style';
-import {userLoginUsingPost} from "@/services/cai-api-backend/userController";
+import Settings from '../../../../config/defaultSettings';
 
 const useStyles = createStyles(({ token }) => {
   return {
@@ -119,7 +119,7 @@ const Login: React.FC = () => {
         flushSync(() => {
           setInitialState((prevState) => ({
             ...prevState,
-            loginUser: res.data,  // 设置 loginUser
+            loginUser: res.data, // 设置 loginUser
           }));
         });
         history.push(finalRedirectUrl);
@@ -130,14 +130,14 @@ const Login: React.FC = () => {
       }
       // 登录失败处理，根据后端返回的错误码提供用户反馈
       if (res.code === 40000 && res.message) {
-        message.error(res.message);  // 显示具体的错误信息
+        message.error(res.message); // 显示具体的错误信息
       } else {
-        message.error('登录失败，请检查输入信息或稍后再试！');  // 未知错误
+        message.error('登录失败，请检查输入信息或稍后再试！'); // 未知错误
       }
     } catch (error) {
       // 捕获并处理异常情况，提供错误提示
       console.error('Login error:', error);
-      message.error('登录失败，请重试！');
+      message.error(error.message || '网络错误，请稍后再试！'); // 如果 error.message 为空，提供默认提示
     }
   };
   const { status, type: loginType } = userLoginState;

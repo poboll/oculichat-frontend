@@ -11,6 +11,16 @@
  * @doc https://umijs.org/docs/guides/routes
  */
 export default [
+  // {
+  //   path: '/',
+  //   redirect: '/welcome',
+  // },
+  {
+    path: '/',
+    name: 'home',
+    icon: 'smile',
+    component: './Index',
+  },
   {
     path: '/user',
     layout: false,
@@ -21,12 +31,6 @@ export default [
         component: './User/Login',
       },
     ],
-  },
-  {
-    path: '/welcome',
-    name: 'welcome',
-    icon: 'smile',
-    component: './Welcome',
   },
   {
     path: '/admin',
@@ -48,13 +52,17 @@ export default [
         name: 'interface',
         icon: 'table',
         path: '/admin/interface_info',
-        component: './InterfaceInfo',
+        component: './Admin/InterfaceInfo',
       },
     ],
   },
   {
-    path: '/',
-    redirect: '/welcome',
+    // 动态路由
+    path: '/interface_info/:id',
+    name: 'interface info',
+    component: './InterfaceInfo',
+    // 不在菜单页显示
+    hideInMenu: true,
   },
   {
     path: '*',

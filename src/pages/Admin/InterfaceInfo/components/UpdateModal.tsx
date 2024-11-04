@@ -1,7 +1,7 @@
-import { Modal } from 'antd';
-import React, {useEffect, useRef} from 'react';
 import { ProColumns, ProFormInstance, ProTable } from '@ant-design/pro-components';
 import '@umijs/max';
+import { Modal } from 'antd';
+import React, { useEffect, useRef } from 'react';
 
 export type Props = {
   value: API.InterfaceInfo;
@@ -33,7 +33,6 @@ const UpdateModal: React.FC<Props> = (props) => {
         form={{ initialValues: value }}
       />
     </Modal>
-
   );
 };
 

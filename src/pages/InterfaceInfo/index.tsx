@@ -1,653 +1,119 @@
-import { PlusOutlined } from '@ant-design/icons';
-import type { ActionType, ProColumns, ProDescriptionsItemProps } from '@ant-design/pro-components';
 import {
-  FooterToolbar,
-  ModalForm,
-  PageContainer,
-  ProDescriptions,
-  ProFormText,
-  ProFormTextArea,
-  ProTable,
-} from '@ant-design/pro-components';
-import { FormattedMessage, useIntl } from '@umijs/max';
-import { Button, Drawer, message } from 'antd';
-import React, { useRef, useState } from 'react';
-import {
-  addInterfaceInfoUsingPost, deleteInterfaceInfoUsingPost,
-  listInterfaceInfoByPageUsingGet, updateInterfaceInfoUsingPost,
-} from "@/services/cai-api-backend/interfaceInfoController";
-import type {SortOrder} from "antd/lib/table/interface";
-import CreateModal from "@/pages/InterfaceInfo/components/CreateModal";
-import UpdateModal from "@/pages/InterfaceInfo/components/UpdateModal";
-import {record} from "@umijs/utils/compiled/zod";
+  getInterfaceInfoByIdUsingGet,
+  invokeInterfaceUsingPost,
+} from '@/services/cai-api-backend/interfaceInfoController';
+import { PageContainer } from '@ant-design/pro-components';
+import { Badge, Button, Card, Descriptions, Divider, Form, Input, message } from 'antd';
+import moment from 'moment';
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router';
 
-const TableList: React.FC = () => {
-  /**
-   * @en-US Pop-up window of new window
-   * @zh-CN 新建窗口的弹窗
-   *  */
-  const [createModalOpen, handleModalOpen] = useState<boolean>(false);
-  /**
-   * @en-US The pop-up window of the distribution update window
-   * @zh-CN 分布更新窗口的弹窗
-   * */
-  const [updateModalOpen, handleUpdateModalOpen] = useState<boolean>(false);
+const InterfaceInfo: React.FC = () => {
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState<API.InterfaceInfo>();
+  const [invokeRes, setInvokeRes] = useState<any>();
+  const [invokeLoading, setInvokeLoading] = useState(false);
 
-  const [showDetail, setShowDetail] = useState<boolean>(false);
+  const params = useParams(); // 或者使用useMacth('/interface_info/:id');JSON.stringify();拿到整个页面的路由信息
 
-  const actionRef = useRef<ActionType>();
-  const [currentRow, setCurrentRow] = useState<API.RuleListItem>();
-  const [selectedRowsState, setSelectedRows] = useState<API.RuleListItem[]>([]);
-
-  /**
-   * @en-US Add node
-   * @zh-CN 添加节点
-   * @param fields
-   */
-  const handleAdd = async (fields: API.InterfaceInfoAddRequest) => {
-    const hide = message.loading('正在添加');
-    try {
-      await addInterfaceInfoUsingPost({...fields});
-      hide();
-      message.success('创建成功');
-      // 关闭Modal
-      handleModalOpen(false);
-      // 设置自动刷新
-      actionRef.current?.reload();
-      return true;
-    } catch (error: any) {
-      hide();
-      console.log(error);
-      message.error('创建失败，' + error.message);
-      return false;
+  const loadData = async () => {
+    if (!params.id) {
+      message.error('无数据，请重试');
+      return;
     }
-  };
-
-  /**
-   * @en-US Update InterfaceInfo
-   * @zh-CN 更新接口信息
-   *
-   * @param fields
-   */
-  const handleUpdate = async (fields: API.InterfaceInfoUpdateRequest) => {
-    const hide = message.loading('正在更新');
+    setLoading(true);
     try {
-      if(!currentRow){
-        return false;
-      }
-      let res = await updateInterfaceInfoUsingPost({
-        // 因为columns中的id valueType为index 不会传递 所以我们需要手动赋值id
-        id: currentRow.id,
-        ...fields,
+      const res = await getInterfaceInfoByIdUsingGet({
+        id: Number(params.id),
       });
-      if (res.data) {
-        hide();
-        handleUpdateModalOpen(false);
-        message.success('更新成功!');
-        // 刷新页面
-        actionRef.current?.reload();
-        return true;
-      }
+      setData(res?.data);
+      setLoading(false);
     } catch (error: any) {
-      hide();
-      message.error('更新失败，' + error.message);
-      return false;
+      setLoading(false);
+      message.error('请求失败,' + error.message);
     }
   };
 
-  /**
-   *  Delete node
-   * @zh-CN 删除节点
-   *
-   * @param record
-   */
-  const handleRemove = async (record: API.InterfaceInfo) => {
-    const hide = message.loading('正在删除');
-    if (!record) return true;
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const onFinish = async (values: any) => {
+    if (!params.id) {
+      message.error('接口不存在');
+      return;
+    }
+    setInvokeLoading(true);
     try {
-      await deleteInterfaceInfoUsingPost({
-        id: record.id
+      const res = await invokeInterfaceUsingPost({
+        id: params.id,
+        ...values,
       });
-      hide();
-      message.success('删除成功！');
-      // 刷新页面
-      actionRef.current?.reload();
-      return true;
+      setInvokeRes(res.data);
+      message.success('请求成功！');
     } catch (error: any) {
-      hide();
-      message.error('删除失败，' + error.message);
-      return false;
+      message.error('操作失败，' + error.message);
+    } finally {
+      setInvokeLoading(false);
     }
   };
-
-  /**
-   * @en-US International configuration
-   * @zh-CN 国际化配置
-   * */
-  const intl = useIntl();
-
-  // const columns: ProColumns<API.InterfaceInfo>[] = [
-  //   {
-  //     title: (
-  //       <FormattedMessage
-  //         id="pages.searchTable.updateForm.ruleName.nameLabel"
-  //         defaultMessage="Rule name"
-  //       />
-  //     ),
-  //     dataIndex: 'name',
-  //     tip: 'The rule name is the unique key',
-  //     render: (dom, entity) => {
-  //       return (
-  //         <a
-  //           onClick={() => {
-  //             setCurrentRow(entity);
-  //             setShowDetail(true);
-  //           }}
-  //         >
-  //           {dom}
-  //         </a>
-  //       );
-  //     },
-  //   },
-  //   {
-  //     title: <FormattedMessage id="pages.searchTable.titleDesc" defaultMessage="Description" />,
-  //     dataIndex: 'desc',
-  //     valueType: 'textarea',
-  //   },
-  //   {
-  //     title: (
-  //       <FormattedMessage
-  //         id="pages.searchTable.titleCallNo"
-  //         defaultMessage="Number of service calls"
-  //       />
-  //     ),
-  //     dataIndex: 'callNo',
-  //     sorter: true,
-  //     hideInForm: true,
-  //     renderText: (val: string) =>
-  //       `${val}${intl.formatMessage({
-  //         id: 'pages.searchTable.tenThousand',
-  //         defaultMessage: ' 万 ',
-  //       })}`,
-  //   },
-  //   {
-  //     title: <FormattedMessage id="pages.searchTable.titleStatus" defaultMessage="Status" />,
-  //     dataIndex: 'status',
-  //     hideInForm: true,
-  //     valueEnum: {
-  //       0: {
-  //         text: (
-  //           <FormattedMessage
-  //             id="pages.searchTable.nameStatus.default"
-  //             defaultMessage="Shut down"
-  //           />
-  //         ),
-  //         status: 'Default',
-  //       },
-  //       1: {
-  //         text: (
-  //           <FormattedMessage id="pages.searchTable.nameStatus.running" defaultMessage="Running" />
-  //         ),
-  //         status: 'Processing',
-  //       },
-  //       2: {
-  //         text: (
-  //           <FormattedMessage id="pages.searchTable.nameStatus.online" defaultMessage="Online" />
-  //         ),
-  //         status: 'Success',
-  //       },
-  //       3: {
-  //         text: (
-  //           <FormattedMessage
-  //             id="pages.searchTable.nameStatus.abnormal"
-  //             defaultMessage="Abnormal"
-  //           />
-  //         ),
-  //         status: 'Error',
-  //       },
-  //     },
-  //   },
-  //   {
-  //     title: (
-  //       <FormattedMessage
-  //         id="pages.searchTable.titleUpdatedAt"
-  //         defaultMessage="Last scheduled time"
-  //       />
-  //     ),
-  //     sorter: true,
-  //     dataIndex: 'updatedAt',
-  //     valueType: 'dateTime',
-  //     renderFormItem: (item, { defaultRender, ...rest }, form) => {
-  //       const status = form.getFieldValue('status');
-  //       if (`${status}` === '0') {
-  //         return false;
-  //       }
-  //       if (`${status}` === '3') {
-  //         return (
-  //           <Input
-  //             {...rest}
-  //             placeholder={intl.formatMessage({
-  //               id: 'pages.searchTable.exception',
-  //               defaultMessage: 'Please enter the reason for the exception!',
-  //             })}
-  //           />
-  //         );
-  //       }
-  //       return defaultRender(item);
-  //     },
-  //   },
-  //   {
-  //     title: <FormattedMessage id="pages.searchTable.titleOption" defaultMessage="Operating" />,
-  //     dataIndex: 'option',
-  //     valueType: 'option',
-  //     render: (_, record) => [
-  //       <a
-  //         key="config"
-  //         onClick={() => {
-  //           handleUpdateModalOpen(true);
-  //           setCurrentRow(record);
-  //         }}
-  //       >
-  //         <FormattedMessage id="pages.searchTable.config" defaultMessage="Configuration" />
-  //       </a>,
-  //       <a key="subscribeAlert" href="https://procomponents.ant.design/">
-  //         <FormattedMessage
-  //           id="pages.searchTable.subscribeAlert"
-  //           defaultMessage="Subscribe to alerts"
-  //         />
-  //       </a>,
-  //     ],
-  //   },
-  // ];
-  const columns: ProColumns<API.InterfaceInfo>[] = [
-    {
-      title: (
-        <FormattedMessage
-          id="pages.interfaceTable.id"
-          defaultMessage="ID"
-        />
-      ),
-      dataIndex: 'id',
-      valueType: 'index',
-    },
-    {
-      title: (
-        <FormattedMessage
-          id="pages.interfaceTable.name"
-          defaultMessage="Interface Name"
-        />
-      ),
-      dataIndex: 'name',
-      valueType: 'text',
-      formItemProps: {
-        rules: [{
-          required: true,
-          message: '请输入接口名称',
-        }]
-      },
-      render: (dom, entity) => {
-        return (
-          <a
-            onClick={() => {
-              setCurrentRow(entity);
-              setShowDetail(true);
-            }}
-          >
-            {dom}
-          </a>
-        );
-      },
-    },
-    {
-      title: (
-        <FormattedMessage
-          id="pages.interfaceTable.description"
-          defaultMessage="Description"
-        />
-      ),
-      dataIndex: 'description',
-      valueType: 'textarea',
-    },
-    {
-      title: (
-        <FormattedMessage
-          id="pages.interfaceTable.method"
-          defaultMessage="Request Method"
-        />
-      ),
-      dataIndex: 'method',
-      valueType: 'text',
-      formItemProps: {
-        rules: [{
-          required: true,
-          message: '请输入请求方法',
-        }]
-      },
-    },
-    {
-      title: (
-        <FormattedMessage
-          id="pages.interfaceTable.url"
-          defaultMessage="URL"
-        />
-      ),
-      dataIndex: 'url',
-      valueType: 'text',
-      formItemProps: {
-        rules: [{
-          required: true,
-          message: '请输入URL',
-        }]
-      },
-    },
-    {
-      title: (
-        <FormattedMessage
-          id="pages.interfaceTable.requestHeader"
-          defaultMessage="Request Header"
-        />
-      ),
-      dataIndex: 'requestHeader',
-      valueType: 'textarea',
-    },
-    {
-      title: (
-        <FormattedMessage
-          id="pages.interfaceTable.responseHeader"
-          defaultMessage="Response Header"
-        />
-      ),
-      dataIndex: 'responseHeader',
-      valueType: 'textarea',
-    },
-    {
-      title: (
-        <FormattedMessage
-          id="pages.interfaceTable.status"
-          defaultMessage="Status"
-        />
-      ),
-      dataIndex: 'status',
-      hideInForm: true,
-      valueEnum: {
-        0: {
-          text: (
-            <FormattedMessage
-              id="pages.interfaceTable.status.off"
-              defaultMessage="Shut down"
-            />
-          ),
-          status: 'Default',
-        },
-        1: {
-          text: (
-            <FormattedMessage
-              id="pages.searchTable.nameStatus.running"
-              defaultMessage="Running"
-            />
-          ),
-          status: 'Processing',
-        },
-      },
-    },
-    {
-      title: (
-        <FormattedMessage
-          id="pages.interfaceTable.createTime"
-          defaultMessage="Creation Time"
-        />
-      ),
-      dataIndex: 'createTime',
-      valueType: 'dateTime',
-      hideInForm: true,
-    },
-    {
-      title: (
-        <FormattedMessage
-          id="pages.interfaceTable.updateTime"
-          defaultMessage="Update Time"
-        />
-      ),
-      dataIndex: 'updateTime',
-      valueType: 'dateTime',
-      hideInForm: true,
-    },
-    {
-      title: (
-        <FormattedMessage
-          id="pages.interfaceTable.option"
-          defaultMessage="Operation"
-        />
-      ),
-      dataIndex: 'option',
-      valueType: 'option',
-      render: (_, record) => [
-        // 修改按钮
-        <a
-          key="config"
-          onClick={() => {
-            // handleUpdateModalOpen(true);
-            // 这里打开 UpdateForm 而不是 CreateModal
-            handleUpdateModalOpen(true);
-            setCurrentRow(record);
-          }}
-        >
-          <FormattedMessage id="pages.interfaceTable.config" defaultMessage="Configure" />
-        </a>,
-        // 删除按钮
-        <a
-          key="delete"
-          style={{ color: 'red' }}  // 设置删除按钮的样式
-          onClick={async () => {
-            const success = await handleRemove(record);  // 调用删除函数
-            if (success) {
-              actionRef.current?.reload();  // 成功后刷新表格
-            }
-          }}
-        >
-          <FormattedMessage id="pages.interfaceTable.delete" defaultMessage="删除" />
-        </a>,
-        <a key="subscribeAlert" href="https://procomponents.ant.design/">
-          <FormattedMessage
-            id="pages.interfaceTable.subscribeAlert"
-            defaultMessage="Subscribe to Alerts"
-          />
-        </a>,
-      ],
-    },
-  ];
 
   return (
-    <PageContainer>
-      <ProTable<API.RuleListItem, API.PageParams>
-        headerTitle={intl.formatMessage({
-          id: 'pages.searchTable.title',
-          defaultMessage: 'Enquiry form',
-        })}
-        actionRef={actionRef}
-        rowKey="id"
-        search={{
-          labelWidth: 120,
-        }}
-        toolBarRender={() => [
-          <Button
-            type="primary"
-            key="primary"
-            onClick={() => {
-              handleModalOpen(true);
-            }}
-          >
-            <PlusOutlined /> <FormattedMessage id="pages.searchTable.new" defaultMessage="New" />
-          </Button>,
-        ]}
-        // request={listInterfaceInfoUsingGet}
-        // 分页查询
-        request={async (
-          params: {
-            pageSize?: number;
-            current?: number;
-            keyword?: string;
-          },
-          sort: Record<string, SortOrder>,
-          filter: Record<string, (string | number)[] | null>,
-        ) => {
-          const res = await listInterfaceInfoByPageUsingGet({...params} as API.listInterfaceInfoByPageUsingGETParams);
+    <PageContainer title={'接口详情'}>
+      {/*{*/}
+      {/*  JSON.stringify(data)*/}
+      {/*}*/}
+      <Card loading={loading}>
+        {data ? (
+          <Descriptions title={data.name} column={2} layout="vertical" bordered={true}>
+            <Descriptions.Item label="描述">{data.description}</Descriptions.Item>
 
-          if (res.data) {
-            return {
-              data: res.data.records || [],
-              success: true,
-              total: res.data.total,
-            };
-          } else {
-            return {
-              data: [],
-              success: false,
-              total: 0,
-            };
-          }
-        }}
-        columns={columns}
-        rowSelection={{
-          onChange: (_, selectedRows) => {
-            setSelectedRows(selectedRows);
-          },
-        }}
-      />
-      {selectedRowsState?.length > 0 && (
-        <FooterToolbar
-          extra={
-            <div>
-              <FormattedMessage id="pages.searchTable.chosen" defaultMessage="Chosen" />{' '}
-              <a style={{ fontWeight: 600 }}>{selectedRowsState.length}</a>{' '}
-              <FormattedMessage id="pages.searchTable.item" defaultMessage="项" />
-              &nbsp;&nbsp;
-              <span>
-                <FormattedMessage
-                  id="pages.searchTable.totalServiceCalls"
-                  defaultMessage="Total number of service calls"
-                />{' '}
-                {selectedRowsState.reduce((pre, item) => pre + item.callNo!, 0)}{' '}
-                <FormattedMessage id="pages.searchTable.tenThousand" defaultMessage="万" />
-              </span>
-            </div>
-          }
-        >
-          <Button
-            onClick={async () => {
-              await handleRemove(selectedRowsState);
-              setSelectedRows([]);
-              actionRef.current?.reloadAndRest?.();
-            }}
-          >
-            <FormattedMessage
-              id="pages.searchTable.batchDeletion"
-              defaultMessage="Batch deletion"
-            />
-          </Button>
-          <Button type="primary">
-            <FormattedMessage
-              id="pages.searchTable.batchApproval"
-              defaultMessage="Batch approval"
-            />
-          </Button>
-        </FooterToolbar>
-      )}
-      <ModalForm
-        title={intl.formatMessage({
-          id: 'pages.searchTable.createForm.newRule',
-          defaultMessage: 'New rule',
-        })}
-        width="400px"
-        open={createModalOpen}
-        onOpenChange={handleModalOpen}
-        onFinish={async (value) => {
-          const success = await handleAdd(value);
-          if (success) {
-            handleModalOpen(false);
-            if (actionRef.current) {
-              actionRef.current?.reload();
-            }
-          }
-        }}
-      >
-        <ProFormText
-          rules={[
-            {
-              required: true,
-              message: (
-                <FormattedMessage
-                  id="pages.searchTable.ruleName"
-                  defaultMessage="Rule name is required"
-                />
-              ),
-            },
-          ]}
-          width="md"
-          name="name"
-        />
-        <ProFormTextArea width="md" name="desc" />
-      </ModalForm>
+            <Descriptions.Item label="接口状态">
+              {data.status === 0 ? (
+                <Badge text={'关闭'} status={'default'} />
+              ) : (
+                <Badge text={'启用'} status={'processing'} />
+              )}
+            </Descriptions.Item>
 
-      <UpdateModal
-        /* 这里的 UpdateModal 代码是在原有的 UpdateForm 基础上面改的 */
-        columns={columns}
-        value={currentRow || {}}
-        open={updateModalOpen}
-        onSubmit={async (value) => {
-          const success = await handleUpdate(value);
-          if (success) {
-            handleUpdateModalOpen(false);
-            setCurrentRow(undefined);
-            if (actionRef.current) {
-              actionRef.current?.reload();
-            }
-          }
-        }}
-        onCancel={() => {
-          handleUpdateModalOpen(false);
-          if (!showDetail) {
-            setCurrentRow(undefined);
-          }
-        }}
-      />
+            <Descriptions.Item label="请求地址">{data.url}</Descriptions.Item>
 
-      <Drawer
-        width={600}
-        open={showDetail}
-        onClose={() => {
-          setCurrentRow(undefined);
-          setShowDetail(false);
-        }}
-        closable={false}
-      >
-        {currentRow?.name && (
-          <ProDescriptions<API.RuleListItem>
-            column={2}
-            title={currentRow?.name}
-            request={async () => ({
-              data: currentRow || {},
-            })}
-            params={{
-              id: currentRow?.name,
-            }}
-            columns={columns as ProDescriptionsItemProps<API.RuleListItem>[]}
-          />
+            <Descriptions.Item label="请求方法">{data.method}</Descriptions.Item>
+
+            <Descriptions.Item label="请求头">{data.requestHeader}</Descriptions.Item>
+
+            <Descriptions.Item label="请求参数">{data.requestParams}</Descriptions.Item>
+
+            <Descriptions.Item label="响应头">{data.responseHeader}</Descriptions.Item>
+
+            <Descriptions.Item label="创建时间">
+              {moment(data.createTime).format('YYYY-MM-DD HH:mm:ss')}
+            </Descriptions.Item>
+
+            <Descriptions.Item label="更新时间">
+              {moment(data.updateTime).format('YYYY-MM-DD HH:mm:ss')}
+            </Descriptions.Item>
+          </Descriptions>
+        ) : (
+          <>接口不存在</>
         )}
-      </Drawer>
-      <CreateModal
-        columns={columns}
-        open={createModalOpen}
-        onCancel={() => {
-          handleModalOpen(false);
-        }}
-        onSubmit={(values) => {
-          // 提交处理逻辑
-          handleAdd(values)
-        }}
-      />
+      </Card>
+      <Divider />
+      <Card title={'在线调用'}>
+        <Form name="invoke" layout={'vertical'} onFinish={onFinish}>
+          <Form.Item label="请求参数" name="userRequestParams">
+            <Input.TextArea />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit" loading={invokeLoading}>
+              调用
+            </Button>
+          </Form.Item>
+        </Form>
+      </Card>
+      {invokeRes ? <Card title={'调用结果'}>{invokeRes}</Card> : null}
     </PageContainer>
   );
 };
 
-export default TableList;
+export default InterfaceInfo;
