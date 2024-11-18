@@ -54,12 +54,18 @@ export default [
         path: '/admin/interface_info',
         component: './Admin/InterfaceInfo',
       },
+      {
+        name: 'analysis',
+        icon: 'table',
+        path: '/admin/interface_analysis',
+        component: './Admin/InterfaceAnalysis',
+      },
     ],
   },
   {
     // 动态路由
     path: '/interface_info/:id',
-    name: 'interface info',
+    name: 'interface-info',
     component: './InterfaceInfo',
     // 不在菜单页显示
     hideInMenu: true,
