@@ -1,46 +1,66 @@
-import { GithubOutlined, InfoCircleOutlined } from '@ant-design/icons'; // 导入 InfoCircleOutlined 图标
-import { DefaultFooter } from '@ant-design/pro-components';
+import {GithubOutlined, InfoCircleOutlined, WechatOutlined} from '@ant-design/icons';
+import {DefaultFooter} from '@ant-design/pro-components';
+import '@umijs/max';
 import React from 'react';
+import {Tooltip} from "antd";
+
+const wechat = "/assets/WeChat.png";
 
 const Footer: React.FC = () => {
+  const defaultMessage = '温瞳工作室出品';
+  const currentYear = new Date().getFullYear();
   return (
     <DefaultFooter
       style={{
         background: 'none',
       }}
-      copyright="在在"
+      // @ts-ignore
+      copyright={<>
+        {`${currentYear} ${defaultMessage}`} |{' '}
+        憧憬
+        {" | "}
+        <a target={'_blank'} href={'https://icp.gov.moe/?keyword=20230744'} rel="noreferrer">
+          <img
+            src="https://icp.gov.moe/images/ico64.png"
+            alt={'萌ICP备 20230744号'}
+            style={{ verticalAlign: 'middle', height: '16px', marginRight: '4px' }} // Align image with text
+          />
+          萌ICP备20230744号
+        </a>
+      </>}
       links={[
         {
-          key: 'Ant Design Pro',
-          title: 'Ant Design Pro',
-          href: 'https://pro.ant.design',
-          blankTarget: true,
-        },
-        {
           key: 'github',
-          title: <GithubOutlined />,
-          href: 'https://github.com/ant-design/ant-design-pro',
+          title: (
+            <Tooltip title="查看本站技术及源码，欢迎 star">
+              <GithubOutlined/> 支持项目
+            </Tooltip>
+          ),
+          href: 'https://github.com/poboll/cai-api',
           blankTarget: true,
         },
         {
-          key: 'Ant Design',
-          title: 'Ant Design',
-          href: 'https://ant.design',
+          key: 'contact',
+          title: (
+            <Tooltip title={<img src={wechat} alt="微信 code_nav" width="120"/>}>
+              <WechatOutlined/> 联系作者
+            </Tooltip>
+          ),
+          href: '/assets/WeChat.png',
           blankTarget: true,
         },
         {
-          key: 'disclaimer',
+          key: 'info',
           title: (
             <>
-              <InfoCircleOutlined /> 免责声明
+              <InfoCircleOutlined/> 免责声明
             </>
           ),
-          href: '/disclaimer', // 免责声明页面链接
+          href: 'https://github.com/poboll/cai-api-frontend/statement/UserAgreement.md',
           blankTarget: true,
-        },
+        }
       ]}
     />
   );
 };
-
 export default Footer;
