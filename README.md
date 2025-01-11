@@ -7,9 +7,6 @@
 <a target="_blank" href="https://github.com/poboll/cai-api">
     <img alt="" src="https://github.com/poboll/cai-api/badge/star.svg?theme=gvp"/>
 </a>
-<a target="_blank" href="https://github.com/poboll/cai-api">
-    <img alt="" src="https://img.shields.io/github/stars/poboll/cai-api.svg?style=social&label=Stars"/>
-</a>
     <img alt="Maven" src="https://raster.shields.io/badge/Maven-3.8.1-red.svg"/>
 <a target="_blank" href="https://www.oracle.com/technetwork/java/javase/downloads/index.html">
         <img alt="" src="https://img.shields.io/badge/JDK-1.8+-green.svg"/>
@@ -58,7 +55,7 @@
 | **🏘️ [cai-api-common](https://github.com/poboll/cai-api/cai-api-common)**                                                                               | 公共服务模块        |
 | **🕸️ [cai-api-gateway](https://github.com/poboll/cai-api/cai-api-gateway)**                                                                             | 网关模块          |
 | **🔗 [cai-api-interface](https://github.com/poboll/cai-api/cai-api-interface)**                                                                          | 接口模块          |
-| **🛠 [cai-qpi-sdk](https://github.com/poboll/cai-api-sdk)**                                                                                              | 开发者调用sdk      |
+| **🛠 [cai-api-sdk](https://github.com/poboll/cai-api-sdk)**                                                                                              | 开发者调用sdk      |
 | **📘 [cai-api-doc](https://api-docs.caiths.com)**                                                                                                        | 接口在线文档        |
 | **✔️ [cai-api-sdk-demo](https://github.com/poboll/cai-api-sdk-demo/blob/1.0.0/src/main/java/com/caiths/caiapisdkdemo/controller/InvokeController.java)** | SDK调用Demo     |
 
