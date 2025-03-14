@@ -1,21 +1,21 @@
 <p align="center">
     <img src=https://github.com/user-attachments/assets/f7c5f6bb-164d-4ec5-8e35-720e5076a50c width=188/>
 </p>
-<h1 align="center">Cai-API 接口开放平台</h1>
-<p align="center"><strong>Cai-API 接口开放平台是一个为用户和开发者提供全面API接口调用服务的平台 🛠</strong></p>
+<h1 align="center">Oculichat 眼智医前端仓库</h1>
+<p align="center"><strong>oculichat 眼智医-眼底智能辅助诊疗系统是一个为医生和患者提供辅助诊疗综合服务一站式服务的平台 🛠</strong></p>
 <div align="center">
-<a target="_blank" href="https://github.com/poboll/cai-api">
-    <img alt="" src="https://github.com/poboll/cai-api/badge/star.svg?theme=gvp"/>
+<a target="_blank" href="https://github.com/poboll/oculichat-frontend">
+    <img alt="" src="https://github.com/poboll/oculichat-frontend/badge/star.svg?theme=gvp"/>
 </a>
     <img alt="Maven" src="https://raster.shields.io/badge/Maven-3.8.1-red.svg"/>
 <a target="_blank" href="https://www.oracle.com/technetwork/java/javase/downloads/index.html">
         <img alt="" src="https://img.shields.io/badge/JDK-1.8+-green.svg"/>
 </a>
     <img alt="SpringBoot" src="https://raster.shields.io/badge/SpringBoot-2.7+-green.svg"/>
-<a href="https://github.com/poboll/cai-api" target="_blank">
-    <img src='https://img.shields.io/github/forks/poboll/cai-api' alt='GitHub forks' class="no-zoom">
+<a href="https://github.com/poboll/oculichat-frontend" target="_blank">
+    <img src='https://img.shields.io/github/forks/poboll/oculichat-frontend' alt='GitHub forks' class="no-zoom">
 </a>
-<a href="https://github.com/poboll/cai-api" target="_blank"><img src='https://img.shields.io/github/stars/poboll/cai-api' alt='GitHub stars' class="no-zoom">
+<a href="https://github.com/poboll/oculichat-frontend" target="_blank"><img src='https://img.shields.io/github/stars/poboll/oculichat-frontend' alt='GitHub stars' class="no-zoom">
 </a>
 </div>
 
@@ -25,25 +25,25 @@
 
 **😀 作为用户您可以通过注册登录账户，获取接口调用权限，并根据自己的需求浏览和选择适合的接口。您可以在线进行接口调试，快速验证接口的功能和效果。**
 
-**💻 作为开发者 我们提供了[客户端SDK: Cai-API-SDK](https://github.com/poboll/cai-api-sdk)， 通过[开发者凭证](https://api.caiths.com/account/center)即可将轻松集成接口到您的项目中，实现更高效的开发和调用。**
+**💻 作为开发者 我们提供了[客户端SDK: CAI-API-SDK](https://github.com/poboll/cai-api-sdk)， 通过[开发者凭证](https://api.caiths.com/account/center)即可将轻松集成接口到您的项目中，实现更高效的开发和调用。**
 
-**🤝 您可以将自己的接口接入到Cai-API 接口开放平台平台上，并发布给其他用户使用。 您可以管理和各个接口，以便更好地分析和优化接口性能。**
+**🤝 您可以将自己的接口接入到oculichat-frontend 接口开放平台平台上，并发布给其他用户使用。 您可以管理和各个接口，以便更好地分析和优化接口性能。**
 
 **👌 我们还提供了[开发者在线文档](https://api-docs.caiths.com)和技术支持，帮助您快速接入和发布接口。**
 
-**🏁 无论您是用户还是开发者，Cai-API 接口开放平台都致力于提供稳定、安全、高效的接口调用服务，帮助您实现更快速、便捷的开发和调用体验。**
+**🏁 无论您是用户还是开发者，oculichat-frontend 接口开放平台都致力于提供稳定、安全、高效的接口调用服务，帮助您实现更快速、便捷的开发和调用体验。**
 
 ## 网站导航 🧭
 
-- [**Cai-API 后端 🏘️**](https://github.com/poboll/cai-api)
-- [**Cai-API 前端 🏘**️](https://github.com/poboll/cai-api-frontend)
+- [**oculichat-frontend 后端 🏘️**](https://github.com/poboll/oculichat-frontend)
+- [**oculichat-frontend 前端 🏘**️](https://github.com/poboll/oculichat-frontend-frontend)
 
--  **[Cai-API-SDK](https://github.com/poboll/cai-api-sdk)** 🛠
+-  **[oculichat-frontend-SDK](https://github.com/poboll/oculichat-frontend-sdk)** 🛠
 
--  **[Cai-API 接口开放平台 🔗](https://api.caiths.com/)**
+-  **[oculichat-frontend 接口开放平台 🔗](https://api.caiths.com/)**
 
--  **[Cai-API-DOC 开发者文档 📖](https://api-docs.caiths.com)**
--  **[Cai-API-SDK-demo ✔️](https://github.com/poboll/cai-api-sdk-demo/blob/main/src/main/java/com/caiths/caiapisdkdemo/controller/InvokeController.java)**
+-  **[oculichat-frontend-DOC 开发者文档 📖](https://api-docs.caiths.com)**
+-  **[oculichat-frontend-SDK-demo ✔️](https://github.com/poboll/oculichat-frontend-sdk-demo/blob/main/src/main/java/com/caiths/caiapisdkdemo/controller/InvokeController.java)**
 
 
 ## 目录结构 📑
@@ -51,13 +51,13 @@
 
 | 目录                                                                                                                                                       | 描述            |
 |----------------------------------------------------------------------------------------------------------------------------------------------------------|---------------|
-| **🏘️ [cai-api-backend](https://github.com/poboll/cai-api/cai-api-backend)**                                                                             | Cai-API后端服务模块 |
-| **🏘️ [cai-api-common](https://github.com/poboll/cai-api/cai-api-common)**                                                                               | 公共服务模块        |
-| **🕸️ [cai-api-gateway](https://github.com/poboll/cai-api/cai-api-gateway)**                                                                             | 网关模块          |
-| **🔗 [cai-api-interface](https://github.com/poboll/cai-api/cai-api-interface)**                                                                          | 接口模块          |
-| **🛠 [cai-api-sdk](https://github.com/poboll/cai-api-sdk)**                                                                                              | 开发者调用sdk      |
-| **📘 [cai-api-doc](https://api-docs.caiths.com)**                                                                                                        | 接口在线文档        |
-| **✔️ [cai-api-sdk-demo](https://github.com/poboll/cai-api-sdk-demo/blob/1.0.0/src/main/java/com/caiths/caiapisdkdemo/controller/InvokeController.java)** | SDK调用Demo     |
+| **🏘️ [oculichat-frontend-backend](https://github.com/poboll/oculichat-frontend/oculichat-frontend-backend)**                                                                             | oculichat-frontend后端服务模块 |
+| **🏘️ [oculichat-frontend-common](https://github.com/poboll/oculichat-frontend/oculichat-frontend-common)**                                                                               | 公共服务模块        |
+| **🕸️ [oculichat-frontend-gateway](https://github.com/poboll/oculichat-frontend/oculichat-frontend-gateway)**                                                                             | 网关模块          |
+| **🔗 [oculichat-frontend-interface](https://github.com/poboll/oculichat-frontend/oculichat-frontend-interface)**                                                                          | 接口模块          |
+| **🛠 [oculichat-frontend-sdk](https://github.com/poboll/oculichat-frontend-sdk)**                                                                                              | 开发者调用sdk      |
+| **📘 [oculichat-frontend-doc](https://api-docs.caiths.com)**                                                                                                        | 接口在线文档        |
+| **✔️ [oculichat-frontend-sdk-demo](https://github.com/poboll/oculichat-frontend-sdk-demo/blob/1.0.0/src/main/java/com/caiths/caiapisdkdemo/controller/InvokeController.java)** | SDK调用Demo     |
 
 ## 项目流程 🗺️
 
@@ -130,26 +130,26 @@ yarn build or npm run build
 
 `坤币`即积分，用于平台接口调用。
 
-| **功能**                                                     | 游客 | **普通用户** | **管理员** |
-|------------------------------------------------------------|----|----------|---------|
-| [**Cai-API-SDK**](https://github.com/poboll/cai-api-sdk)使用 | ✅  | ✅        | ✅       |
-| **[开发者API在线文档](http://api-docs.caiths.com)**               | ✅  | ✅        | ✅       |
-| 邀请好友注册得坤币                                                  | ❌  | ✅        | ✅       |
-| 切换主题、深色、暗色                                                 | ✅  | ✅        | ✅       |
-| 微信支付宝付款                                                    | ❌  | ✅        | ✅       |
-| 在线调试接口                                                     | ❌  | ✅        | ✅       |
-| 每日签到得坤币                                                    | ❌  | ✅        | ✅       |
-| 接口大厅搜索接口、浏览接口                                              | ✅  | ❌        | ✅       |
-| 邮箱验证码登录注册                                                  | ✅  | ✅        | ✅       |
-| 钱包充值                                                       | ❌  | ❌        | ✅       |
-| 支付成功邮箱通知(需要绑定邮箱)                                           | ❌  | ✅        | ✅       |
-| 更新头像                                                       | ❌  | ✅        | ✅       |
-| 绑定、换绑、解绑邮箱                                                 | ❌  | ✅        | ✅       |
-| 取消订单、删除订单                                                  | ❌  | ✅        | ✅       |
-| 商品管理、上线、下架                                                 | ❌  | ❌        | ✅       |
-| 用户管理、封号解封等                                                 | ❌  | ❌        | ✅       |
-| 接口管理、接口发布审核、下架                                             | ❌  | ❌        | ✅       |
-| 退款                                                         | ❌  | ❌        | ❌       |
+| **功能**                                                                | 游客 | **普通用户** | **管理员** |
+|-----------------------------------------------------------------------|----|----------|---------|
+| [**CAI-API-SDK**](https://github.com/poboll/cai-api-sdk)使用 | ✅  | ✅        | ✅       |
+| **[开发者API在线文档](http://api-docs.caiths.com)**                          | ✅  | ✅        | ✅       |
+| 邀请好友注册得坤币                                                             | ❌  | ✅        | ✅       |
+| 切换主题、深色、暗色                                                            | ✅  | ✅        | ✅       |
+| 微信支付宝付款                                                               | ❌  | ✅        | ✅       |
+| 在线调试接口                                                                | ❌  | ✅        | ✅       |
+| 每日签到得坤币                                                               | ❌  | ✅        | ✅       |
+| 接口大厅搜索接口、浏览接口                                                         | ✅  | ❌        | ✅       |
+| 邮箱验证码登录注册                                                             | ✅  | ✅        | ✅       |
+| 钱包充值                                                                  | ❌  | ❌        | ✅       |
+| 支付成功邮箱通知(需要绑定邮箱)                                                      | ❌  | ✅        | ✅       |
+| 更新头像                                                                  | ❌  | ✅        | ✅       |
+| 绑定、换绑、解绑邮箱                                                            | ❌  | ✅        | ✅       |
+| 取消订单、删除订单                                                             | ❌  | ✅        | ✅       |
+| 商品管理、上线、下架                                                            | ❌  | ❌        | ✅       |
+| 用户管理、封号解封等                                                            | ❌  | ❌        | ✅       |
+| 接口管理、接口发布审核、下架                                                        | ❌  | ❌        | ✅       |
+| 退款                                                                    | ❌  | ❌        | ❌       |
 
 ## 功能展示 ✨
 
