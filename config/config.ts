@@ -130,7 +130,7 @@ export default defineConfig({
     {
       requestLibPath: "import { request } from '@umijs/max'",
       schemaPath: 'http://localhost:7529/api/v3/api-docs',
-      projectName: 'cai-api-backend',
+      projectName: 'oculichat-backend',
     },
   ],
   mfsu: {

@@ -24,7 +24,7 @@ const Admin: React.FC = () => {
             textAlign: 'center',
           }}
         >
-          <SmileTwoTone/> Cai-API 接口开放平台 <HeartTwoTone twoToneColor="#eb2f96"/> You
+          <SmileTwoTone/> Oculichat 眼底智能影像分析平台 <HeartTwoTone twoToneColor="#eb2f96"/> You
         </Typography.Title>
       </Card>
       <p
