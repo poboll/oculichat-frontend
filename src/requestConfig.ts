@@ -17,7 +17,7 @@ interface ResponseStructure {
  * @doc https://umijs.org/docs/max/request#配置
  */
 export const requestConfig: RequestConfig = {
-  baseURL: process.env.NODE_ENV === 'production' ? "https://api.caiths.com/" : 'http://localhost:7529/',
+  baseURL: process.env.NODE_ENV === 'production' ? "https://api.caiths.com/" : 'http://127.0.0.1:7529/',
   withCredentials: true,
 
   // 请求拦截器
