@@ -25,12 +25,23 @@
     component: './InterfaceSquare',
   },
   { path: '/recharge/list', icon: 'PayCircleOutlined', name: '积分商城', component: './Recharge' },
-
   {
     path: '/order/list',
     name: '我的订单',
     icon: 'ProfileOutlined',
     component: './Order/OrderList',
+  },
+  {
+    path: '/Fileupload/list',
+    name: '上传文件',
+    icon: 'CloudUploadOutlined',
+    component: './Fileupload',
+  },
+  {
+    path: '/Chat/list',
+    name: 'AI聊天',
+    icon: 'MessageOutlined',  // Or 'RobotOutlined' if you prefer
+    component: './Chat',
   },
   {
     path: '/admin',
