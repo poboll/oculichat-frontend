@@ -135,8 +135,8 @@ const Register: React.FC = () => {
             maxWidth: '75vw',
           }}
           logo={<img alt="logo" src="/logo.gif"/>}
-          title="Cai-API 接口开放平台"
-          subTitle={'Cai-API 接口开放平台致力于提供稳定、安全、高效的接口调用服务'}
+          title="Oculichat 眼底辅助诊断开放平台"
+          subTitle={'Oculichat 眼底辅助诊断开放平台致力于提供稳定、安全、高效的接口调用服务'}
           initialValues={{
             invitationCode: invitationCode
           }}

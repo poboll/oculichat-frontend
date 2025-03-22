@@ -1,6 +1,6 @@
 {
-  "name": "Cai-API 接口开放平台",
-  "short_name": "Cai-API 接口开放平台",
+  "name": "Oculichat 眼底辅助诊断开放平台",
+  "short_name": "Oculichat 眼底辅助诊断开放平台",
   "display": "standalone",
   "start_url": "./?utm_source=homescreen",
   "theme_color": "#002140",
