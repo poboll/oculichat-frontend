@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.1",
   "info": {
-    "title": "Cai-API 接口开放平台",
+    "title": "Oculichat 眼底辅助诊断开放平台",
     "version": "1.0.0"
   },
   "servers": [

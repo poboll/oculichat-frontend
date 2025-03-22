@@ -73,7 +73,7 @@ export default defineConfig({
    * @name layout 插件
    * @doc https://umijs.org/docs/max/layout-menu
    */
-  title: 'Cai-API 接口开放平台',
+  title: 'Oculichat 眼底辅助诊断开放平台',
   layout: {
     locale: true,
     ...defaultSettings,
