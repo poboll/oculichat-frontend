@@ -11,7 +11,7 @@ const getAIResponse = (userMessage: string): Promise<string> => {
   });
 };
 
-const Chat: React.FC = () => {
+const AccessAIServices: React.FC = () => {
   const [messages, setMessages] = useState<{ sender: string; content: string }[]>([]);
   const [userInput, setUserInput] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
@@ -78,4 +78,4 @@ const Chat: React.FC = () => {
   );
 };
 
-export default Chat;
+export default AccessAIServices;

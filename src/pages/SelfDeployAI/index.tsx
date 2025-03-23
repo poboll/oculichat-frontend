@@ -5,7 +5,7 @@ import { RcFile, UploadFile } from "antd/es/upload/interface";
 
 const { Title } = Typography;
 
-const FileUpload: React.FC = () => {
+const SelfDeployAI: React.FC = () => {
   const [uploading, setUploading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
@@ -104,4 +104,4 @@ const FileUpload: React.FC = () => {
   );
 };
 
-export default FileUpload;
+export default SelfDeployAI;
