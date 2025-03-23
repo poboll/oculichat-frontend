@@ -5,12 +5,11 @@ import { RcFile, UploadFile } from "antd/es/upload/interface";
 
 const { Title } = Typography;
 
-// Simulate AI Response
+// 模拟AI响应
 const getAIResponse = async (file: File, query: string): Promise<string> => {
-  // Here, you can replace this with your own AI logic (e.g., fetch to your own API)
   return new Promise((resolve) => {
     setTimeout(() => {
-      const response = `AI response for file: ${file.name}, Query: ${query}`;
+      const response = `文件: ${file.name}，查询: ${query} 的AI响应。`;
       resolve(response);
     }, 1000);
   });
@@ -27,16 +26,15 @@ const SelfDeployAIPage: React.FC = () => {
   const handleSendMessage = async () => {
     if (!userInput.trim()) return;
 
-    // Add the user's message to the chat
     setMessages((prev) => [...prev, { sender: "用户", content: userInput }]);
     setUserInput("");
     setLoading(true);
 
     try {
-      const response = await getAIResponse(fileList[0].originFileObj as File, userInput); // Replace file with uploaded file
+      const response = await getAIResponse(fileList[0].originFileObj as File, userInput);
       setMessages((prev) => [...prev, { sender: "AI", content: response }]);
     } catch (error) {
-      message.error("Error while fetching AI response.");
+      message.error("获取AI响应时出错。");
     } finally {
       setLoading(false);
     }
@@ -48,10 +46,10 @@ const SelfDeployAIPage: React.FC = () => {
       setUploading(true);
     }
     if (file.status === "done") {
-      message.success(`${file.name} file uploaded successfully.`);
+      message.success(`${file.name} 文件上传成功。`);
       setUploading(false);
     } else if (file.status === "error") {
-      message.error(`${file.name} file upload failed.`);
+      message.error(`${file.name} 文件上传失败。`);
       setUploading(false);
     }
   };
@@ -59,7 +57,7 @@ const SelfDeployAIPage: React.FC = () => {
   const beforeUpload = (file: RcFile) => {
     const isImage = file.type.startsWith("image/");
     if (!isImage) {
-      message.error("Only image files are allowed.");
+      message.error("只允许上传图片文件。");
     }
     return isImage;
   };
@@ -78,26 +76,25 @@ const SelfDeployAIPage: React.FC = () => {
         onSuccess?.({}, file);
         setUploading(false);
       } else {
-        onError?.(new Error("Upload failed"));
+        onError?.(new Error("上传失败"));
         setUploading(false);
       }
     };
     xhr.onerror = () => {
-      onError?.(new Error("Upload failed"));
+      onError?.(new Error("上传失败"));
       setUploading(false);
     };
     xhr.send(file);
   };
 
   useEffect(() => {
-    setMessages([{ sender: "AI", content: "Hello! How can I assist you today?" }]);
+    setMessages([{ sender: "AI", content: "你好！今天我能为你做些什么？" }]);
   }, []);
 
   return (
     <div style={{ display: "flex" }}>
-      {/* Left Panel for File Upload */}
       <Card hoverable style={{ width: 400, padding: "20px", marginRight: "20px" }}>
-        <Title level={4}>Upload Files</Title>
+        <Title level={4}>上传文件</Title>
         <Upload
           customRequest={customRequest}
           fileList={fileList}
@@ -108,7 +105,7 @@ const SelfDeployAIPage: React.FC = () => {
           accept="image/*"
         >
           <Button icon={<UploadOutlined />} block>
-            Choose File
+            选择文件
           </Button>
         </Upload>
         {uploading && (
@@ -118,7 +115,6 @@ const SelfDeployAIPage: React.FC = () => {
         )}
       </Card>
 
-      {/* Right Panel for Chat with AI */}
       <Card hoverable style={{ flex: 1, width: 600, padding: "20px" }}>
         <div style={{ height: "300px", overflowY: "auto", marginBottom: 16 }}>
           {messages.map((msg, index) => (
@@ -140,11 +136,11 @@ const SelfDeployAIPage: React.FC = () => {
           value={userInput}
           onChange={(e) => setUserInput(e.target.value)}
           onPressEnter={handleSendMessage}
-          placeholder="Enter message..."
+          placeholder="输入消息..."
           style={{ marginBottom: 10 }}
         />
         <Button type="primary" block onClick={handleSendMessage}>
-          Send
+          发送
         </Button>
       </Card>
     </div>
