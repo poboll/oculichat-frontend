@@ -444,9 +444,10 @@ ${condition === 'Normal' ?
           padding: '20px',
           overflow: 'auto',
           boxShadow: '1px 0 4px rgba(0,0,0,0.05)',
-          background: '#fcfcfc'
+          background: '#fcfcfc',
+          height: 'calc(100vh - 64px)',
         }}>
-          <Tabs defaultActiveKey="upload" onChange={(key) => setActiveTab(key)}>
+          <Tabs defaultActiveKey="upload" onChange={(key) => setActiveTab(key)} >
             <TabPane tab="照片上传" key="upload">
               <div style={{ marginBottom: 20 }}>
                 <Card
@@ -485,7 +486,7 @@ ${condition === 'Normal' ?
                 </Card>
               </div>
 
-              <div>
+              <div style={{ marginBottom: 50 }}>
                 <Divider>上传状态</Divider>
                 <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                   <div>
