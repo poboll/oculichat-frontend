@@ -230,7 +230,7 @@ ${randomDiagnosis}
             </TabPane>
           </Tabs>
         </Sider>
-        <Content style={{ padding: '20px', display: 'flex', flexDirection: 'column' }}>
+        <Content style={{ padding: '20px', display: 'flex', flexDirection: 'column'}}>
           <Card
             style={{
               flex: 1,
@@ -238,7 +238,8 @@ ${randomDiagnosis}
               flexDirection: 'column',
               boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
               borderRadius: '8px',
-              marginBottom: '20px'
+              marginBottom: '20px',
+              overflow: 'hidden'
             }}
             bodyStyle={{
               flex: 1,
