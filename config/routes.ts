@@ -32,16 +32,16 @@
     component: './Order/OrderList',
   },
   {
-    path: '/Fileupload/list',
-    name: '上传文件',
+    path: '/selfdeployai/list',
+    name: '自行部署AI',
     icon: 'CloudUploadOutlined',
-    component: './Fileupload',
+    component: './SelfDeployAI',
   },
   {
-    path: '/Chat/list',
-    name: 'AI聊天',
+    path: '/accessaiservices/list',
+    name: '接入服务',
     icon: 'MessageOutlined',  // Or 'RobotOutlined' if you prefer
-    component: './Chat',
+    component: './AccessAIServices',
   },
   {
     path: '/admin',
