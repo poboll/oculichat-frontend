@@ -31,6 +31,54 @@ const SelfDeployAIPage: React.FC = () => {
   }, [leftEyeFile, rightEyeFile]);
 
   // 前端合并两张图片
+  // const createMergedImage = () => {
+  //   if (!leftEyeFile || !rightEyeFile) return;
+  //
+  //   const canvas = document.createElement('canvas');
+  //   const ctx = canvas.getContext('2d');
+  //   if (!ctx) return;
+  //
+  //   const leftImg = new Image();
+  //   const rightImg = new Image();
+  //
+  //   let loadedImages = 0;
+  //   const onImageLoad = () => {
+  //     loadedImages++;
+  //     if (loadedImages === 2) {
+  //       // 两张图片都加载完成后，开始绘制合并图片
+  //       // 设置画布宽度为两张图片宽度之和，高度为较高图片的高度
+  //       const maxHeight = Math.max(leftImg.height, rightImg.height);
+  //       canvas.width = leftImg.width + rightImg.width;
+  //       canvas.height = maxHeight;
+  //
+  //       // 绘制左眼图片
+  //       ctx.drawImage(leftImg, 0, 0);
+  //
+  //       // 绘制右眼图片
+  //       ctx.drawImage(rightImg, leftImg.width, 0);
+  //
+  //       // 添加文字标识
+  //       ctx.font = '16px Arial';
+  //       ctx.fillStyle = 'white';
+  //       ctx.fillRect(5, 5, 50, 25);
+  //       ctx.fillRect(leftImg.width + 5, 5, 55, 25);
+  //       ctx.fillStyle = 'black';
+  //       ctx.fillText('左眼', 10, 22);
+  //       ctx.fillText('右眼', leftImg.width + 10, 22);
+  //
+  //       // 将合并图片转为URL
+  //       const mergedUrl = canvas.toDataURL('image/jpeg');
+  //       setMergedImageUrl(mergedUrl);
+  //     }
+  //   };
+  //
+  //   leftImg.onload = onImageLoad;
+  //   rightImg.onload = onImageLoad;
+  //
+  //   leftImg.src = URL.createObjectURL(leftEyeFile);
+  //   rightImg.src = URL.createObjectURL(rightEyeFile);
+  // };
+// 前端合并两张图片
   const createMergedImage = () => {
     if (!leftEyeFile || !rightEyeFile) return;
 
@@ -69,6 +117,9 @@ const SelfDeployAIPage: React.FC = () => {
         // 将合并图片转为URL
         const mergedUrl = canvas.toDataURL('image/jpeg');
         setMergedImageUrl(mergedUrl);
+
+        // 上传合并图片到FastDFS服务器
+        uploadMergedImageToFastDFS(mergedUrl);
       }
     };
 
@@ -79,6 +130,52 @@ const SelfDeployAIPage: React.FC = () => {
     rightImg.src = URL.createObjectURL(rightEyeFile);
   };
 
+  // 上传合并图片到FastDFS服务器
+  const uploadMergedImageToFastDFS = async (imageDataUrl: string) => {
+    try {
+      // 确保base64格式正确
+      const base64Data = imageDataUrl.split(',')[1]; // 只取内容部分
+
+      // 将base64转换为Blob对象
+      const byteCharacters = atob(base64Data);
+      const byteArrays = [];
+      for (let i = 0; i < byteCharacters.length; i++) {
+        byteArrays.push(byteCharacters.charCodeAt(i));
+      }
+      const blob = new Blob([new Uint8Array(byteArrays)], { type: 'image/jpeg' });
+
+      // 创建FormData对象
+      const formData = new FormData();
+      formData.append('file', blob, 'merged_eye_image.jpg');
+
+      // 输出一些调试信息
+      console.log('上传文件大小:', blob.size);
+
+      // 发送请求到FastDFS服务器
+      const response = await fetch('http://10.3.36.10:7529/api/fastdfs/upload', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        throw new Error(`上传失败: ${response.status} ${response.statusText}`);
+      }
+
+      const result = await response.json();
+
+      if (result.success) {
+        console.log('合并图片上传成功，URL:', result.fileUrl);
+        message.success('合并图片已成功上传到服务器');
+        // 可以选择是否将返回的URL保存到状态中
+        // setMergedImageServerUrl(result.fileUrl);
+      } else {
+        throw new Error(result.error || '上传失败');
+      }
+    } catch (error) {
+      console.error('上传合并图片到FastDFS失败:', error);
+      message.error('上传合并图片到服务器失败，但不影响本地使用');
+    }
+  };
   // 导出诊断报告
   const exportReport = () => {
     if (messages.length === 0) {
@@ -135,41 +232,148 @@ ${content}
   };
 
   // 模拟API-1调用 - 分析图片
+  // const callAPI1 = async (imageUrl: string): Promise<any> => {
+  //   return new Promise((resolve) => {
+  //     setTimeout(() => {
+  //       // 模拟随机生成不同的诊断结果
+  //       const conditions = ['Normal', 'Diabetes', 'Glaucoma', 'AMD', 'Hypertension', 'Myopia', 'Cataract'];
+  //       const severities = ['normal', 'mild', 'moderate', 'severe'];
+  //       const genders = ['Male', 'Female'];
+  //
+  //       const randomCondition = conditions[Math.floor(Math.random() * conditions.length)];
+  //       const leftSeverity = severities[Math.floor(Math.random() * severities.length)];
+  //       const rightSeverity = severities[Math.floor(Math.random() * severities.length)];
+  //       const age = Math.floor(Math.random() * 50) + 20; // 20-70岁
+  //       const gender = genders[Math.floor(Math.random() * genders.length)];
+  //
+  //       const result = {
+  //         "main_class": {
+  //           "label": randomCondition,
+  //           "confidence": parseFloat((0.7 + Math.random() * 0.29).toFixed(6))
+  //         },
+  //         "left_eye": {
+  //           "severity": leftSeverity,
+  //           "confidence": parseFloat((0.7 + Math.random() * 0.29).toFixed(6))
+  //         },
+  //         "right_eye": {
+  //           "severity": rightSeverity,
+  //           "confidence": parseFloat((0.7 + Math.random() * 0.29).toFixed(6))
+  //         },
+  //         "age_prediction": age,
+  //         "gender_prediction": gender
+  //       };
+  //
+  //       resolve(result);
+  //     }, 2000);
+  //   });
+  // };
+// ... existing code ...
+// 模拟API-1调用 - 分析图片
   const callAPI1 = async (imageUrl: string): Promise<any> => {
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        // 模拟随机生成不同的诊断结果
-        const conditions = ['Normal', 'Diabetes', 'Glaucoma', 'AMD', 'Hypertension', 'Myopia', 'Cataract'];
-        const severities = ['normal', 'mild', 'moderate', 'severe'];
-        const genders = ['Male', 'Female'];
+    // 从当前合并的图片获取左右眼图片的base64数据
+    const getBase64FromMergedImage = async (): Promise<{left: string, right: string}> => {
+      return new Promise((resolve) => {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        if (!ctx) {
+          message.error('无法创建canvas上下文');
+          return;
+        }
 
-        const randomCondition = conditions[Math.floor(Math.random() * conditions.length)];
-        const leftSeverity = severities[Math.floor(Math.random() * severities.length)];
-        const rightSeverity = severities[Math.floor(Math.random() * severities.length)];
-        const age = Math.floor(Math.random() * 50) + 20; // 20-70岁
-        const gender = genders[Math.floor(Math.random() * genders.length)];
+        const img = new Image();
+        img.onload = () => {
+          // 设置画布大小
+          canvas.width = img.width;
+          canvas.height = img.height;
 
-        const result = {
-          "main_class": {
-            "label": randomCondition,
-            "confidence": parseFloat((0.7 + Math.random() * 0.29).toFixed(6))
-          },
-          "left_eye": {
-            "severity": leftSeverity,
-            "confidence": parseFloat((0.7 + Math.random() * 0.29).toFixed(6))
-          },
-          "right_eye": {
-            "severity": rightSeverity,
-            "confidence": parseFloat((0.7 + Math.random() * 0.29).toFixed(6))
-          },
-          "age_prediction": age,
-          "gender_prediction": gender
+          // 绘制完整图片
+          ctx.drawImage(img, 0, 0);
+
+          // 假设左右眼图片等宽，取图片中点分割
+          const midPoint = img.width / 2;
+
+          // 创建左眼canvas
+          const leftCanvas = document.createElement('canvas');
+          const leftCtx = leftCanvas.getContext('2d');
+          leftCanvas.width = midPoint;
+          leftCanvas.height = img.height;
+          leftCtx?.drawImage(img, 0, 0);
+
+          // 创建右眼canvas
+          const rightCanvas = document.createElement('canvas');
+          const rightCtx = rightCanvas.getContext('2d');
+          rightCanvas.width = midPoint;
+          rightCanvas.height = img.height;
+          rightCtx?.drawImage(img, -midPoint, 0);
+
+          // 获取base64数据，去掉前缀"data:image/jpeg;base64,"
+          const leftBase64 = leftCanvas.toDataURL('image/jpeg').split(',')[1];
+          const rightBase64 = rightCanvas.toDataURL('image/jpeg').split(',')[1];
+
+          resolve({
+            left: leftBase64,
+            right: rightBase64
+          });
         };
 
-        resolve(result);
-      }, 2000);
-    });
+        img.src = imageUrl;
+      });
+    };
+
+    try {
+      // 获取左右眼图片的base64数据
+      const { left: leftImageBase64, right: rightImageBase64 } = await getBase64FromMergedImage();
+
+      // 构造请求体
+      const requestBody = {
+        left_image_base64: leftImageBase64,
+        right_image_base64: rightImageBase64
+      };
+
+      // 设置API URL
+      // const apiUrl = 'http://10.3.36.10:7529/api/model/predict';  // 使用真实接口
+      const apiUrl = 'http://10.3.36.10:7529/api/model/simulate';  // 使用模拟接口（备用）
+
+      // 发送请求到后端
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(requestBody)
+      });
+
+      if (!response.ok) {
+        throw new Error(`API请求失败: ${response.status} ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      console.log('API响应结果:', result);
+      return result;
+    } catch (error) {
+      console.error('调用模型API出错:', error);
+      message.error('分析图片时出错，请重试');
+
+      // 出错时返回模拟数据作为备用（可选，便于开发调试）
+      return {
+        "main_class": {
+          "label": "Diabetes",
+          "confidence": 0.85
+        },
+        "left_eye": {
+          "severity": "mild",
+          "confidence": 0.78
+        },
+        "right_eye": {
+          "severity": "moderate",
+          "confidence": 0.82
+        },
+        "age_prediction": 48,
+        "gender_prediction": "Male"
+      };
+    }
   };
+// ... existing code ...
 
   // 模拟API-2调用 - 解释结果
   const callAPI2 = async (aiAnalysis: any, userInput: string = ''): Promise<string> => {
