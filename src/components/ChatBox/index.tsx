@@ -64,7 +64,8 @@ const ChatBox: React.FC<{ onSendMessage: (message: string) => void }> = ({ onSen
             marginRight: 10,
             borderRadius: 20,
             padding: '8px 12px',
-            borderColor: '#d9d9d9'
+            borderColor: '#d9d9d9',
+            marginBottom: 10,
           }}
         />
         <Button
@@ -74,7 +75,7 @@ const ChatBox: React.FC<{ onSendMessage: (message: string) => void }> = ({ onSen
           shape="circle"
           icon={<SendOutlined />}
           size="large"
-          style={{ background: '#52c41a', borderColor: '#52c41a' }}
+          style={{ background: '#52c41a', borderColor: '#52c41a', marginBottom: 10, }}
         />
       </div>
     </div>
