@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Upload, Button, message, Progress } from 'antd';
-import { UploadOutlined } from '@ant-design/icons';
+import {Upload, Progress, Card} from 'antd';
+import {InboxOutlined} from '@ant-design/icons';
+
 
 const FileUpload: React.FC<{ onUploadSuccess: (file: File) => void }> = ({ onUploadSuccess }) => {
   const [progress, setProgress] = useState(0);
@@ -46,20 +47,43 @@ const FileUpload: React.FC<{ onUploadSuccess: (file: File) => void }> = ({ onUpl
   }, [previewUrl]);
 
   return (
-    <div>
-      <Upload customRequest={customRequest} showUploadList={false} accept="image/*">
-        <Button icon={<UploadOutlined />} block>
-          选择文件
-        </Button>
-      </Upload>
-      {uploading && <Progress percent={progress} status="active" />}
-      {previewUrl && (
-        <div style={{ marginTop: 10 }}>
-          <img src={previewUrl} alt="预览" style={{ maxWidth: '100%', border: '1px solid #ddd', padding: 4 }} />
+    <div style={{ textAlign: 'center' }}>
+      <Upload.Dragger
+        customRequest={customRequest}
+        showUploadList={false}
+        accept="image/*,application/pdf,text/plain"
+        style={{ padding: '20px 0' }}
+      >
+        <p className="ant-upload-drag-icon">
+          <InboxOutlined style={{ fontSize: 48, color: '#1890ff' }} />
+        </p>
+        <p className="ant-upload-text">点击或拖拽文件到此区域上传</p>
+        <p className="ant-upload-hint">支持单个或批量上传</p>
+      </Upload.Dragger>
+
+      {uploading && (
+        <div style={{ marginTop: 16 }}>
+          <Progress percent={progress} status="active" strokeColor={{
+            from: '#108ee9',
+            to: '#87d068',
+          }} />
+        </div>
+      )}
+
+      {previewUrl && !uploading && (
+        <div style={{ marginTop: 16 }}>
+          <Card
+            hoverable
+            cover={<img alt="预览" src={previewUrl} style={{ maxHeight: '200px', objectFit: 'contain' }} />}
+            style={{ width: '100%' }}
+          >
+            <Card.Meta title="文件预览" />
+          </Card>
         </div>
       )}
     </div>
   );
 };
+
 
 export default FileUpload;
