@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Input, Button, Spin, message } from 'antd';
-import moment from 'moment';
 
 const ChatBox: React.FC<{ onSendMessage: (message: string) => void }> = ({ onSendMessage }) => {
   const [userInput, setUserInput] = useState<string>('');

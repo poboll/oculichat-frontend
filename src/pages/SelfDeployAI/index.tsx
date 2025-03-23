@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, message, Typography } from 'antd';
 import moment from 'moment';
 import FileUpload from '@/components/FileUpload';
@@ -10,6 +10,7 @@ const SelfDeployAIPage: React.FC = () => {
   const [messages, setMessages] = useState<{ sender: string; content: string; timestamp: string; file?: File }[]>([]);
   const [file, setFile] = useState<File | null>(null);
 
+  // 模拟发送消息并获取AI响应
   const handleSendMessage = async (userInput: string) => {
     const timestamp = moment().format('YYYY-MM-DD HH:mm:ss');
     setMessages((prev) => [...prev, { sender: '用户', content: userInput, timestamp }]);
@@ -22,6 +23,7 @@ const SelfDeployAIPage: React.FC = () => {
     }
   };
 
+  // 模拟AI响应
   const getAIResponse = async (file: File | null, query: string): Promise<string> => {
     return new Promise((resolve) => {
       setTimeout(() => {
@@ -29,7 +31,7 @@ const SelfDeployAIPage: React.FC = () => {
           ? `文件: ${file.name}，查询: ${query} 的AI响应。`
           : `查询: ${query} 的AI响应（无文件）。`;
         resolve(response);
-      }, 1000);
+      }, 1000); // 模拟延时1秒钟返回响应
     });
   };
 
