@@ -1,10 +1,22 @@
 // ... existing code ...
 import React, { useState, useEffect, useRef } from 'react';
 import { Card, message, Typography, Layout, Avatar, Empty, Divider, Spin, Button, Tabs, Space, Tooltip, Switch } from 'antd';
-import { RobotOutlined, UserOutlined, FileTextOutlined, HistoryOutlined, QuestionCircleOutlined, ExportOutlined, ClearOutlined, MergeCellsOutlined, EyeOutlined } from '@ant-design/icons';
+import {
+  RobotOutlined,
+  UserOutlined,
+  HistoryOutlined,
+  QuestionCircleOutlined,
+  ExportOutlined,
+  ClearOutlined,
+  MergeCellsOutlined,
+  EyeOutlined,
+  LoadingOutlined
+} from '@ant-design/icons';
 import moment from 'moment';
 import FileUpload from '@/components/FileUpload';
 import ChatBox from '@/components/ChatBox';
+
+
 
 const { Title, Text } = Typography;
 const { Header, Content, Sider } = Layout;
@@ -199,12 +211,25 @@ const SelfDeployAIPage: React.FC = () => {
 
 ## 分析结果
 主要诊断: ${analysis.main_class.label} (置信度: ${(analysis.main_class.confidence * 100).toFixed(2)}%)
+分级: ${analysis.main_class.grade}级
 左眼: ${analysis.left_eye.severity} (置信度: ${(analysis.left_eye.confidence * 100).toFixed(2)}%)
 右眼: ${analysis.right_eye.severity} (置信度: ${(analysis.right_eye.confidence * 100).toFixed(2)}%)
 预测年龄: ${analysis.age_prediction}
 预测性别: ${analysis.gender_prediction}
 
-## 诊断解读与建议
+## 病灶测量
+微血管瘤: ${analysis.measurements.microaneurysm_count}个
+出血点: ${analysis.measurements.hemorrhage_count}处
+硬性渗出: ${analysis.measurements.exudate_count}处
+
+## 特征重要性
+${analysis.feature_importance.factors.map(f => `- ${f.name}: ${(f.value * 100).toFixed(1)}%`).join('\n')}
+
+## 诊断解读
+${analysis.explanation.text}
+关键发现：${analysis.explanation.findings.join('，')}
+
+## 诊断建议
 ${content}
 `;
         hasAnalysis = true;
@@ -384,6 +409,22 @@ ${content}
         // 基本回复模板
         let response = `
 # 眼底诊断结果解读
+
+## 核心发现
+${aiAnalysis.explanation.text}
+
+## 详细特征
+${aiAnalysis.explanation.findings.map((f, i) => `${i + 1}. ${f}`).join('\n')}
+
+## 病灶分布
+- 微血管瘤: ${aiAnalysis.measurements.microaneurysm_count}个
+- 出血点: ${aiAnalysis.measurements.hemorrhage_count}处
+- 硬性渗出: ${aiAnalysis.measurements.exudate_count}处
+
+## 特征贡献度
+${aiAnalysis.feature_importance.factors.map(f =>
+          `▸ ${f.name}: ${(f.value * 100).toFixed(1)}%`
+        ).join('\n')}
 
 ## 分析结果
 AI分析您的眼底照片后，结果显示：
@@ -603,7 +644,7 @@ ${condition === 'Normal' ?
   }, [messages]);
 
   return (
-    <Layout style={{ height: '100vh', overflow: 'hidden', background: '#fff' }}>
+    <Layout style={{ height: '100vh', overflow: 'hidden', background: '#f0f2f5' }}>
       <Header style={{
         display: 'flex',
         alignItems: 'center',
@@ -647,8 +688,8 @@ ${condition === 'Normal' ?
         <Sider width={380} theme="light" style={{
           padding: '20px',
           overflow: 'auto',
-          boxShadow: '1px 0 4px rgba(0,0,0,0.05)',
-          background: '#fcfcfc',
+          boxShadow: '1px 0 4px rgba(0,0,0,0.1)',  //0,0,0,0.05 增加阴影
+          background: '#fff',  //#fcfcfc 白色背景
           height: 'calc(100vh - 64px)',
         }}>
           <Tabs defaultActiveKey="upload" onChange={(key) => setActiveTab(key)} >
@@ -767,22 +808,23 @@ ${condition === 'Normal' ?
             </TabPane>
           </Tabs>
         </Sider>
-        <Content style={{ padding: '20px', display: 'flex', flexDirection: 'column'}}>
+        <Content style={{ padding: '20px', display: 'flex', flexDirection: 'column' , background: '#f0f2f5'}}>
           <Card
             style={{
               flex: 1,
               display: 'flex',
               flexDirection: 'column',
-              boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
-              borderRadius: '8px',
-              marginBottom: '20px',
-              overflow: 'hidden'
+              boxShadow: '0 1px 4px rgba(0,0,0,0.1)',  //0,0,0,0.05
+              borderRadius: '12px',  //8
+              marginBottom: '24px',   //24
+              overflow: 'hidden',
+              background: '#fff', // 白色背景
             }}
             bodyStyle={{
               flex: 1,
               display: 'flex',
               flexDirection: 'column',
-              padding: '20px',
+              padding: '24px',   //20
               overflow: 'hidden'
             }}
           >
@@ -802,7 +844,7 @@ ${condition === 'Normal' ?
                     style={{
                       display: 'flex',
                       justifyContent: msg.sender === '用户' ? 'flex-end' : 'flex-start',
-                      marginBottom: 20,
+                      marginBottom: '16px',  //20
                     }}
                   >
                     <div style={{
@@ -876,11 +918,24 @@ ${condition === 'Normal' ?
                   </div>
                 } />
               )}
+              {/*{loading && (*/}
+              {/*  <div style={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>*/}
+              {/*    <Spin tip="AI正在分析眼底照片..." />*/}
+              {/*  </div>*/}
+              {/*)}*/}
               {loading && (
-                <div style={{ display: 'flex', justifyContent: 'center', padding: '20px' }}>
-                  <Spin tip="AI正在分析眼底照片..." />
+                <div style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  padding: '20px',
+                }}>
+                  <Spin
+                    tip="AI正在分析眼底照片..."
+                    indicator={<LoadingOutlined style={{ fontSize: '24px', color: '#1890ff' }} spin />} // 使用旋转图标
+                  />
                 </div>
               )}
+
             </div>
 
             {/* 聊天控制区域 */}
@@ -916,7 +971,10 @@ ${condition === 'Normal' ?
         </Content>
       </Layout>
     </Layout>
+
+
   );
 };
+
 
 export default SelfDeployAIPage;
