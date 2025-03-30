@@ -164,7 +164,7 @@ const SelfDeployAIPage: React.FC = () => {
       console.log('上传文件大小:', blob.size);
 
       // 发送请求到FastDFS服务器
-      const response = await fetch('http://10.3.36.10:7529/api/fastdfs/upload', {
+      const response = await fetch('http://10.3.36.106:7529/api/fastdfs/upload', {
         method: 'POST',
         body: formData
       });
@@ -218,12 +218,20 @@ const SelfDeployAIPage: React.FC = () => {
 预测性别: ${analysis.gender_prediction}
 
 ## 病灶测量
-微血管瘤: ${analysis.measurements.microaneurysm_count}个
-出血点: ${analysis.measurements.hemorrhage_count}处
-硬性渗出: ${analysis.measurements.exudate_count}处
+微血管瘤: ${analysis.measurements?.microaneurysm_count ?? '未测量'}个
+出血点: ${analysis.measurements?.hemorrhage_count ?? '未测量'}处
+硬性渗出: ${analysis.measurements?.exudate_count ?? '未测量'}处
 
 ## 特征重要性
-${analysis.feature_importance.factors.map(f => `- ${f.name}: ${(f.value * 100).toFixed(1)}%`).join('\n')}
+${analysis.feature_importance?.factors?.map(f =>
+          `- ${f.name}: ${(f.value * 100).toFixed(1)}%`
+        ).join('\n') || '无特征重要性数据'}
+
+## 可视化分析
+- 左眼分析图: ${analysis.visualizations?.left_eye ? '已生成' : '无'}
+- 右眼分析图: ${analysis.visualizations?.right_eye ? '已生成' : '无'}
+- 包含视图: ${analysis.visualizations?.left_eye?.filtered_views ?
+          Object.keys(analysis.visualizations.left_eye.filtered_views).join(', ') : '无'}
 
 ## 诊断解读
 ${analysis.explanation.text}
@@ -231,6 +239,7 @@ ${analysis.explanation.text}
 
 ## 诊断建议
 ${content}
+
 `;
         hasAnalysis = true;
         break;
@@ -275,6 +284,7 @@ ${content}
   //         "main_class": {
   //           "label": randomCondition,
   //           "confidence": parseFloat((0.7 + Math.random() * 0.29).toFixed(6))
+  //           "grade": 2
   //         },
   //         "left_eye": {
   //           "severity": leftSeverity,
@@ -357,7 +367,7 @@ ${content}
 
       // 设置API URL
       // const apiUrl = 'http://10.3.36.10:7529/api/model/predict';  // 使用真实接口
-      const apiUrl = 'http://10.3.36.10:7529/api/model/simulate';  // 使用模拟接口（备用）
+      const apiUrl = 'http://10.3.36.106:7529/api/model/simulate';  // 使用模拟接口（备用）
 
       // 发送请求到后端
       const response = await fetch(apiUrl, {
@@ -394,7 +404,59 @@ ${content}
           "confidence": 0.82
         },
         "age_prediction": 48,
-        "gender_prediction": "Male"
+        "gender_prediction": "Male",
+        "explanation": {
+          "findings": [
+            "微血管瘤",
+            "点状出血",
+            "硬性渗出"
+          ],
+          "text": "诊断结果为DR二级，发现多个微血管瘤和出血灶。"
+        },
+        "feature_importance": {
+          "image": "data:",
+          "factors": [
+            {
+              "name": "微血管瘤",
+              "value": 0.42
+            },
+            {
+              "name": "出血点",
+              "value": 0.35
+            },
+            {
+              "name": "硬性渗出",
+              "value": 0.23
+            }
+          ]
+        },
+        "measurements": {
+          "microaneurysm_count": 5,
+          "exudate_count": 2,
+          "hemorrhage_count": 3
+        },
+        "visualizations": {
+          "right_eye": {
+            "filtered_views": {
+              "red_free": "data:image/png;base64,iVAZD0iciI/P",
+              "green_channel": "data:image/png;base64,iVFja2VqqqKj8XQEGAHGtChZVP2QFAAAAAElFTkSuQmCC",
+              "contrast_enhanced": "data:image/png;base64,iVAuQmCC"
+            },
+            "original": "data:image/png;base64,iVAAqKj8XQEGAHGtChZVP2QFAAAAAElFTkSuQmCC",
+            "binary_map": "data:image/png;base64,iVAA",
+            "probability_map": "data:image/png;base64,iVAA"
+          },
+          "left_eye": {
+            "filtered_views": {
+              "red_free": "data:image/png;base64,iVAAAGFqqKj8XQEGAHGtChZVP2QFAAAAAElFTkSuQmCC",
+              "green_channel": "data:image/png;base64,iVA4cGFC",
+              "contrast_enhanced": "data:image/png"
+            },
+            "original": "data:image/png;base64,",
+            "binary_map": "data:image/png;base64,iVAAAAD",
+            "probability_map": "data:image/png;base64,iVAAA"
+          }
+        }
       };
     }
   };
@@ -410,21 +472,10 @@ ${content}
         let response = `
 # 眼底诊断结果解读
 
-## 核心发现
-${aiAnalysis.explanation.text}
-
-## 详细特征
-${aiAnalysis.explanation.findings.map((f, i) => `${i + 1}. ${f}`).join('\n')}
-
 ## 病灶分布
-- 微血管瘤: ${aiAnalysis.measurements.microaneurysm_count}个
-- 出血点: ${aiAnalysis.measurements.hemorrhage_count}处
-- 硬性渗出: ${aiAnalysis.measurements.exudate_count}处
-
-## 特征贡献度
-${aiAnalysis.feature_importance.factors.map(f =>
-          `▸ ${f.name}: ${(f.value * 100).toFixed(1)}%`
-        ).join('\n')}
+- 微血管瘤: ${aiAnalysis.measurements?.microaneurysm_count || '未定义'}个
+- 出血点: ${aiAnalysis.measurements?.hemorrhage_count || '未定义'}处
+- 硬性渗出: ${aiAnalysis.measurements?.exudate_count || '未定义'}处
 
 ## 分析结果
 AI分析您的眼底照片后，结果显示：
@@ -434,6 +485,13 @@ AI分析您的眼底照片后，结果显示：
 - **右眼状态**: ${aiAnalysis.right_eye.severity === 'normal' ? '正常' : aiAnalysis.right_eye.severity === 'mild' ? '轻度异常' : aiAnalysis.right_eye.severity === 'moderate' ? '中度异常' : '重度异常'} (置信度: ${(aiAnalysis.right_eye.confidence * 100).toFixed(2)}%)
 - **预测年龄**: ${aiAnalysis.age_prediction}岁 (仅供参考)
 - **预测性别**: ${aiAnalysis.gender_prediction === 'Male' ? '男性' : '女性'} (仅供参考)
+
+## 可视化分析
+AI已生成以下分析视图：
+${aiAnalysis.visualizations ? `
+- **左眼分析图**: 包含${Object.keys(aiAnalysis.visualizations.left_eye?.filtered_views || {}).length}种特殊视图
+- **右眼分析图**: 包含${Object.keys(aiAnalysis.visualizations.right_eye?.filtered_views || {}).length}种特殊视图
+` : '无可视化分析数据'}
 
 ## 临床解读
 ${condition === 'Normal' ?
@@ -464,6 +522,8 @@ ${condition === 'Normal' ?
         }
 3. 建议定期随访，通常每3-6个月进行一次眼底检查
 4. 保持健康生活方式，包括均衡饮食、适量运动和充足睡眠
+
+
 
 ### 免责声明
 本分析结果仅供参考，不构成医疗诊断或治疗建议。请咨询专业眼科医生获取完整评估和个性化建议。最终诊断应基于医生的专业判断并结合其他临床表现和检查结果。
@@ -644,7 +704,7 @@ ${condition === 'Normal' ?
   }, [messages]);
 
   return (
-    <Layout style={{ height: '100vh', overflow: 'hidden', background: '#f0f2f5' }}>
+    <Layout style={{ height: '100vh', overflow: 'hidden', background: '#f5f7fa' }}>
       <Header style={{
         display: 'flex',
         alignItems: 'center',
@@ -654,7 +714,7 @@ ${condition === 'Normal' ?
         padding: '0 24px'
       }}>
         <Title level={3} style={{ margin: 0, color: '#333' }}>
-          <RobotOutlined style={{ marginRight: 10, color: '#52c41a' }} />
+          <RobotOutlined style={{ marginRight: 10, color: '#315167FF' }} />
           眼底辅助诊断平台
         </Title>
         <div style={{ marginLeft: 'auto' }}>
@@ -700,9 +760,9 @@ ${condition === 'Normal' ?
                   style={{
                     boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
                     borderRadius: '8px',
-                    marginBottom: 16
+                    marginBottom: 16,
                   }}
-                  headStyle={{ color: '#52c41a' }}
+                  headStyle={{ color: '#315167FF' }} //#52c41a    49, 81,103
                 >
                   <FileUpload
                     onUploadSuccess={(file) => {
@@ -719,7 +779,7 @@ ${condition === 'Normal' ?
                     boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
                     borderRadius: '8px'
                   }}
-                  headStyle={{ color: '#52c41a' }}
+                  headStyle={{ color: '#315167FF' }}
                 >
                   <FileUpload
                     onUploadSuccess={(file) => {
@@ -733,7 +793,7 @@ ${condition === 'Normal' ?
 
               <div style={{ marginBottom: 50 }}>
                 <Divider>上传状态</Divider>
-                <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between' ,color: '#315167FF' }}>
                   <div>
                     <Text strong>左眼照片:</Text>
                     <Text type={leftEyeFile ? "success" : "secondary"}> {leftEyeFile ? leftEyeFile.name : '未上传'}</Text>
@@ -752,7 +812,7 @@ ${condition === 'Normal' ?
                         <Card
                           title={
                             <div style={{ display: 'flex', alignItems: 'center' }}>
-                              <MergeCellsOutlined style={{ marginRight: 8, color: '#52c41a' }} />
+                              <MergeCellsOutlined style={{ marginRight: 8, color: '#315167FF' }} />
                               <span>合并预览</span>
                             </div>
                           }
@@ -769,7 +829,7 @@ ${condition === 'Normal' ?
 
                     <Button
                       type="primary"
-                      style={{ marginTop: 16, width: '100%', background: '#52c41a', borderColor: '#52c41a' }}
+                      style={{ marginTop: 16, width: '100%', background: '#315167FF', borderColor: '#315167FF' }}
                       onClick={() => {
                         setActiveTab('diagnosis');
                         // 自动触发图片分析
@@ -862,7 +922,7 @@ ${condition === 'Normal' ?
                         <Avatar
                           icon={msg.sender === '用户' ? <UserOutlined /> : <RobotOutlined />}
                           style={{
-                            backgroundColor: msg.sender === '用户' ? '#1890ff' : '#52c41a',
+                            backgroundColor: msg.sender === '用户' ? '#959393' : '#4a7ba3',
                             marginRight: 8
                           }}
                           size="small"
@@ -872,21 +932,60 @@ ${condition === 'Normal' ?
 
                       {/* 消息内容 */}
                       {msg.sender === 'AI' ? (
-                        <div
-                          dangerouslySetInnerHTML={{
-                            __html: msg.content
-                              .replace(/\n/g, '<br>')
-                              .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-                              .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                              .replace(/#{3} (.*?)$/gm, '<h3>$1</h3>')
-                              .replace(/#{2} (.*?)$/gm, '<h2>$1</h2>')
-                              .replace(/#{1} (.*?)$/gm, '<h1>$1</h1>')
-                              .replace(/```json\n([\s\S]*?)\n```/g, '<pre style="background-color:#f6f8fa;padding:10px;border-radius:5px;overflow:auto"><code>$1</code></pre>')
-                          }}
-                        />
+                        <div>
+                          <div
+                            dangerouslySetInnerHTML={{
+                              __html: msg.content
+                                .replace(/\n/g, '<br>')
+                                .replace(/\*\*(.*?)\*\*/g, '<strong style="color:#315167FF">$1</strong>')
+                                .replace(/\*(.*?)\*/g, '<em style="color:#315167FF">$1</em>')
+                                .replace(/#{3} (.*?)(<br>|$)/gm, '<h3 style="color:#315167FF;margin:12px 0 8px;font-size:1.2em;border-left:4px solid #315167FF;padding-left:8px">$1</h3>')
+                                .replace(/#{2} (.*?)(<br>|$)/gm, '<h2 style="color:#315167FF;margin:14px 0 10px;font-size:1.4em;border-bottom:1px solid #315167FF;padding-bottom:4px">$1</h2>')
+                                .replace(/#{1} (.*?)(<br>|$)/gm, '<h1 style="color:#315167FF;margin:16px 0 12px;font-size:1.6em">$1</h1>')
+                                .replace(/```json\n([\s\S]*?)\n```/g, '<pre style="background-color:#f6f8fa;padding:12px;border-radius:6px;overflow:auto;border:1px solid #d9d9d9"><code style="color:#333;font-family:monospace">$1</code></pre>')
+                                .replace(/- (.*?)(<br>|$)/g, '<li style="margin-left:16px">$1</li>')
+                                .replace(/\d+\. (.*?)(<br>|$)/g, '<li style="margin-left:16px">$1</li>')
+                                .replace(/`([^`]+)`/g, '<code style="background:#f0f9ff;padding:2px 4px;border-radius:3px;border:1px solid #d9d9d9">$1</code>')
+                            }}
+                          />
+                          {/* 显示可视化数据（如果有） */}
+                          {msg.aiAnalysis?.visualizations && (
+                            <div style={{ marginTop: 16 }}>
+                              <h4 style={{ color: '#315167FF', marginBottom: 8 }}>AI分析视图</h4>
+                              <div style={{ display: 'flex', gap: 16 }}>
+                                {msg.aiAnalysis.visualizations.left_eye && (
+                                  <div style={{ flex: 1 }}>
+                                    <h5 style={{ marginBottom: 4 }}>左眼分析</h5>
+                                    {msg.aiAnalysis.visualizations.left_eye.original && (
+                                      <img
+                                        src={msg.aiAnalysis.visualizations.left_eye.original}
+                                        alt="左眼原始图"
+                                        style={{ width: '100%', borderRadius: 4, border: '1px solid #f0f0f0' }}
+                                      />
+                                    )}
+                                  </div>
+                                )}
+                                {msg.aiAnalysis.visualizations.right_eye && (
+                                  <div style={{ flex: 1 }}>
+                                    <h5 style={{ marginBottom: 4 }}>右眼分析</h5>
+                                    {msg.aiAnalysis.visualizations.right_eye.original && (
+                                      <img
+                                        src={msg.aiAnalysis.visualizations.right_eye.original}
+                                        alt="右眼原始图"
+                                        style={{ width: '100%', borderRadius: 4, border: '1px solid #f0f0f0' }}
+                                      />
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       ) : (
                         <div>{msg.content}</div>
                       )}
+
+
 
                       {/* 显示合并图片（如果有） */}
                       {msg.mergedImage && (
@@ -931,7 +1030,7 @@ ${condition === 'Normal' ?
                 }}>
                   <Spin
                     tip="AI正在分析眼底照片..."
-                    indicator={<LoadingOutlined style={{ fontSize: '24px', color: '#1890ff' }} spin />} // 使用旋转图标
+                    indicator={<LoadingOutlined style={{ fontSize: '24px', color: 'leftEyeFile' }} spin />} // 使用旋转图标
                   />
                 </div>
               )}
