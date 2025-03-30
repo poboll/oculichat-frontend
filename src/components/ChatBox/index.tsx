@@ -112,8 +112,8 @@ const ChatBox: React.FC<{
               style={{
                 marginRight: 8,
                 marginBottom: 10,
-                background: '#52c41a',
-                borderColor: '#52c41a',
+                background: '#315167FF',
+                borderColor: '#315167FF',
                 color: 'white'
               }}
             />
