@@ -3,10 +3,20 @@ import {DefaultFooter} from '@ant-design/pro-components';
 import '@umijs/max';
 import React from 'react';
 import {Tooltip} from "antd";
+import {useLocation} from "@umijs/max";
 
 const wechat = "/assets/WeChat.png";
 
+// 不显示脚注的页面列表
+const hideFooterPaths = ['/selfdeployai', '/accessaiservices'];
+
 const Footer: React.FC = () => {
+  const { pathname } = useLocation();
+
+  // 如果当前路径在隐藏列表中，不渲染footer
+  if (hideFooterPaths.includes(pathname)) {
+    return null;
+  }
   const defaultMessage = '温瞳工作室出品';
   const currentYear = new Date().getFullYear();
   return (

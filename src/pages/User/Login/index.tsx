@@ -32,11 +32,11 @@ const ActionIcons = () => {
     };
   });
   return (
-    <>
-      <AlipayCircleOutlined key="AlipayCircleOutlined" className={langClassName}/>
-      <TaobaoCircleOutlined key="TaobaoCircleOutlined" className={langClassName}/>
-      <WeiboCircleOutlined key="WeiboCircleOutlined" className={langClassName}/>
-    </>
+      <>
+        <AlipayCircleOutlined key="AlipayCircleOutlined" className={langClassName}/>
+        <TaobaoCircleOutlined key="TaobaoCircleOutlined" className={langClassName}/>
+        <WeiboCircleOutlined key="WeiboCircleOutlined" className={langClassName}/>
+      </>
   );
 };
 
@@ -50,7 +50,7 @@ const Login: React.FC = () => {
       height: '100vh',
       overflow: 'auto',
       backgroundImage:
-        "url('https://mdn.alipayobjects.com/yuyan_qk0oxh/afts/img/V-_oS6r-i7wAAAAAAAAAAAAAFl94AQBr')",
+          "url('https://mdn.alipayobjects.com/yuyan_qk0oxh/afts/img/V-_oS6r-i7wAAAAAAAAAAAAAFl94AQBr')",
       backgroundSize: '100% 100%',
     };
   });
@@ -91,160 +91,160 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className={containerClassName}>
-      <Helmet>
-        <title>
-          {'登录'}- {Settings.title}
-        </title>
-      </Helmet>
-      <div
-        style={{
-          flex: '1',
-          padding: '32px 0',
-        }}
-      >
-        <LoginForm
-          contentStyle={{
-            minWidth: 280,
-            maxWidth: '75vw',
-          }}
-          logo={<img alt="logo" src="/logo.gif"/>}
-          title="Oculichat 眼底辅助诊断开放平台"
-          subTitle={'Oculichat 眼底辅助诊断开放平台致力于提供稳定、安全、高效的接口调用服务'}
-          initialValues={{
-            autoLogin: true,
-          }}
-          actions={['其他登录方式 :', <ActionIcons key="icons"/>]}
-          onFinish={async (values) => {
-            if (type === "account") {
-              await handleSubmit(values as API.UserLoginRequest);
-            } else {
-              await handleEmailSubmit(values as API.UserEmailLoginRequest);
-            }
-          }}
-        >
-          <Tabs
-            activeKey={type}
-            onChange={setType}
-            centered
-            items={[
-              {
-                key: 'email',
-                label: '邮箱账号登录',
-              },
-              {
-                key: 'account',
-                label: '账户密码登录',
-              },
-
-            ]}
-          />
-          {type === 'account' && (
-            <>
-              <ProFormText
-                name="userAccount"
-                fieldProps={{
-                  size: 'large',
-                  prefix: <UserOutlined/>,
-                }}
-                placeholder={'请输入账号'}
-                rules={[
-                  {
-                    required: true,
-                    message: '账号是必填项！',
-                  },
-                ]}
-              />
-              <ProFormText.Password
-                name="userPassword"
-                fieldProps={{
-                  size: 'large',
-                  prefix: <LockOutlined/>,
-                }}
-                placeholder={'请输入密码'}
-                rules={[
-                  {
-                    required: true,
-                    message: '密码是必填项！',
-                  },
-                ]}
-              />
-            </>
-          )}
-          {type === 'email' && (
-            <>
-              <ProFormText
-                fieldProps={{
-                  size: 'large',
-                  prefix: <MailOutlined/>,
-                }}
-                name="emailAccount"
-                placeholder={'请输入邮箱账号！'}
-                rules={[
-                  {
-                    required: true,
-                    message: '邮箱账号是必填项！',
-                  },
-                  {
-                    pattern: /^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$/,
-                    message: '不合法的邮箱账号！',
-                  },
-                ]}
-              />
-              <ProFormCaptcha
-                fieldProps={{
-                  size: 'large',
-                  prefix: <LockOutlined/>,
-                }}
-                captchaProps={{
-                  size: 'large',
-                }}
-                placeholder={'请输入验证码！'}
-                captchaTextRender={(timing, count) => {
-                  if (timing) {
-                    return `${count} ${'秒后重新获取'}`;
-                  }
-                  return '获取验证码';
-                }}
-                phoneName={"emailAccount"}
-                name="captcha"
-                rules={[
-                  {
-                    required: true,
-                    message: '验证码是必填项！',
-                  },
-                ]}
-                onGetCaptcha={async (emailAccount) => {
-                  const res = await getCaptchaUsingGET({emailAccount})
-                  if (res.data && res.code === 0) {
-                    message.success("验证码发送成功")
-                    return
-                  }
-                }}
-              />
-            </>
-          )}
-          <div
+      <div className={containerClassName}>
+        <Helmet>
+          <title>
+            {'登录'}- {Settings.title}
+          </title>
+        </Helmet>
+        <div
             style={{
-              marginBottom: 24,
+              flex: '1',
+              padding: '32px 0',
             }}
-          >
-            <ProFormCheckbox noStyle name="autoLogin">
-              自动登录
-            </ProFormCheckbox>
-            <Link
-              to={'/user/register'}
-              style={{
-                float: 'right',
+        >
+          <LoginForm
+              contentStyle={{
+                minWidth: 280,
+                maxWidth: '75vw',
               }}
+              logo={<img alt="logo" src="/logo.gif"/>}
+              title="Cai-API 接口开放平台"
+              subTitle={'Cai-API 接口开放平台致力于提供稳定、安全、高效的接口调用服务'}
+              initialValues={{
+                autoLogin: true,
+              }}
+              actions={['其他登录方式 :', <ActionIcons key="icons"/>]}
+              onFinish={async (values) => {
+                if (type === "account") {
+                  await handleSubmit(values as API.UserLoginRequest);
+                } else {
+                  await handleEmailSubmit(values as API.UserEmailLoginRequest);
+                }
+              }}
+          >
+            <Tabs
+                activeKey={type}
+                onChange={setType}
+                centered
+                items={[
+                  {
+                    key: 'email',
+                    label: '邮箱账号登录',
+                  },
+                  {
+                    key: 'account',
+                    label: '账户密码登录',
+                  },
+
+                ]}
+            />
+            {type === 'account' && (
+                <>
+                  <ProFormText
+                      name="userAccount"
+                      fieldProps={{
+                        size: 'large',
+                        prefix: <UserOutlined/>,
+                      }}
+                      placeholder={'请输入账号'}
+                      rules={[
+                        {
+                          required: true,
+                          message: '账号是必填项！',
+                        },
+                      ]}
+                  />
+                  <ProFormText.Password
+                      name="userPassword"
+                      fieldProps={{
+                        size: 'large',
+                        prefix: <LockOutlined/>,
+                      }}
+                      placeholder={'请输入密码'}
+                      rules={[
+                        {
+                          required: true,
+                          message: '密码是必填项！',
+                        },
+                      ]}
+                  />
+                </>
+            )}
+            {type === 'email' && (
+                <>
+                  <ProFormText
+                      fieldProps={{
+                        size: 'large',
+                        prefix: <MailOutlined/>,
+                      }}
+                      name="emailAccount"
+                      placeholder={'请输入邮箱账号！'}
+                      rules={[
+                        {
+                          required: true,
+                          message: '邮箱账号是必填项！',
+                        },
+                        {
+                          pattern: /^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$/,
+                          message: '不合法的邮箱账号！',
+                        },
+                      ]}
+                  />
+                  <ProFormCaptcha
+                      fieldProps={{
+                        size: 'large',
+                        prefix: <LockOutlined/>,
+                      }}
+                      captchaProps={{
+                        size: 'large',
+                      }}
+                      placeholder={'请输入验证码！'}
+                      captchaTextRender={(timing, count) => {
+                        if (timing) {
+                          return `${count} ${'秒后重新获取'}`;
+                        }
+                        return '获取验证码';
+                      }}
+                      phoneName={"emailAccount"}
+                      name="captcha"
+                      rules={[
+                        {
+                          required: true,
+                          message: '验证码是必填项！',
+                        },
+                      ]}
+                      onGetCaptcha={async (emailAccount) => {
+                        const res = await getCaptchaUsingGET({emailAccount})
+                        if (res.data && res.code === 0) {
+                          message.success("验证码发送成功")
+                          return
+                        }
+                      }}
+                  />
+                </>
+            )}
+            <div
+                style={{
+                  marginBottom: 24,
+                }}
             >
-              还没账号?点击前往注册
-            </Link>
-          </div>
-        </LoginForm>
+              <ProFormCheckbox noStyle name="autoLogin">
+                自动登录
+              </ProFormCheckbox>
+              <Link
+                  to={'/user/register'}
+                  style={{
+                    float: 'right',
+                  }}
+              >
+                还没账号?点击前往注册
+              </Link>
+            </div>
+          </LoginForm>
+        </div>
+        <Footer/>
       </div>
-      <Footer/>
-    </div>
   );
 };
 export default Login;
