@@ -18,7 +18,8 @@ import FileUpload from '@/components/FileUpload';
 import ChatBox from '@/components/ChatBox';
 // 在import部分添加
 import BatchAnalysisUpload from '@/components/BatchAnalysisUpload';
-
+// 在import部分添加一个用于生成唯一ID的函数
+import { v4 as uuidv4 } from 'uuid';
 // 本地存储键名
 const CHAT_HISTORY_KEY = 'local_oculi_chat_history';
 const KEEP_HISTORY_KEY = 'local_oculi_keep_history_setting';
@@ -38,7 +39,13 @@ const SelfDeployAIPage: React.FC = () => {
   // 添加新的状态
   const [activeTabKey, setActiveTabKey] = useState('upload');
   const [batchResults, setBatchResults] = useState<any[]>([]);
-
+  // 在其他useState声明之后添加
+  const prevMessagesRef = useRef(null);
+  const prevLastMessageRef = useRef(null);
+// 添加一个用于生成消息ID的函数
+  const generateMessageId = () => {
+    return uuidv4();
+  };
   // 批量分析完成回调
   const handleBatchComplete = (results: any[]) => {
     setBatchResults(results);
@@ -515,8 +522,10 @@ ${condition === 'Normal' ?
   };
 
   // 处理发送消息，根据是否有图片决定走哪个流程
+  // 修改处理发送消息的函数，添加流式响应效果
   const handleSendMessage = async (userInput: string) => {
     const timestamp = moment().format('YYYY-MM-DD HH:mm:ss');
+    const userMessageId = generateMessageId();
 
     // 判断是否为图片分析流程
     const isImageAnalysis = userInput.includes('[图片分析]');
@@ -530,6 +539,7 @@ ${condition === 'Normal' ?
 
       // 添加用户图片消息
       setMessages((prev) => [...prev, {
+        id: userMessageId,
         sender: '用户',
         content: '请分析这组眼底照片',
         timestamp,
@@ -544,17 +554,117 @@ ${condition === 'Normal' ?
         // 调用API-1分析图片
         const aiAnalysisResult = await callAPI1(mergedImageUrl);
 
-        // 直接调用API-2获取解释，不再显示原始JSON
+        // 创建AI响应消息，初始内容和分析结果为空
+        const aiMessageId = generateMessageId();
+        setMessages((prev) => [...prev, {
+          id: aiMessageId,
+          sender: 'AI',
+          content: '', // 初始为空
+          timestamp: moment().format('YYYY-MM-DD HH:mm:ss'),
+          aiAnalysis: null, // 初始为null，逐步添加分析数据
+          isStreaming: true // 标记为正在流式传输
+        }]);
+
+        // 获取解释结果但不立即显示
         const interpretationResult = await callAPI2(aiAnalysisResult);
 
-        // 添加AI响应（仅显示解释结果）
-        setMessages((prev) => [...prev, {
-          sender: 'AI',
-          content: interpretationResult,
-          timestamp: moment().format('YYYY-MM-DD HH:mm:ss'),
-          aiAnalysis: aiAnalysisResult
-        }]);
+        // 将解释结果分段
+        const paragraphs = interpretationResult.split('\n\n');
+
+        // 修改: 分阶段构建并显示aiAnalysis对象
+
+        // 第1阶段: 只显示基本诊断信息
+        const basicInfo = {
+          main_class: aiAnalysisResult.main_class,
+          left_eye: aiAnalysisResult.left_eye,
+          right_eye: aiAnalysisResult.right_eye,
+          age_prediction: aiAnalysisResult.age_prediction,
+          gender_prediction: aiAnalysisResult.gender_prediction,
+          explanation: aiAnalysisResult.explanation
+        };
+
+        // 更新消息，添加基本信息
+        await new Promise(resolve => setTimeout(resolve, 500));
+        setMessages((prev) => prev.map(msg =>
+          msg.id === aiMessageId
+            ? {...msg, aiAnalysis: basicInfo, content: paragraphs[0] || ''}
+            : msg
+        ));
+
+        // 第2阶段: 添加测量数据
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        const withMeasurements = {
+          ...basicInfo,
+          measurements: aiAnalysisResult.measurements
+        };
+
+        // 更新内容和分析数据
+        let currentContent = paragraphs.slice(0, 2).join('\n\n');
+        setMessages((prev) => prev.map(msg =>
+          msg.id === aiMessageId
+            ? {...msg, aiAnalysis: withMeasurements, content: currentContent}
+            : msg
+        ));
+
+        // 第3阶段: 添加特征重要性
+        await new Promise(resolve => setTimeout(resolve, 800));
+        const withFeatures = {
+          ...withMeasurements,
+          feature_importance: aiAnalysisResult.feature_importance
+        };
+
+        // 更新内容和分析数据
+        currentContent = paragraphs.slice(0, 3).join('\n\n');
+        setMessages((prev) => prev.map(msg =>
+          msg.id === aiMessageId
+            ? {...msg, aiAnalysis: withFeatures, content: currentContent}
+            : msg
+        ));
+
+        // 第4阶段: 添加左眼可视化数据
+        await new Promise(resolve => setTimeout(resolve, 1200));
+        const withLeftEye = {
+          ...withFeatures,
+          visualizations: {
+            left_eye: aiAnalysisResult.visualizations?.left_eye
+          }
+        };
+
+        // 更新内容和分析数据
+        currentContent = paragraphs.slice(0, 4).join('\n\n');
+        setMessages((prev) => prev.map(msg =>
+          msg.id === aiMessageId
+            ? {...msg, aiAnalysis: withLeftEye, content: currentContent}
+            : msg
+        ));
+
+        // 第5阶段: 添加右眼可视化数据，完整显示
+        await new Promise(resolve => setTimeout(resolve, 1200));
+
+        // 继续逐段更新剩余内容文字
+        for (let i = 4; i < paragraphs.length; i++) {
+          // 添加当前段落
+          currentContent += (i > 0 ? '\n\n' : '') + paragraphs[i];
+
+          // 更新消息
+          setMessages((prev) => prev.map(msg =>
+            msg.id === aiMessageId
+              ? {...msg, content: currentContent, aiAnalysis: aiAnalysisResult}
+              : msg
+          ));
+
+          // 随机延迟，模拟打字效果
+          await new Promise(resolve => setTimeout(resolve, Math.random() * 300 + 200));
+        }
+
+        // 标记为流式传输完成
+        setMessages((prev) => prev.map(msg =>
+          msg.id === aiMessageId
+            ? {...msg, isStreaming: false}
+            : msg
+        ));
       } catch (error) {
+        console.error('获取AI响应时出错:', error);
         message.error('获取AI响应时出错。');
       } finally {
         setLoading(false);
@@ -562,6 +672,7 @@ ${condition === 'Normal' ?
     } else {
       // 普通对话流程
       setMessages((prev) => [...prev, {
+        id: userMessageId,
         sender: '用户',
         content: userInput,
         timestamp
@@ -579,8 +690,19 @@ ${condition === 'Normal' ?
           }
         }
 
-        // 如果有分析结果，则带上用户问题调用API-2
-        // 如果没有分析结果，则是普通对话
+        // 创建AI响应消息，初始内容为空
+        const aiMessageId = generateMessageId();
+        setMessages((prev) => [...prev, {
+          id: aiMessageId,
+          sender: 'AI',
+          content: '', // 初始为空
+          timestamp: moment().format('YYYY-MM-DD HH:mm:ss'),
+          aiAnalysis: latestAnalysis, // 可能为null
+          isStreaming: true // 标记为正在流式传输
+        }]);
+
+        // 获取响应内容
+        let response;
         if (latestAnalysis) {
           // 准备历史记录（最多取3条）
           let history = [];
@@ -604,24 +726,56 @@ ${condition === 'Normal' ?
             fullUserInput = `历史对话：\n${history.map(h => `用户：${h.user}\nAI：${h.ai}`).join('\n\n')}\n\n当前问题：${userInput}`;
           }
 
-          const response = await callAPI2(latestAnalysis, fullUserInput);
-
-          setMessages((prev) => [...prev, {
-            sender: 'AI',
-            content: response,
-            timestamp: moment().format('YYYY-MM-DD HH:mm:ss'),
-            aiAnalysis: latestAnalysis
-          }]);
+          // const response = await callAPI2(latestAnalysis, fullUserInput);
+          //
+          // setMessages((prev) => [...prev, {
+          //   sender: 'AI',
+          //   content: response,
+          //   timestamp: moment().format('YYYY-MM-DD HH:mm:ss'),
+          //   aiAnalysis: latestAnalysis
+          // }]);
+          response = await callAPI2(latestAnalysis, fullUserInput);
         } else {
+          // // 普通对话，使用模拟的AI响应
+          // const response = await getSimpleAIResponse(userInput);
+          //
+          // setMessages((prev) => [...prev, {
+          //   sender: 'AI',
+          //   content: response,
+          //   timestamp: moment().format('YYYY-MM-DD HH:mm:ss')
+          // }]);
           // 普通对话，使用模拟的AI响应
-          const response = await getSimpleAIResponse(userInput);
-
-          setMessages((prev) => [...prev, {
-            sender: 'AI',
-            content: response,
-            timestamp: moment().format('YYYY-MM-DD HH:mm:ss')
-          }]);
+          response = await getSimpleAIResponse(userInput);
         }
+        // 将响应分成字符串数组，可以按字符、词或句子分割
+        // 这里我们按字符分割以获得更细腻的流式效果
+        const characters = response.split('');
+        let currentContent = '';
+
+        // 逐字符更新消息内容
+        for (let i = 0; i < characters.length; i++) {
+          currentContent += characters[i];
+
+          // 每累积一定数量的字符再更新一次，减少状态更新次数
+          if (i % 3 === 0 || i === characters.length - 1) {
+            setMessages((prev) => prev.map(msg =>
+              msg.id === aiMessageId
+                ? {...msg, content: currentContent}
+                : msg
+            ));
+          }
+
+          // 随机延迟，模拟打字效果
+          const delay = Math.random() * 30 + 10; // 10-40ms的随机延迟
+          await new Promise(resolve => setTimeout(resolve, delay));
+        }
+
+        // 标记为流式传输完成
+        setMessages((prev) => prev.map(msg =>
+          msg.id === aiMessageId
+            ? {...msg, isStreaming: false}
+            : msg
+        ));
       } catch (error) {
         message.error('获取AI响应时出错。');
       } finally {
@@ -658,13 +812,33 @@ ${condition === 'Normal' ?
     message.success('聊天记录已清除');
   };
 
-  // 自动滚动到底部
+// 自动滚动到底部
   useEffect(() => {
     const chatContainer = document.getElementById('chat-container');
     if (chatContainer) {
-      chatContainer.scrollTop = chatContainer.scrollHeight;
+      // 判断是否应该自动滚动
+      // 1. 是新消息（消息数量增加）
+      // 2. 或者是最后一条消息的流式传输结束
+      const isNewMessage = messages.length > 0 && prevMessagesRef.current?.length !== messages.length;
+      const lastMessage = messages[messages.length - 1];
+      const isStreamingComplete = lastMessage && prevMessagesRef.current?.length === messages.length &&
+        prevLastMessageRef.current?.isStreaming === true && !lastMessage.isStreaming;
+
+      // 获取当前滚动位置
+      const isScrolledToBottom = chatContainer.scrollHeight - chatContainer.scrollTop <= chatContainer.clientHeight + 100;
+
+      // 仅在以下情况自动滚动：新消息、流式传输结束、或用户已经在底部附近
+      if (isNewMessage || isStreamingComplete || isScrolledToBottom) {
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+      }
     }
+
+    // 保存上一次的消息列表和最后一条消息的状态用于比较
+    prevMessagesRef.current = [...messages];
+    prevLastMessageRef.current = messages.length > 0 ? {...messages[messages.length - 1]} : null;
   }, [messages]);
+
+
 
   return (
     <Layout style={{ height: '100vh', overflow: 'hidden', background: '#f5f7fa' }}>
@@ -928,6 +1102,29 @@ ${condition === 'Normal' ?
                                 .replace(/`([^`]+)`/g, '<code style="background:#f0f9ff;padding:2px 4px;border-radius:3px;border:1px solid #d9d9d9">$1</code>')
                             }}
                           />
+                          {/* 正在输入的指示器 */}
+                          {msg.isStreaming && (
+                            <div style={{ marginTop: '5px' }}>
+        <span
+          style={{
+            display: 'inline-block',
+            width: '6px',
+            height: '6px',
+            background: '#315167FF',
+            borderRadius: '50%',
+            marginRight: '4px',
+            animation: 'blink 1s infinite'
+          }}
+        ></span>
+                              <style>{`
+          @keyframes blink {
+            0% { opacity: 0.2; }
+            50% { opacity: 1; }
+            100% { opacity: 0.2; }
+          }
+        `}</style>
+                            </div>
+                          )}
                           {/* 显示可视化数据（如果有） */}
                           {msg.aiAnalysis?.visualizations && (
                             <div style={{ marginTop: 16, borderRadius: 12, padding: 16, background: '#f8fafc', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
