@@ -493,18 +493,10 @@ ${condition === 'Normal' ?
         // 调用API-1分析图片
         const aiAnalysisResult = await callAPI1(mergedImageUrl);
 
-        // 添加AI响应（显示原始分析结果）
-        setMessages((prev) => [...prev, {
-          sender: 'AI',
-          content: '```json\n' + JSON.stringify(aiAnalysisResult, null, 2) + '\n```',
-          timestamp: moment().format('YYYY-MM-DD HH:mm:ss'),
-          aiAnalysis: aiAnalysisResult
-        }]);
-
-        // 调用API-2获取解释
+        // 直接调用API-2获取解释，不再显示原始JSON
         const interpretationResult = await callAPI2(aiAnalysisResult);
 
-        // 添加AI响应（显示解释结果）
+        // 添加AI响应（仅显示解释结果）
         setMessages((prev) => [...prev, {
           sender: 'AI',
           content: interpretationResult,
@@ -857,7 +849,6 @@ ${condition === 'Normal' ?
                                 .replace(/#{3} (.*?)(<br>|$)/gm, '<h3 style="color:#315167FF;margin:12px 0 8px;font-size:1.2em;border-left:4px solid #315167FF;padding-left:8px">$1</h3>')
                                 .replace(/#{2} (.*?)(<br>|$)/gm, '<h2 style="color:#315167FF;margin:14px 0 10px;font-size:1.4em;border-bottom:1px solid #315167FF;padding-bottom:4px">$1</h2>')
                                 .replace(/#{1} (.*?)(<br>|$)/gm, '<h1 style="color:#315167FF;margin:16px 0 12px;font-size:1.6em">$1</h1>')
-                                .replace(/```json\n([\s\S]*?)\n```/g, '<pre style="background-color:#f6f8fa;padding:12px;border-radius:6px;overflow:auto;border:1px solid #d9d9d9"><code style="color:#333;font-family:monospace">$1</code></pre>')
                                 .replace(/- (.*?)(<br>|$)/g, '<li style="margin-left:16px">$1</li>')
                                 .replace(/\d+\. (.*?)(<br>|$)/g, '<li style="margin-left:16px">$1</li>')
                                 .replace(/`([^`]+)`/g, '<code style="background:#f0f9ff;padding:2px 4px;border-radius:3px;border:1px solid #d9d9d9">$1</code>')
@@ -872,20 +863,27 @@ ${condition === 'Normal' ?
                                   <div style={{ flex: 1 }}>
                                     <h5 style={{ marginBottom: 4 }}>左眼分析</h5>
                                     {msg.aiAnalysis.visualizations.left_eye.original && (
-                                      <img
-                                        src={msg.aiAnalysis.visualizations.left_eye.original}
-                                        alt="左眼原始图"
-                                        style={{ width: '100%', borderRadius: 4, border: '1px solid #f0f0f0', marginBottom: 8 }}
-                                      />
+                                      <div>
+                                        <div style={{ fontSize: '12px', color: '#666', marginBottom: 2 }}>原始眼底图像</div>
+                                        <img
+                                          src={msg.aiAnalysis.visualizations.left_eye.original}
+                                          alt="左眼原始图"
+                                          style={{ width: '100%', borderRadius: 4, border: '1px solid #f0f0f0', marginBottom: 8 }}
+                                        />
+                                      </div>
                                     )}
                                     {/* 添加左眼过滤视图 */}
                                     {msg.aiAnalysis.visualizations.left_eye.filtered_views && (
                                       <div>
-                                        <h5 style={{ marginBottom: 4 }}>左眼过滤视图</h5>
+                                        <h5 style={{ marginBottom: 4 }}>增强视图</h5>
                                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                                           {Object.entries(msg.aiAnalysis.visualizations.left_eye.filtered_views).map(([key, value]) => (
                                             <div key={`left-${key}`} style={{ width: 'calc(50% - 4px)' }}>
-                                              <div style={{ fontSize: '12px', color: '#666', marginBottom: 2 }}>{key}</div>
+                                              <div style={{ fontSize: '12px', color: '#666', marginBottom: 2 }}>
+                                                {key === 'green_channel' ? '绿色通道' :
+                                                  key === 'red_free' ? '无红通道' :
+                                                    key === 'contrast_enhanced' ? '对比度增强' : key}
+                                              </div>
                                               <img
                                                 src={value as string}
                                                 alt={`左眼${key}视图`}
@@ -900,7 +898,7 @@ ${condition === 'Normal' ?
                                     <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
                                       {msg.aiAnalysis.visualizations.left_eye.probability_map && (
                                         <div style={{ flex: 1 }}>
-                                          <div style={{ fontSize: '12px', color: '#666', marginBottom: 2 }}>概率图</div>
+                                          <div style={{ fontSize: '12px', color: '#666', marginBottom: 2 }}>疾病概率热图</div>
                                           <img
                                             src={msg.aiAnalysis.visualizations.left_eye.probability_map}
                                             alt="左眼概率图"
@@ -910,7 +908,7 @@ ${condition === 'Normal' ?
                                       )}
                                       {msg.aiAnalysis.visualizations.left_eye.binary_map && (
                                         <div style={{ flex: 1 }}>
-                                          <div style={{ fontSize: '12px', color: '#666', marginBottom: 2 }}>二值图</div>
+                                          <div style={{ fontSize: '12px', color: '#666', marginBottom: 2 }}>病变分割图</div>
                                           <img
                                             src={msg.aiAnalysis.visualizations.left_eye.binary_map}
                                             alt="左眼二值图"
@@ -925,20 +923,27 @@ ${condition === 'Normal' ?
                                   <div style={{ flex: 1 }}>
                                     <h5 style={{ marginBottom: 4 }}>右眼分析</h5>
                                     {msg.aiAnalysis.visualizations.right_eye.original && (
-                                      <img
-                                        src={msg.aiAnalysis.visualizations.right_eye.original}
-                                        alt="右眼原始图"
-                                        style={{ width: '100%', borderRadius: 4, border: '1px solid #f0f0f0', marginBottom: 8 }}
-                                      />
+                                      <div>
+                                        <div style={{ fontSize: '12px', color: '#666', marginBottom: 2 }}>原始眼底图像</div>
+                                        <img
+                                          src={msg.aiAnalysis.visualizations.right_eye.original}
+                                          alt="右眼原始图"
+                                          style={{ width: '100%', borderRadius: 4, border: '1px solid #f0f0f0', marginBottom: 8 }}
+                                        />
+                                      </div>
                                     )}
                                     {/* 添加右眼过滤视图 */}
                                     {msg.aiAnalysis.visualizations.right_eye.filtered_views && (
                                       <div>
-                                        <h5 style={{ marginBottom: 4 }}>右眼过滤视图</h5>
+                                        <h5 style={{ marginBottom: 4 }}>增强视图</h5>
                                         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
                                           {Object.entries(msg.aiAnalysis.visualizations.right_eye.filtered_views).map(([key, value]) => (
                                             <div key={`right-${key}`} style={{ width: 'calc(50% - 4px)' }}>
-                                              <div style={{ fontSize: '12px', color: '#666', marginBottom: 2 }}>{key}</div>
+                                              <div style={{ fontSize: '12px', color: '#666', marginBottom: 2 }}>
+                                                {key === 'green_channel' ? '绿色通道' :
+                                                  key === 'red_free' ? '无红通道' :
+                                                    key === 'contrast_enhanced' ? '对比度增强' : key}
+                                              </div>
                                               <img
                                                 src={value as string}
                                                 alt={`右眼${key}视图`}
@@ -953,7 +958,7 @@ ${condition === 'Normal' ?
                                     <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
                                       {msg.aiAnalysis.visualizations.right_eye.probability_map && (
                                         <div style={{ flex: 1 }}>
-                                          <div style={{ fontSize: '12px', color: '#666', marginBottom: 2 }}>概率图</div>
+                                          <div style={{ fontSize: '12px', color: '#666', marginBottom: 2 }}>疾病概率热图</div>
                                           <img
                                             src={msg.aiAnalysis.visualizations.right_eye.probability_map}
                                             alt="右眼概率图"
@@ -963,7 +968,7 @@ ${condition === 'Normal' ?
                                       )}
                                       {msg.aiAnalysis.visualizations.right_eye.binary_map && (
                                         <div style={{ flex: 1 }}>
-                                          <div style={{ fontSize: '12px', color: '#666', marginBottom: 2 }}>二值图</div>
+                                          <div style={{ fontSize: '12px', color: '#666', marginBottom: 2 }}>病变分割图</div>
                                           <img
                                             src={msg.aiAnalysis.visualizations.right_eye.binary_map}
                                             alt="右眼二值图"
