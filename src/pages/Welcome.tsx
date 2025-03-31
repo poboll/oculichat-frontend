@@ -98,22 +98,32 @@ const ScrollingShowcase: React.FC = () => {
         {
             title: '眼底图像智能分析',
             description: '采用先进的深度学习技术，实现眼底图像的自动分析和病变检测，准确率达到业内领先水平。',
-            image: 'https://pic1.imgdb.cn/item/65708cafc458853aef9b426b.jpg',
+            image: 'http://www.cdnjson.com/images/2025/03/31/ocu00.png',
         },
         {
-            title: 'OCR文本识别',
+            title: '智能诊断报告',
             description: '针对医疗报告的专业OCR识别，支持多种格式的医疗文档，实现快速准确的文本提取。',
-            image: 'https://pic1.imgdb.cn/item/657084c7c458853aef76b008.jpg',
+            image: 'http://www.cdnjson.com/images/2025/03/31/ocu1.png',
         },
         {
-            title: '智能诊断辅助',
+            title: '模型精确打分',
             description: '结合AI模型和专家经验，提供智能化的诊断建议，协助医生提高诊断效率。',
-            image: 'https://pic1.imgdb.cn/item/657084c7c458853aef76af5d.jpg',
+            image: 'http://www.cdnjson.com/images/2025/03/31/ocu2.png',
         },
         {
-            title: '数据分析平台',
+            title: '模型精确打分',
+            description: '结合AI模型和专家经验，提供智能化的诊断建议，协助医生提高诊断效率。',
+            image: 'http://www.cdnjson.com/images/2025/03/31/ocu3.png',
+        },
+        {
+            title: '眼底图像示例',
             description: '强大的数据分析能力，帮助医疗机构深入理解患者数据，优化诊疗方案。',
-            image: 'https://pic1.imgdb.cn/item/65708348c458853aef70266b.jpg',
+            image: 'http://www.cdnjson.com/images/2025/03/31/ocu4.png',
+        },
+        {
+            title: '先进算法支撑',
+            description: '强大的数据分析能力，帮助医疗机构深入理解患者数据，优化诊疗方案。',
+            image: 'http://www.cdnjson.com/images/2025/03/31/ocu6.png',
         },
     ];
 
@@ -480,7 +490,7 @@ const Welcome: React.FC = () => {
                             color: '#98a1ab',
                             marginBottom: '24px',
                         }}>
-                            深受多家医疗机构信赖
+                            领先业界的医用级辅助诊断平台
                         </p>
                         <div style={{
                             display: 'flex',
@@ -639,7 +649,7 @@ const Welcome: React.FC = () => {
                             title={<Title level={5}>稳定与安全</Title>}
                             desc={
                                 <Text strong>
-                                    平台致力于提供稳定、安全的接口服务，采用多重安全措施保障用户数据和隐私。
+                                    平台致力于提供稳定、准确、安全的眼底OCR图像辅助诊断和对外的API接口服务，采用多重安全措施保障用户数据和隐私。
                                 </Text>
                             }
                         />
@@ -754,7 +764,8 @@ const Welcome: React.FC = () => {
                                 </ul>
                             </div>
 
-                            <div
+                            <button
+                                onClick={() => window.open('https://www.yuque.com/inni/item/oculichat', '_blank')}
                                 style={{
                                     width: '100%',
                                     padding: '12px 0',
@@ -763,10 +774,14 @@ const Welcome: React.FC = () => {
                                     color: 'white',
                                     borderRadius: 8,
                                     cursor: 'pointer',
+                                    border: 'none',  // 移除按钮边框
+                                    fontFamily: 'inherit',  // 继承父元素字体
+                                    fontSize: 'inherit',  // 继承父元素字体大小
                                 }}
                             >
                                 查看项目更多详情
-                            </div>
+                            </button>
+
                         </EyeProjectCard>
                     </Col>
                 </Row>
