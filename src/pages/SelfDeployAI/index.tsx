@@ -855,329 +855,620 @@ ${condition === 'Normal' ?
                             }}
                           />
                           {/* 显示可视化数据（如果有） */}
-                          // 在消息显示部分进行优化调整，使视觉效果更加美观
                           {msg.aiAnalysis?.visualizations && (
-                            <div style={{ marginTop: 16, border: '1px solid #f0f0f0', borderRadius: 8, padding: 16, background: '#fcfcfc' }}>
-                              <h4 style={{ color: '#315167FF', marginBottom: 12, borderBottom: '1px solid #eee', paddingBottom: 8 }}>
-                                <EyeOutlined style={{ marginRight: 8 }} /> AI 图像分析结果
+                            <div style={{ marginTop: 16, borderRadius: 12, padding: 16, background: '#f8fafc', boxShadow: '0 2px 8px rgba(0,0,0,0.06)' }}>
+                              <h4 style={{ color: '#315167FF', marginBottom: 16, borderBottom: '1px solid #eaedf0', paddingBottom: 10, fontWeight: 600 }}>
+                                <EyeOutlined style={{ marginRight: 8 }} /> AI 眼底诊断分析结果
                               </h4>
-                              <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-                                {/* 左眼分析区块 */}
-                                {msg.aiAnalysis.visualizations.left_eye && (
-                                  <div style={{ flex: 1, minWidth: '45%' }}>
-                                    <h5 style={{ marginBottom: 8, color: '#315167FF', display: 'flex', alignItems: 'center' }}>
-            <span style={{
-              display: 'inline-block',
-              width: 18,
-              height: 18,
-              borderRadius: '50%',
-              background: '#315167FF',
-              color: 'white',
-              textAlign: 'center',
-              lineHeight: '18px',
-              fontSize: 12,
-              marginRight: 6
-            }}>L</span> 左眼分析
-                                    </h5>
-                                    <div style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.08)', borderRadius: 8, overflow: 'hidden', marginBottom: 12 }}>
-                                      {msg.aiAnalysis.visualizations.left_eye.original && (
-                                        <div>
-                                          <div style={{ background: '#315167FF', color: 'white', padding: '4px 10px', fontSize: '12px' }}>原始眼底图像</div>
-                                          <img
-                                            src={msg.aiAnalysis.visualizations.left_eye.original}
-                                            alt="左眼原始图"
-                                            style={{ width: '100%', display: 'block' }}
-                                          />
-                                        </div>
-                                      )}
-                                    </div>
 
-                                    {/* 左眼过滤视图 - 更美观的网格布局 */}
-                                    {msg.aiAnalysis.visualizations.left_eye.filtered_views && (
-                                      <div>
-                                        <h6 style={{ marginBottom: 6, fontWeight: 'normal', color: '#666' }}>增强视图</h6>
-                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8 }}>
-                                          {Object.entries(msg.aiAnalysis.visualizations.left_eye.filtered_views).map(([key, value]) => (
-                                            <div key={`left-${key}`} style={{ borderRadius: 6, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-                                              <div style={{
-                                                fontSize: '11px',
-                                                background: '#f5f7fa',
-                                                padding: '3px 6px',
-                                                borderBottom: '1px solid #eee'
-                                              }}>
-                                                {key === 'green_channel' ? '绿色通道' :
-                                                  key === 'red_free' ? '无红通道' :
-                                                    key === 'contrast_enhanced' ? '对比度增强' : key}
-                                              </div>
-                                              <img
-                                                src={value as string}
-                                                alt={`左眼${key}视图`}
-                                                style={{ width: '100%', height: 'auto', display: 'block' }}
-                                              />
-                                            </div>
-                                          ))}
-                                        </div>
-                                      </div>
-                                    )}
-
-                                    {/* 左眼分析图 - 更整洁的布局 */}
-                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8, marginTop: 12 }}>
-                                      {msg.aiAnalysis.visualizations.left_eye.probability_map && (
-                                        <div style={{ borderRadius: 6, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-                                          <div style={{ fontSize: '11px', background: '#f5f7fa', padding: '3px 6px', borderBottom: '1px solid #eee' }}>
-                                            疾病概率热图
-                                          </div>
-                                          <img
-                                            src={msg.aiAnalysis.visualizations.left_eye.probability_map}
-                                            alt="左眼概率图"
-                                            style={{ width: '100%', height: 'auto', display: 'block' }}
-                                          />
-                                        </div>
-                                      )}
-                                      {msg.aiAnalysis.visualizations.left_eye.binary_map && (
-                                        <div style={{ borderRadius: 6, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-                                          <div style={{ fontSize: '11px', background: '#f5f7fa', padding: '3px 6px', borderBottom: '1px solid #eee' }}>
-                                            病变分割图
-                                          </div>
-                                          <img
-                                            src={msg.aiAnalysis.visualizations.left_eye.binary_map}
-                                            alt="左眼二值图"
-                                            style={{ width: '100%', height: 'auto', display: 'block' }}
-                                          />
-                                        </div>
-                                      )}
-                                    </div>
-
-                                    {/* 左眼严重程度指示器 */}
-                                    <div style={{
-                                      marginTop: 12,
-                                      background: msg.aiAnalysis.left_eye.severity === 'normal' ? '#f6ffed' :
-                                        msg.aiAnalysis.left_eye.severity === 'mild' ? '#e6f7ff' :
-                                          msg.aiAnalysis.left_eye.severity === 'moderate' ? '#fff7e6' : '#fff1f0',
-                                      padding: '6px 10px',
-                                      borderRadius: 4,
-                                      fontSize: 13,
-                                      display: 'flex',
-                                      justifyContent: 'space-between'
-                                    }}>
-            <span>严重程度: <strong>{
-              msg.aiAnalysis.left_eye.severity === 'normal' ? '正常' :
-                msg.aiAnalysis.left_eye.severity === 'mild' ? '轻度' :
-                  msg.aiAnalysis.left_eye.severity === 'moderate' ? '中度' : '重度'
-            }</strong></span>
-                                      <span>置信度: {(msg.aiAnalysis.left_eye.confidence * 100).toFixed(1)}%</span>
-                                    </div>
-                                  </div>
-                                )}
-
-                                {/* 右眼分析区块 - 镜像左眼的布局风格 */}
-                                {msg.aiAnalysis.visualizations.right_eye && (
-                                  <div style={{ flex: 1, minWidth: '45%' }}>
-                                    <h5 style={{ marginBottom: 8, color: '#315167FF', display: 'flex', alignItems: 'center' }}>
-            <span style={{
-              display: 'inline-block',
-              width: 18,
-              height: 18,
-              borderRadius: '50%',
-              background: '#315167FF',
-              color: 'white',
-              textAlign: 'center',
-              lineHeight: '18px',
-              fontSize: 12,
-              marginRight: 6
-            }}>R</span> 右眼分析
-                                    </h5>
-                                    <div style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.08)', borderRadius: 8, overflow: 'hidden', marginBottom: 12 }}>
-                                      {msg.aiAnalysis.visualizations.right_eye.original && (
-                                        <div>
-                                          <div style={{ background: '#315167FF', color: 'white', padding: '4px 10px', fontSize: '12px' }}>原始眼底图像</div>
-                                          <img
-                                            src={msg.aiAnalysis.visualizations.right_eye.original}
-                                            alt="右眼原始图"
-                                            style={{ width: '100%', display: 'block' }}
-                                          />
-                                        </div>
-                                      )}
-                                    </div>
-
-                                    {/* 右眼过滤视图 - 与左眼保持一致的风格 */}
-                                    {msg.aiAnalysis.visualizations.right_eye.filtered_views && (
-                                      <div>
-                                        <h6 style={{ marginBottom: 6, fontWeight: 'normal', color: '#666' }}>增强视图</h6>
-                                        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8 }}>
-                                          {Object.entries(msg.aiAnalysis.visualizations.right_eye.filtered_views).map(([key, value]) => (
-                                            <div key={`right-${key}`} style={{ borderRadius: 6, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-                                              <div style={{
-                                                fontSize: '11px',
-                                                background: '#f5f7fa',
-                                                padding: '3px 6px',
-                                                borderBottom: '1px solid #eee'
-                                              }}>
-                                                {key === 'green_channel' ? '绿色通道' :
-                                                  key === 'red_free' ? '无红通道' :
-                                                    key === 'contrast_enhanced' ? '对比度增强' : key}
-                                              </div>
-                                              <img
-                                                src={value as string}
-                                                alt={`右眼${key}视图`}
-                                                style={{ width: '100%', height: 'auto', display: 'block' }}
-                                              />
-                                            </div>
-                                          ))}
-                                        </div>
-                                      </div>
-                                    )}
-
-                                    {/* 右眼分析图 - 与左眼保持一致的风格 */}
-                                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8, marginTop: 12 }}>
-                                      {msg.aiAnalysis.visualizations.right_eye.probability_map && (
-                                        <div style={{ borderRadius: 6, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-                                          <div style={{ fontSize: '11px', background: '#f5f7fa', padding: '3px 6px', borderBottom: '1px solid #eee' }}>
-                                            疾病概率热图
-                                          </div>
-                                          <img
-                                            src={msg.aiAnalysis.visualizations.right_eye.probability_map}
-                                            alt="右眼概率图"
-                                            style={{ width: '100%', height: 'auto', display: 'block' }}
-                                          />
-                                        </div>
-                                      )}
-                                      {msg.aiAnalysis.visualizations.right_eye.binary_map && (
-                                        <div style={{ borderRadius: 6, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
-                                          <div style={{ fontSize: '11px', background: '#f5f7fa', padding: '3px 6px', borderBottom: '1px solid #eee' }}>
-                                            病变分割图
-                                          </div>
-                                          <img
-                                            src={msg.aiAnalysis.visualizations.right_eye.binary_map}
-                                            alt="右眼二值图"
-                                            style={{ width: '100%', height: 'auto', display: 'block' }}
-                                          />
-                                        </div>
-                                      )}
-                                    </div>
-
-                                    {/* 右眼严重程度指示器 */}
-                                    <div style={{
-                                      marginTop: 12,
-                                      background: msg.aiAnalysis.right_eye.severity === 'normal' ? '#f6ffed' :
-                                        msg.aiAnalysis.right_eye.severity === 'mild' ? '#e6f7ff' :
-                                          msg.aiAnalysis.right_eye.severity === 'moderate' ? '#fff7e6' : '#fff1f0',
-                                      padding: '6px 10px',
-                                      borderRadius: 4,
-                                      fontSize: 13,
-                                      display: 'flex',
-                                      justifyContent: 'space-between'
-                                    }}>
-            <span>严重程度: <strong>{
-              msg.aiAnalysis.right_eye.severity === 'normal' ? '正常' :
-                msg.aiAnalysis.right_eye.severity === 'mild' ? '轻度' :
-                  msg.aiAnalysis.right_eye.severity === 'moderate' ? '中度' : '重度'
-            }</strong></span>
-                                      <span>置信度: {(msg.aiAnalysis.right_eye.confidence * 100).toFixed(1)}%</span>
-                                    </div>
-                                  </div>
-                                )}
-                              </div>
-
-                              {/* 诊断结果摘要区 */}
+                              {/* 诊断结果摘要区 - 移到顶部使其成为焦点 */}
                               <div style={{
-                                marginTop: 16,
-                                background: '#f9f9f9',
-                                padding: 12,
-                                borderRadius: 8,
-                                border: '1px dashed #d9d9d9'
+                                marginBottom: 20,
+                                background: '#f0f5fa',
+                                padding: 16,
+                                borderRadius: 10,
+                                border: '1px solid #e2ebf5'
                               }}>
-                                <h5 style={{ marginBottom: 8, color: '#315167FF' }}>诊断结果摘要</h5>
-                                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px 16px' }}>
-                                  <div style={{ minWidth: '180px', flex: 1 }}>
-                                    <div style={{ fontSize: 13, color: '#666' }}>主要诊断</div>
+                                <h5 style={{ marginBottom: 12, color: '#315167FF', fontSize: 15 }}>诊断结果摘要</h5>
+                                <div style={{
+                                  display: 'grid',
+                                  gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+                                  gap: '16px'
+                                }}>
+                                  <div>
+                                    <div style={{ fontSize: 13, color: '#666', marginBottom: 4 }}>主要诊断</div>
                                     <div style={{
-                                      fontSize: 14,
+                                      fontSize: 16,
                                       fontWeight: 'bold',
                                       color: '#315167FF',
                                       display: 'flex',
-                                      justifyContent: 'space-between'
+                                      justifyContent: 'space-between',
+                                      alignItems: 'center'
                                     }}>
             <span>{
               msg.aiAnalysis.main_class.label === 'Normal' ? '正常眼底' :
                 msg.aiAnalysis.main_class.label === 'DR' ? '糖尿病视网膜病变' :
                   msg.aiAnalysis.main_class.label === 'Glaucoma' ? '青光眼' :
-                    msg.aiAnalysis.main_class.label
+                    msg.aiAnalysis.main_class.label === 'Cataract' ? '白内障' :
+                      msg.aiAnalysis.main_class.label === 'AMD' ? '年龄相关性黄斑变性' :
+                        msg.aiAnalysis.main_class.label === 'Hypertension' ? '高血压性视网膜病变' :
+                          msg.aiAnalysis.main_class.label
             }</span>
-                                      <span style={{ fontWeight: 'normal', fontSize: 13 }}>
+                                      <span style={{
+                                        fontWeight: 'normal',
+                                        fontSize: 13,
+                                        background: '#315167FF',
+                                        color: 'white',
+                                        padding: '3px 8px',
+                                        borderRadius: 15
+                                      }}>
               {msg.aiAnalysis.main_class.grade && `${msg.aiAnalysis.main_class.grade}级`}
             </span>
                                     </div>
-                                  </div>
-                                  <div style={{ minWidth: '150px', flex: 1 }}>
-                                    <div style={{ fontSize: 13, color: '#666' }}>病灶数量</div>
-                                    <div style={{ fontSize: 14 }}>
-                                      {msg.aiAnalysis.measurements?.microaneurysm_count &&
-                                        <span style={{ marginRight: 12 }}>微血管瘤: <strong>{msg.aiAnalysis.measurements.microaneurysm_count}</strong></span>
-                                      }
-                                      {msg.aiAnalysis.measurements?.hemorrhage_count &&
-                                        <span style={{ marginRight: 12 }}>出血点: <strong>{msg.aiAnalysis.measurements.hemorrhage_count}</strong></span>
-                                      }
-                                      {msg.aiAnalysis.measurements?.exudate_count &&
-                                        <span>硬性渗出: <strong>{msg.aiAnalysis.measurements.exudate_count}</strong></span>
-                                      }
+                                    <div style={{
+                                      marginTop: 4,
+                                      fontSize: 12,
+                                      color: '#666',
+                                      background: '#e6f2fd',
+                                      padding: '2px 6px',
+                                      borderRadius: 4,
+                                      display: 'inline-block'
+                                    }}>
+                                      置信度: {(msg.aiAnalysis.main_class.confidence * 100).toFixed(1)}%
                                     </div>
                                   </div>
-                                  <div style={{ minWidth: '150px', flex: 1 }}>
-                                    <div style={{ fontSize: 13, color: '#666' }}>患者信息预测</div>
+
+                                  <div>
+                                    <div style={{ fontSize: 13, color: '#666', marginBottom: 4 }}>病灶数量</div>
+                                    <div style={{
+                                      display: 'flex',
+                                      flexDirection: 'column',
+                                      gap: '5px',
+                                      fontSize: 14
+                                    }}>
+                                      {msg.aiAnalysis.measurements?.microaneurysm_count !== undefined && (
+                                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                                          <div style={{
+                                            width: 10,
+                                            height: 10,
+                                            borderRadius: '50%',
+                                            background: '#ff4d4f',
+                                            marginRight: 6
+                                          }}></div>
+                                          微血管瘤: <strong style={{ marginLeft: 4 }}>{msg.aiAnalysis.measurements.microaneurysm_count}</strong>
+                                        </div>
+                                      )}
+                                      {msg.aiAnalysis.measurements?.hemorrhage_count !== undefined && (
+                                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                                          <div style={{
+                                            width: 10,
+                                            height: 10,
+                                            borderRadius: '50%',
+                                            background: '#722ed1',
+                                            marginRight: 6
+                                          }}></div>
+                                          出血点: <strong style={{ marginLeft: 4 }}>{msg.aiAnalysis.measurements.hemorrhage_count}</strong>
+                                        </div>
+                                      )}
+                                      {msg.aiAnalysis.measurements?.exudate_count !== undefined && (
+                                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                                          <div style={{
+                                            width: 10,
+                                            height: 10,
+                                            borderRadius: '50%',
+                                            background: '#faad14',
+                                            marginRight: 6
+                                          }}></div>
+                                          硬性渗出: <strong style={{ marginLeft: 4 }}>{msg.aiAnalysis.measurements.exudate_count}</strong>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+
+                                  <div>
+                                    <div style={{ fontSize: 13, color: '#666', marginBottom: 4 }}>患者信息预测</div>
                                     <div style={{ fontSize: 14 }}>
-                                      {msg.aiAnalysis.age_prediction &&
-                                        <span style={{ marginRight: 12 }}>年龄: <strong>{msg.aiAnalysis.age_prediction}岁</strong></span>
-                                      }
-                                      {msg.aiAnalysis.gender_prediction &&
-                                        <span>性别: <strong>{msg.aiAnalysis.gender_prediction === 'Male' ? '男' : '女'}</strong></span>
-                                      }
+                                      {msg.aiAnalysis.age_prediction && (
+                                        <div style={{ display: 'flex', alignItems: 'center', marginBottom: 4 }}>
+                                          <span style={{ marginRight: 8 }}>年龄:</span>
+                                          <strong style={{
+                                            background: '#f0f5fa',
+                                            padding: '2px 8px',
+                                            borderRadius: 4
+                                          }}>{msg.aiAnalysis.age_prediction}岁</strong>
+                                        </div>
+                                      )}
+                                      {msg.aiAnalysis.gender_prediction && (
+                                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                                          <span style={{ marginRight: 8 }}>性别:</span>
+                                          <strong style={{
+                                            background: msg.aiAnalysis.gender_prediction === 'Male' ? '#e6f7ff' : '#fff0f6',
+                                            padding: '2px 10px',
+                                            borderRadius: 4,
+                                            color: msg.aiAnalysis.gender_prediction === 'Male' ? '#1890ff' : '#eb2f96'
+                                          }}>{msg.aiAnalysis.gender_prediction === 'Male' ? '男' : '女'}</strong>
+                                        </div>
+                                      )}
                                     </div>
                                   </div>
                                 </div>
+
+                                {/* 新增：关键发现标签 */}
+                                {msg.aiAnalysis.explanation?.findings && msg.aiAnalysis.explanation.findings.length > 0 && (
+                                  <div style={{ marginTop: 12 }}>
+                                    <div style={{ fontSize: 13, color: '#666', marginBottom: 4 }}>关键发现</div>
+                                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px' }}>
+                                      {msg.aiAnalysis.explanation.findings.map((finding, idx) => (
+                                        <span key={idx} style={{
+                                          background: ['#fff7e6', '#e6f7ff', '#f6ffed'][idx % 3],
+                                          border: `1px solid ${['#ffd591', '#91d5ff', '#b7eb8f'][idx % 3]}`,
+                                          padding: '2px 10px',
+                                          borderRadius: 12,
+                                          fontSize: 13
+                                        }}>{finding}</span>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
                               </div>
 
-                              {/* 特征重要性区 */}
-                              {(msg.aiAnalysis.feature_importance?.image || msg.aiAnalysis.feature_importance?.factors) && (
-                                <div style={{ marginTop: 16, display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-                                  {msg.aiAnalysis.feature_importance.image && (
-                                    <div style={{ flex: '1 0 200px', maxWidth: '350px' }}>
-                                      <h5 style={{ marginBottom: 8, color: '#315167FF' }}>特征重要性分析</h5>
-                                      <div style={{ border: '1px solid #f0f0f0', borderRadius: 6, overflow: 'hidden' }}>
-                                        <img
-                                          src={msg.aiAnalysis.feature_importance.image}
-                                          alt="特征重要性图"
-                                          style={{ width: '100%', display: 'block' }}
-                                        />
+                              <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
+                                {/* 左右眼分析区 - 采用网格布局确保对称 */}
+                                <div style={{
+                                  display: 'grid',
+                                  gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
+                                  gap: 20,
+                                  width: '100%'
+                                }}>
+                                  {/* 左眼分析区块 */}
+                                  {msg.aiAnalysis.visualizations.left_eye && (
+                                    <div style={{
+                                      background: '#fff',
+                                      borderRadius: 10,
+                                      overflow: 'hidden',
+                                      boxShadow: '0 1px 4px rgba(0,0,0,0.08)'
+                                    }}>
+                                      <div style={{
+                                        background: '#315167FF',
+                                        color: 'white',
+                                        padding: '10px 15px',
+                                        fontSize: 15,
+                                        display: 'flex',
+                                        alignItems: 'center'
+                                      }}>
+              <span style={{
+                display: 'inline-block',
+                width: 20,
+                height: 20,
+                borderRadius: '50%',
+                background: 'white',
+                color: '#315167FF',
+                textAlign: 'center',
+                lineHeight: '20px',
+                fontSize: 13,
+                fontWeight: 'bold',
+                marginRight: 8
+              }}>L</span>
+                                        左眼分析
+                                        <span style={{
+                                          marginLeft: 'auto',
+                                          fontSize: 13,
+                                          background: msg.aiAnalysis.left_eye.severity === 'normal' ? '#52c41a' :
+                                            msg.aiAnalysis.left_eye.severity === 'mild' ? '#1890ff' :
+                                              msg.aiAnalysis.left_eye.severity === 'moderate' ? '#fa8c16' : '#f5222d',
+                                          padding: '2px 10px',
+                                          borderRadius: 12
+                                        }}>
+                {msg.aiAnalysis.left_eye.severity === 'normal' ? '正常' :
+                  msg.aiAnalysis.left_eye.severity === 'mild' ? '轻度' :
+                    msg.aiAnalysis.left_eye.severity === 'moderate' ? '中度' : '重度'}
+                                          ({(msg.aiAnalysis.left_eye.confidence * 100).toFixed(0)}%)
+              </span>
                                       </div>
-                                    </div>
-                                  )}
 
-                                  {msg.aiAnalysis.feature_importance?.factors && msg.aiAnalysis.feature_importance.factors.length > 0 && (
-                                    <div style={{ flex: '1 0 200px' }}>
-                                      <h5 style={{ marginBottom: 8, color: '#315167FF' }}>关键特征分布</h5>
-                                      <div style={{ height: '160px', display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>
-                                        {msg.aiAnalysis.feature_importance.factors.map((factor, idx) => (
-                                          <div key={idx} style={{ marginBottom: 6 }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2 }}>
-                                              <span style={{ fontSize: 13 }}>{factor.name}</span>
-                                              <span style={{ fontSize: 13 }}>{(factor.value * 100).toFixed(1)}%</span>
-                                            </div>
-                                            <div style={{ height: 8, width: '100%', background: '#f0f0f0', borderRadius: 4, overflow: 'hidden' }}>
-                                              <div
-                                                style={{
-                                                  height: '100%',
-                                                  width: `${factor.value * 100}%`,
-                                                  background: idx === 0 ? '#315167FF' : idx === 1 ? '#4a7ba3' : '#769ebf',
-                                                  borderRadius: 4
-                                                }}
+                                      <div style={{ padding: 15 }}>
+                                        {/* 左眼原始图像 */}
+                                        {msg.aiAnalysis.visualizations.left_eye.original && (
+                                          <div style={{ marginBottom: 15 }}>
+                                            <h6 style={{ fontSize: 14, color: '#666', marginBottom: 8, fontWeight: 'normal' }}>原始眼底图像</h6>
+                                            <div style={{
+                                              borderRadius: 8,
+                                              overflow: 'hidden',
+                                              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                                              background: '#000',
+                                              padding: 1
+                                            }}>
+                                              <img
+                                                src={msg.aiAnalysis.visualizations.left_eye.original}
+                                                alt="左眼原始图"
+                                                style={{ width: '100%', display: 'block', borderRadius: 7 }}
                                               />
                                             </div>
                                           </div>
-                                        ))}
+                                        )}
+
+                                        {/* 左眼分析图 - 使用网格布局 */}
+                                        <div style={{ marginBottom: 15 }}>
+                                          <h6 style={{ fontSize: 14, color: '#666', marginBottom: 8, fontWeight: 'normal' }}>疾病分析图</h6>
+                                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 }}>
+                                            {msg.aiAnalysis.visualizations.left_eye.probability_map && (
+                                              <div style={{ borderRadius: 8, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+                                                <div style={{
+                                                  fontSize: 12,
+                                                  background: '#f5f7fa',
+                                                  padding: '5px 8px',
+                                                  borderBottom: '1px solid #eee'
+                                                }}>
+                                                  疾病概率热图
+                                                </div>
+                                                <img
+                                                  src={msg.aiAnalysis.visualizations.left_eye.probability_map}
+                                                  alt="左眼概率图"
+                                                  style={{ width: '100%', height: 'auto', display: 'block' }}
+                                                />
+                                              </div>
+                                            )}
+                                            {msg.aiAnalysis.visualizations.left_eye.binary_map && (
+                                              <div style={{ borderRadius: 8, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+                                                <div style={{
+                                                  fontSize: 12,
+                                                  background: '#f5f7fa',
+                                                  padding: '5px 8px',
+                                                  borderBottom: '1px solid #eee'
+                                                }}>
+                                                  病变分割图
+                                                </div>
+                                                <img
+                                                  src={msg.aiAnalysis.visualizations.left_eye.binary_map}
+                                                  alt="左眼二值图"
+                                                  style={{ width: '100%', height: 'auto', display: 'block' }}
+                                                />
+                                              </div>
+                                            )}
+                                          </div>
+                                        </div>
+
+                                        {/* 左眼增强视图 */}
+                                        {msg.aiAnalysis.visualizations.left_eye.filtered_views && (
+                                          <div>
+                                            <h6 style={{ fontSize: 14, color: '#666', marginBottom: 8, fontWeight: 'normal' }}>增强视图</h6>
+                                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 10 }}>
+                                              {Object.entries(msg.aiAnalysis.visualizations.left_eye.filtered_views).map(([key, value]) => (
+                                                <div key={`left-${key}`} style={{
+                                                  borderRadius: 8,
+                                                  overflow: 'hidden',
+                                                  boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
+                                                }}>
+                                                  <div style={{
+                                                    fontSize: 12,
+                                                    background: '#f5f7fa',
+                                                    padding: '5px 8px',
+                                                    borderBottom: '1px solid #eee'
+                                                  }}>
+                                                    {key === 'green_channel' ? '绿色通道' :
+                                                      key === 'red_free' ? '无红通道' :
+                                                        key === 'contrast_enhanced' ? '对比度增强' : key}
+                                                  </div>
+                                                  <img
+                                                    src={value as string}
+                                                    alt={`左眼${key}视图`}
+                                                    style={{ width: '100%', height: 'auto', display: 'block' }}
+                                                  />
+                                                </div>
+                                              ))}
+                                            </div>
+                                          </div>
+                                        )}
                                       </div>
                                     </div>
                                   )}
+
+                                  {/* 右眼分析区块 */}
+                                  {msg.aiAnalysis.visualizations.right_eye && (
+                                    <div style={{
+                                      background: '#fff',
+                                      borderRadius: 10,
+                                      overflow: 'hidden',
+                                      boxShadow: '0 1px 4px rgba(0,0,0,0.08)'
+                                    }}>
+                                      <div style={{
+                                        background: '#315167FF',
+                                        color: 'white',
+                                        padding: '10px 15px',
+                                        fontSize: 15,
+                                        display: 'flex',
+                                        alignItems: 'center'
+                                      }}>
+              <span style={{
+                display: 'inline-block',
+                width: 20,
+                height: 20,
+                borderRadius: '50%',
+                background: 'white',
+                color: '#315167FF',
+                textAlign: 'center',
+                lineHeight: '20px',
+                fontSize: 13,
+                fontWeight: 'bold',
+                marginRight: 8
+              }}>R</span>
+                                        右眼分析
+                                        <span style={{
+                                          marginLeft: 'auto',
+                                          fontSize: 13,
+                                          background: msg.aiAnalysis.right_eye.severity === 'normal' ? '#52c41a' :
+                                            msg.aiAnalysis.right_eye.severity === 'mild' ? '#1890ff' :
+                                              msg.aiAnalysis.right_eye.severity === 'moderate' ? '#fa8c16' : '#f5222d',
+                                          padding: '2px 10px',
+                                          borderRadius: 12
+                                        }}>
+                {msg.aiAnalysis.right_eye.severity === 'normal' ? '正常' :
+                  msg.aiAnalysis.right_eye.severity === 'mild' ? '轻度' :
+                    msg.aiAnalysis.right_eye.severity === 'moderate' ? '中度' : '重度'}
+                                          ({(msg.aiAnalysis.right_eye.confidence * 100).toFixed(0)}%)
+              </span>
+                                      </div>
+
+                                      <div style={{ padding: 15 }}>
+                                        {/* 右眼原始图像 */}
+                                        {msg.aiAnalysis.visualizations.right_eye.original && (
+                                          <div style={{ marginBottom: 15 }}>
+                                            <h6 style={{ fontSize: 14, color: '#666', marginBottom: 8, fontWeight: 'normal' }}>原始眼底图像</h6>
+                                            <div style={{
+                                              borderRadius: 8,
+                                              overflow: 'hidden',
+                                              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+                                              background: '#000',
+                                              padding: 1
+                                            }}>
+                                              <img
+                                                src={msg.aiAnalysis.visualizations.right_eye.original}
+                                                alt="右眼原始图"
+                                                style={{ width: '100%', display: 'block', borderRadius: 7 }}
+                                              />
+                                            </div>
+                                          </div>
+                                        )}
+
+                                        {/* 右眼分析图 - 使用网格布局 */}
+                                        <div style={{ marginBottom: 15 }}>
+                                          <h6 style={{ fontSize: 14, color: '#666', marginBottom: 8, fontWeight: 'normal' }}>疾病分析图</h6>
+                                          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 10 }}>
+                                            {msg.aiAnalysis.visualizations.right_eye.probability_map && (
+                                              <div style={{ borderRadius: 8, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+                                                <div style={{
+                                                  fontSize: 12,
+                                                  background: '#f5f7fa',
+                                                  padding: '5px 8px',
+                                                  borderBottom: '1px solid #eee'
+                                                }}>
+                                                  疾病概率热图
+                                                </div>
+                                                <img
+                                                  src={msg.aiAnalysis.visualizations.right_eye.probability_map}
+                                                  alt="右眼概率图"
+                                                  style={{ width: '100%', height: 'auto', display: 'block' }}
+                                                />
+                                              </div>
+                                            )}
+                                            {msg.aiAnalysis.visualizations.right_eye.binary_map && (
+                                              <div style={{ borderRadius: 8, overflow: 'hidden', boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+                                                <div style={{
+                                                  fontSize: 12,
+                                                  background: '#f5f7fa',
+                                                  padding: '5px 8px',
+                                                  borderBottom: '1px solid #eee'
+                                                }}>
+                                                  病变分割图
+                                                </div>
+                                                <img
+                                                  src={msg.aiAnalysis.visualizations.right_eye.binary_map}
+                                                  alt="右眼二值图"
+                                                  style={{ width: '100%', height: 'auto', display: 'block' }}
+                                                />
+                                              </div>
+                                            )}
+                                          </div>
+                                        </div>
+
+                                        {/* 右眼增强视图 */}
+                                        {msg.aiAnalysis.visualizations.right_eye.filtered_views && (
+                                          <div>
+                                            <h6 style={{ fontSize: 14, color: '#666', marginBottom: 8, fontWeight: 'normal' }}>增强视图</h6>
+                                            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))', gap: 10 }}>
+                                              {Object.entries(msg.aiAnalysis.visualizations.right_eye.filtered_views).map(([key, value]) => (
+                                                <div key={`right-${key}`} style={{
+                                                  borderRadius: 8,
+                                                  overflow: 'hidden',
+                                                  boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
+                                                }}>
+                                                  <div style={{
+                                                    fontSize: 12,
+                                                    background: '#f5f7fa',
+                                                    padding: '5px 8px',
+                                                    borderBottom: '1px solid #eee'
+                                                  }}>
+                                                    {key === 'green_channel' ? '绿色通道' :
+                                                      key === 'red_free' ? '无红通道' :
+                                                        key === 'contrast_enhanced' ? '对比度增强' : key}
+                                                  </div>
+                                                  <img
+                                                    src={value as string}
+                                                    alt={`右眼${key}视图`}
+                                                    style={{ width: '100%', height: 'auto', display: 'block' }}
+                                                  />
+                                                </div>
+                                              ))}
+                                            </div>
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+
+                              {/* 特征重要性区 - 使用新的可视化方式 */}
+                              {(msg.aiAnalysis.feature_importance?.image || msg.aiAnalysis.feature_importance?.factors) && (
+                                <div style={{
+                                  marginTop: 20,
+                                  background: '#fff',
+                                  borderRadius: 10,
+                                  padding: 15,
+                                  boxShadow: '0 1px 4px rgba(0,0,0,0.08)'
+                                }}>
+                                  <h5 style={{ color: '#315167FF', marginBottom: 12, fontSize: 15 }}>特征重要性分析</h5>
+                                  <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
+                                    {msg.aiAnalysis.feature_importance.image && (
+                                      <div style={{ flex: '1 0 200px', maxWidth: '350px' }}>
+                                        <div style={{ border: '1px solid #f0f0f0', borderRadius: 8, overflow: 'hidden' }}>
+                                          <img
+                                            src={msg.aiAnalysis.feature_importance.image}
+                                            alt="特征重要性图"
+                                            style={{ width: '100%', display: 'block' }}
+                                          />
+                                        </div>
+                                      </div>
+                                    )}
+
+                                    {msg.aiAnalysis.feature_importance?.factors && msg.aiAnalysis.feature_importance.factors.length > 0 && (
+                                      <div style={{ flex: '1 0 200px' }}>
+                                        <div style={{ height: '180px', display: 'flex', flexDirection: 'column', justifyContent: 'space-around' }}>
+                                          {msg.aiAnalysis.feature_importance.factors.map((factor, idx) => (
+                                            <div key={idx} style={{ marginBottom: 8 }}>
+                                              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 3 }}>
+                      <span style={{
+                        fontSize: 14,
+                        fontWeight: idx === 0 ? 'bold' : 'normal',
+                        color: idx === 0 ? '#315167FF' : '#666'
+                      }}>{factor.name}</span>
+                                                <span style={{
+                                                  fontSize: 14,
+                                                  fontWeight: idx === 0 ? 'bold' : 'normal',
+                                                  color: idx === 0 ? '#315167FF' : '#666'
+                                                }}>{(factor.value * 100).toFixed(1)}%</span>
+                                              </div>
+                                              <div style={{ height: 12, width: '100%', background: '#f0f0f0', borderRadius: 6, overflow: 'hidden' }}>
+                                                <div
+                                                  style={{
+                                                    height: '100%',
+                                                    width: `${factor.value * 100}%`,
+                                                    background: `linear-gradient(90deg, ${
+                                                      idx === 0 ? '#315167FF' :
+                                                        idx === 1 ? '#4a7ba3' :
+                                                          idx === 2 ? '#769ebf' : '#a3c5df'
+                                                    } 0%, ${
+                                                      idx === 0 ? '#4a7ba3' :
+                                                        idx === 1 ? '#769ebf' :
+                                                          idx === 2 ? '#a3c5df' : '#d5e6f3'
+                                                    } 100%)`,
+                                                    borderRadius: 6
+                                                  }}
+                                                />
+                                              </div>
+                                              {/* 添加特征解释 */}
+                                              <div style={{ fontSize: 12, color: '#888', marginTop: 2, paddingLeft: 2 }}>
+                                                {idx === 0 ? '主要病变特征，对诊断结果影响最大' :
+                                                  idx === 1 ? '次要病变特征，辅助确认诊断' :
+                                                    '辅助特征，提供参考价值'}
+                                              </div>
+                                            </div>
+                                          ))}
+                                        </div>
+
+                                        {/* 添加交互式图例解释 */}
+                                        <div style={{
+                                          marginTop: 10,
+                                          padding: 12,
+                                          background: '#f9f9f9',
+                                          borderRadius: 8,
+                                          fontSize: 13
+                                        }}>
+                                          <div style={{ fontWeight: 'bold', marginBottom: 4, color: '#315167FF' }}>特征解读说明：</div>
+                                          <div>上述特征是AI诊断时重点关注的眼底病变特征，百分比表示各特征对最终诊断结果的贡献权重。</div>
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* 新增：病理解释区 */}
+                              {msg.aiAnalysis.explanation?.text && (
+                                <div style={{
+                                  marginTop: 20,
+                                  background: '#fff',
+                                  borderRadius: 10,
+                                  padding: 15,
+                                  boxShadow: '0 1px 4px rgba(0,0,0,0.08)'
+                                }}>
+                                  <h5 style={{
+                                    color: '#315167FF',
+                                    marginBottom: 12,
+                                    fontSize: 15,
+                                    display: 'flex',
+                                    alignItems: 'center'
+                                  }}>
+                                    <svg viewBox="0 0 24 24" width="16" height="16" fill="#315167FF" style={{ marginRight: 8 }}>
+                                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-11h2v6h-2zm0-4h2v2h-2z"/>
+                                    </svg>
+                                    病理解读
+                                  </h5>
+                                  <div style={{
+                                    fontSize: 14,
+                                    lineHeight: 1.6,
+                                    color: '#444',
+                                    padding: '8px 12px',
+                                    background: '#f0f5fa',
+                                    borderRadius: 8,
+                                    border: '1px solid #e2ebf5'
+                                  }}>
+                                    {msg.aiAnalysis.explanation.text}
+                                  </div>
+
+                                  {/* 添加可视化病理进展图 */}
+                                  <div style={{ marginTop: 15 }}>
+                                    <h6 style={{ fontSize: 14, color: '#666', marginBottom: 8, fontWeight: 'normal' }}>疾病进展示意图</h6>
+                                    <div style={{
+                                      width: '100%',
+                                      height: 60,
+                                      background: 'linear-gradient(90deg, #52c41a 0%, #1890ff 33%, #fa8c16 66%, #f5222d 100%)',
+                                      borderRadius: 6,
+                                      position: 'relative',
+                                      marginTop: 10
+                                    }}>
+                                      {/* 当前状态指示器 */}
+                                      <div style={{
+                                        position: 'absolute',
+                                        left: msg.aiAnalysis.main_class.label === 'Normal' ? '10%' :
+                                          msg.aiAnalysis.main_class.grade === 1 ? '30%' :
+                                            msg.aiAnalysis.main_class.grade === 2 ? '50%' :
+                                              msg.aiAnalysis.main_class.grade === 3 ? '70%' : '90%',
+                                        top: 0,
+                                        transform: 'translateX(-50%)',
+                                        width: 4,
+                                        height: '100%',
+                                        background: 'white',
+                                        boxShadow: '0 0 0 2px rgba(0,0,0,0.2)'
+                                      }}></div>
+
+                                      {/* 阶段标记 */}
+                                      <div style={{
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        position: 'absolute',
+                                        width: '100%',
+                                        bottom: -25,
+                                        fontSize: 12,
+                                        color: '#666'
+                                      }}>
+                                        <span style={{ textAlign: 'left' }}>正常</span>
+                                        <span style={{ textAlign: 'center' }}>轻度</span>
+                                        <span style={{ textAlign: 'center' }}>中度</span>
+                                        <span style={{ textAlign: 'right' }}>重度</span>
+                                      </div>
+                                    </div>
+                                  </div>
                                 </div>
                               )}
                             </div>
