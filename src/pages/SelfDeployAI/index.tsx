@@ -749,11 +749,11 @@ ${condition === 'Normal' ?
                 <div style={{ display: 'flex', justifyContent: 'space-between' ,color: '#315167FF' }}>
                   <div>
                     <Text strong>左眼照片:</Text>
-                    <Text type={leftEyeFile ? "success" : "secondary"}> {leftEyeFile ? leftEyeFile.name : '未上传'}</Text>
+                    <Text style={{ color: leftEyeFile ? '#1890ff' : '#999' }}> {leftEyeFile ? leftEyeFile.name : '未上传'}</Text>
                   </div>
                   <div>
                     <Text strong>右眼照片:</Text>
-                    <Text type={rightEyeFile ? "success" : "secondary"}> {rightEyeFile ? rightEyeFile.name : '未上传'}</Text>
+                    <Text style={{ color: leftEyeFile ? '#1890ff' : '#999' }}> {rightEyeFile ? rightEyeFile.name : '未上传'}</Text>
                   </div>
                 </div>
 

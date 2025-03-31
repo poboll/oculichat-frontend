@@ -1,4 +1,4 @@
-// ... existing code ...
+
 import React, { useState, useEffect } from 'react';
 import {Upload, Progress, Card, message, Image, Typography, Space, Tag, Descriptions, Tooltip, Spin, Modal} from 'antd';
 import { InboxOutlined, EyeOutlined, EyeInvisibleOutlined, FileImageOutlined, InfoCircleOutlined } from '@ant-design/icons';
@@ -98,8 +98,8 @@ const FileUpload: React.FC<{
       >
         <p className="ant-upload-drag-icon">
           {fileType === "左眼照片" ?
-            <EyeOutlined style={{ fontSize: 36, color: '#52c41a' }} /> :
-            <EyeInvisibleOutlined style={{ fontSize: 36, color: '#52c41a' }} />
+            <EyeOutlined style={{ fontSize: 36, color: '#1890ff' }} /> :
+            <EyeInvisibleOutlined style={{ fontSize: 36, color: '#1890ff' }} />
           }
         </p>
         <p className="ant-upload-text">点击或拖拽{fileType}到此区域上传</p>
@@ -109,8 +109,8 @@ const FileUpload: React.FC<{
       {uploading && (
         <div style={{ marginTop: 16 }}>
           <Progress percent={progress} status="active" strokeColor={{
-            from: '#52c41a',
-            to: '#87d068',
+            from: '#1890ff',
+            to: '#91caff',
           }} />
         </div>
       )}
@@ -130,7 +130,7 @@ const FileUpload: React.FC<{
             <div style={{ textAlign: 'center' }}>
               <Title level={5} style={{ margin: '0 0 12px 0' }}>
                 <Space>
-                  <FileImageOutlined style={{ color: '#52c41a' }} />
+                  <FileImageOutlined style={{ color: '#315167FF' }} />
                   {`${fileType}预览`}
                   {fileInfo?.type.includes('jpeg') && <Tag color="blue">JPG</Tag>}
                   {fileInfo?.type.includes('png') && <Tag color="green">PNG</Tag>}
@@ -203,4 +203,4 @@ const FileUpload: React.FC<{
 };
 
 export default FileUpload;
-// ... existing code ...
+
