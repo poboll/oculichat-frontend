@@ -17,7 +17,9 @@ import FileUpload from '@/components/FileUpload';
 import ChatBox from '@/components/ChatBox';
 
 
-
+// 本地存储键名
+const CHAT_HISTORY_KEY = 'local_oculi_chat_history';
+const KEEP_HISTORY_KEY = 'local_oculi_keep_history_setting';
 const { Title, Text } = Typography;
 const { Header, Content, Sider } = Layout;
 const { TabPane } = Tabs;
@@ -41,6 +43,7 @@ const SelfDeployAIPage: React.FC = () => {
       setMergedImageUrl(null);
     }
   }, [leftEyeFile, rightEyeFile]);
+
 
 // 前端合并两张图片
   const createMergedImage = () => {
@@ -216,6 +219,44 @@ ${content}
 
     message.success('诊断报告已导出');
   };
+
+  // 从本地存储加载历史记录和设置
+  useEffect(() => {
+    try {
+      // 加载对话历史
+      const savedMessages = localStorage.getItem(CHAT_HISTORY_KEY);
+      if (savedMessages) {
+        setMessages(JSON.parse(savedMessages));
+      }
+
+      // 加载保留上下文设置
+      const savedKeepHistory = localStorage.getItem(KEEP_HISTORY_KEY);
+      if (savedKeepHistory !== null) {
+        setKeepHistory(JSON.parse(savedKeepHistory));
+      }
+    } catch (error) {
+      console.error('加载历史记录失败:', error);
+    }
+  }, []);
+
+  // 当消息更新时保存到本地存储
+  useEffect(() => {
+    try {
+      localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(messages));
+    } catch (error) {
+      console.error('保存聊天历史失败:', error);
+    }
+  }, [messages]);
+
+  // 保存保留上下文设置
+  useEffect(() => {
+    try {
+      localStorage.setItem(KEEP_HISTORY_KEY, JSON.stringify(keepHistory));
+    } catch (error) {
+      console.error('保存设置失败:', error);
+    }
+  }, [keepHistory]);
+
 
 
 // 模拟API-1调用 - 分析图片
@@ -599,6 +640,11 @@ ${condition === 'Normal' ?
   // 清除聊天记录
   const clearChatHistory = () => {
     setMessages([]);
+    try {
+      localStorage.removeItem(CHAT_HISTORY_KEY);
+    } catch (error) {
+      console.error('清除本地存储失败:', error);
+    }
     message.success('聊天记录已清除');
   };
 
