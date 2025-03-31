@@ -64,7 +64,9 @@
     "react-dom": "^18.3.1",
     "react-helmet-async": "^1.3.0",
     "react-jsoneditor-wrapper": "^1.1.0",
-    "react-syntax-highlighter": "^15.6.1"
+    "react-syntax-highlighter": "^15.6.1",
+    "xlsx": "^0.18.5",
+    "xlsx-js-style": "^1.2.0"
   },
   "devDependencies": {
     "@ant-design/pro-cli": "^2.1.5",

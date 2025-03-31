@@ -10,12 +10,14 @@ import {
   ClearOutlined,
   MergeCellsOutlined,
   EyeOutlined,
-  LoadingOutlined
+  LoadingOutlined,
+  FileExcelOutlined
 } from '@ant-design/icons';
 import moment from 'moment';
 import FileUpload from '@/components/FileUpload';
 import ChatBox from '@/components/ChatBox';
-
+// 在import部分添加
+import BatchAnalysisUpload from '@/components/BatchAnalysisUpload';
 
 // 本地存储键名
 const CHAT_HISTORY_KEY = 'local_oculi_chat_history';
@@ -33,7 +35,15 @@ const SelfDeployAIPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState('upload');
   const [mergedImageUrl, setMergedImageUrl] = useState<string | null>(null);
   const [keepHistory, setKeepHistory] = useState(true);
+  // 添加新的状态
+  const [activeTabKey, setActiveTabKey] = useState('upload');
+  const [batchResults, setBatchResults] = useState<any[]>([]);
 
+  // 批量分析完成回调
+  const handleBatchComplete = (results: any[]) => {
+    setBatchResults(results);
+    message.success(`批量分析完成，共${results.length}个结果`);
+  };
   // 图片合并处理
   useEffect(() => {
     // 当左右眼照片都上传后，生成合并预览
@@ -705,7 +715,13 @@ ${condition === 'Normal' ?
           background: '#fff',  //#fcfcfc 白色背景
           height: 'calc(100vh - 64px)',
         }}>
-          <Tabs defaultActiveKey="upload" onChange={(key) => setActiveTab(key)} >
+          <Tabs
+            activeKey={activeTabKey}
+            onChange={(key) => {
+              setActiveTabKey(key);
+              setActiveTab(key);
+            }}
+          >
             <TabPane tab="照片上传" key="upload">
               <div style={{ marginBottom: 20 }}>
                 <Card
@@ -795,6 +811,18 @@ ${condition === 'Normal' ?
                   </>
                 )}
               </div>
+            </TabPane>
+            {/* 新增批量分析Tab */}
+            <TabPane
+              tab={
+                <span>
+                  <FileExcelOutlined />
+                  批量分析
+                </span>
+              }
+              key="batch"
+            >
+              <BatchAnalysisUpload onBatchComplete={handleBatchComplete} />
             </TabPane>
             <TabPane tab="医学百科" key="wiki">
               <Card style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.05)', borderRadius: '8px', height: '100%' }}>
