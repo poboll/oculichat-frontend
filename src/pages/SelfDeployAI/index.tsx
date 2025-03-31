@@ -42,54 +42,6 @@ const SelfDeployAIPage: React.FC = () => {
     }
   }, [leftEyeFile, rightEyeFile]);
 
-  // 前端合并两张图片
-  // const createMergedImage = () => {
-  //   if (!leftEyeFile || !rightEyeFile) return;
-  //
-  //   const canvas = document.createElement('canvas');
-  //   const ctx = canvas.getContext('2d');
-  //   if (!ctx) return;
-  //
-  //   const leftImg = new Image();
-  //   const rightImg = new Image();
-  //
-  //   let loadedImages = 0;
-  //   const onImageLoad = () => {
-  //     loadedImages++;
-  //     if (loadedImages === 2) {
-  //       // 两张图片都加载完成后，开始绘制合并图片
-  //       // 设置画布宽度为两张图片宽度之和，高度为较高图片的高度
-  //       const maxHeight = Math.max(leftImg.height, rightImg.height);
-  //       canvas.width = leftImg.width + rightImg.width;
-  //       canvas.height = maxHeight;
-  //
-  //       // 绘制左眼图片
-  //       ctx.drawImage(leftImg, 0, 0);
-  //
-  //       // 绘制右眼图片
-  //       ctx.drawImage(rightImg, leftImg.width, 0);
-  //
-  //       // 添加文字标识
-  //       ctx.font = '16px Arial';
-  //       ctx.fillStyle = 'white';
-  //       ctx.fillRect(5, 5, 50, 25);
-  //       ctx.fillRect(leftImg.width + 5, 5, 55, 25);
-  //       ctx.fillStyle = 'black';
-  //       ctx.fillText('左眼', 10, 22);
-  //       ctx.fillText('右眼', leftImg.width + 10, 22);
-  //
-  //       // 将合并图片转为URL
-  //       const mergedUrl = canvas.toDataURL('image/jpeg');
-  //       setMergedImageUrl(mergedUrl);
-  //     }
-  //   };
-  //
-  //   leftImg.onload = onImageLoad;
-  //   rightImg.onload = onImageLoad;
-  //
-  //   leftImg.src = URL.createObjectURL(leftEyeFile);
-  //   rightImg.src = URL.createObjectURL(rightEyeFile);
-  // };
 // 前端合并两张图片
   const createMergedImage = () => {
     if (!leftEyeFile || !rightEyeFile) return;
@@ -265,44 +217,7 @@ ${content}
     message.success('诊断报告已导出');
   };
 
-  // 模拟API-1调用 - 分析图片
-  // const callAPI1 = async (imageUrl: string): Promise<any> => {
-  //   return new Promise((resolve) => {
-  //     setTimeout(() => {
-  //       // 模拟随机生成不同的诊断结果
-  //       const conditions = ['Normal', 'Diabetes', 'Glaucoma', 'AMD', 'Hypertension', 'Myopia', 'Cataract'];
-  //       const severities = ['normal', 'mild', 'moderate', 'severe'];
-  //       const genders = ['Male', 'Female'];
-  //
-  //       const randomCondition = conditions[Math.floor(Math.random() * conditions.length)];
-  //       const leftSeverity = severities[Math.floor(Math.random() * severities.length)];
-  //       const rightSeverity = severities[Math.floor(Math.random() * severities.length)];
-  //       const age = Math.floor(Math.random() * 50) + 20; // 20-70岁
-  //       const gender = genders[Math.floor(Math.random() * genders.length)];
-  //
-  //       const result = {
-  //         "main_class": {
-  //           "label": randomCondition,
-  //           "confidence": parseFloat((0.7 + Math.random() * 0.29).toFixed(6))
-  //           "grade": 2
-  //         },
-  //         "left_eye": {
-  //           "severity": leftSeverity,
-  //           "confidence": parseFloat((0.7 + Math.random() * 0.29).toFixed(6))
-  //         },
-  //         "right_eye": {
-  //           "severity": rightSeverity,
-  //           "confidence": parseFloat((0.7 + Math.random() * 0.29).toFixed(6))
-  //         },
-  //         "age_prediction": age,
-  //         "gender_prediction": gender
-  //       };
-  //
-  //       resolve(result);
-  //     }, 2000);
-  //   });
-  // };
-// ... existing code ...
+
 // 模拟API-1调用 - 分析图片
   const callAPI1 = async (imageUrl: string): Promise<any> => {
     // 从当前合并的图片获取左右眼图片的base64数据
@@ -960,9 +875,50 @@ ${condition === 'Normal' ?
                                       <img
                                         src={msg.aiAnalysis.visualizations.left_eye.original}
                                         alt="左眼原始图"
-                                        style={{ width: '100%', borderRadius: 4, border: '1px solid #f0f0f0' }}
+                                        style={{ width: '100%', borderRadius: 4, border: '1px solid #f0f0f0', marginBottom: 8 }}
                                       />
                                     )}
+                                    {/* 添加左眼过滤视图 */}
+                                    {msg.aiAnalysis.visualizations.left_eye.filtered_views && (
+                                      <div>
+                                        <h5 style={{ marginBottom: 4 }}>左眼过滤视图</h5>
+                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                                          {Object.entries(msg.aiAnalysis.visualizations.left_eye.filtered_views).map(([key, value]) => (
+                                            <div key={`left-${key}`} style={{ width: 'calc(50% - 4px)' }}>
+                                              <div style={{ fontSize: '12px', color: '#666', marginBottom: 2 }}>{key}</div>
+                                              <img
+                                                src={value as string}
+                                                alt={`左眼${key}视图`}
+                                                style={{ width: '100%', borderRadius: 4, border: '1px solid #f0f0f0' }}
+                                              />
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+                                    {/* 添加左眼概率图和二值图 */}
+                                    <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+                                      {msg.aiAnalysis.visualizations.left_eye.probability_map && (
+                                        <div style={{ flex: 1 }}>
+                                          <div style={{ fontSize: '12px', color: '#666', marginBottom: 2 }}>概率图</div>
+                                          <img
+                                            src={msg.aiAnalysis.visualizations.left_eye.probability_map}
+                                            alt="左眼概率图"
+                                            style={{ width: '100%', borderRadius: 4, border: '1px solid #f0f0f0' }}
+                                          />
+                                        </div>
+                                      )}
+                                      {msg.aiAnalysis.visualizations.left_eye.binary_map && (
+                                        <div style={{ flex: 1 }}>
+                                          <div style={{ fontSize: '12px', color: '#666', marginBottom: 2 }}>二值图</div>
+                                          <img
+                                            src={msg.aiAnalysis.visualizations.left_eye.binary_map}
+                                            alt="左眼二值图"
+                                            style={{ width: '100%', borderRadius: 4, border: '1px solid #f0f0f0' }}
+                                          />
+                                        </div>
+                                      )}
+                                    </div>
                                   </div>
                                 )}
                                 {msg.aiAnalysis.visualizations.right_eye && (
@@ -972,12 +928,64 @@ ${condition === 'Normal' ?
                                       <img
                                         src={msg.aiAnalysis.visualizations.right_eye.original}
                                         alt="右眼原始图"
-                                        style={{ width: '100%', borderRadius: 4, border: '1px solid #f0f0f0' }}
+                                        style={{ width: '100%', borderRadius: 4, border: '1px solid #f0f0f0', marginBottom: 8 }}
                                       />
                                     )}
+                                    {/* 添加右眼过滤视图 */}
+                                    {msg.aiAnalysis.visualizations.right_eye.filtered_views && (
+                                      <div>
+                                        <h5 style={{ marginBottom: 4 }}>右眼过滤视图</h5>
+                                        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                                          {Object.entries(msg.aiAnalysis.visualizations.right_eye.filtered_views).map(([key, value]) => (
+                                            <div key={`right-${key}`} style={{ width: 'calc(50% - 4px)' }}>
+                                              <div style={{ fontSize: '12px', color: '#666', marginBottom: 2 }}>{key}</div>
+                                              <img
+                                                src={value as string}
+                                                alt={`右眼${key}视图`}
+                                                style={{ width: '100%', borderRadius: 4, border: '1px solid #f0f0f0' }}
+                                              />
+                                            </div>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+                                    {/* 添加右眼概率图和二值图 */}
+                                    <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+                                      {msg.aiAnalysis.visualizations.right_eye.probability_map && (
+                                        <div style={{ flex: 1 }}>
+                                          <div style={{ fontSize: '12px', color: '#666', marginBottom: 2 }}>概率图</div>
+                                          <img
+                                            src={msg.aiAnalysis.visualizations.right_eye.probability_map}
+                                            alt="右眼概率图"
+                                            style={{ width: '100%', borderRadius: 4, border: '1px solid #f0f0f0' }}
+                                          />
+                                        </div>
+                                      )}
+                                      {msg.aiAnalysis.visualizations.right_eye.binary_map && (
+                                        <div style={{ flex: 1 }}>
+                                          <div style={{ fontSize: '12px', color: '#666', marginBottom: 2 }}>二值图</div>
+                                          <img
+                                            src={msg.aiAnalysis.visualizations.right_eye.binary_map}
+                                            alt="右眼二值图"
+                                            style={{ width: '100%', borderRadius: 4, border: '1px solid #f0f0f0' }}
+                                          />
+                                        </div>
+                                      )}
+                                    </div>
                                   </div>
                                 )}
                               </div>
+                              {/* 添加特征重要性图 */}
+                              {msg.aiAnalysis.feature_importance?.image && (
+                                <div style={{ marginTop: 16 }}>
+                                  <h5 style={{ marginBottom: 4 }}>特征重要性分析</h5>
+                                  <img
+                                    src={msg.aiAnalysis.feature_importance.image}
+                                    alt="特征重要性图"
+                                    style={{ width: '100%', maxWidth: 400, borderRadius: 4, border: '1px solid #f0f0f0' }}
+                                  />
+                                </div>
+                              )}
                             </div>
                           )}
                         </div>
