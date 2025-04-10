@@ -26,7 +26,8 @@ const KEEP_HISTORY_KEY = 'local_oculi_keep_history_setting';
 const { Title, Text } = Typography;
 const { Header, Content, Sider } = Layout;
 const { TabPane } = Tabs;
-
+// 在现有导入之后添加
+import HistoryModal from '@/components/HistoryModal';
 const SelfDeployAIPage: React.FC = () => {
   // 基础状态
   const [messages, setMessages] = useState<any[]>([]);
@@ -42,6 +43,14 @@ const SelfDeployAIPage: React.FC = () => {
   // 在其他useState声明之后添加
   const prevMessagesRef = useRef(null);
   const prevLastMessageRef = useRef(null);
+  // 添加历史记录模态框状态
+  const [historyModalVisible, setHistoryModalVisible] = useState(false);
+// 处理加载历史记录
+  const handleLoadHistory = (historyMessages: any[]) => {
+    if (historyMessages && historyMessages.length > 0) {
+      setMessages(historyMessages);
+    }
+  };
 // 添加一个用于生成消息ID的函数
   const generateMessageId = () => {
     return uuidv4();
@@ -860,7 +869,7 @@ ${condition === 'Normal' ?
               <Button icon={<ExportOutlined />} onClick={exportReport}>导出报告</Button>
             </Tooltip>
             <Tooltip title="历史记录">
-              <Button icon={<HistoryOutlined />}>历史记录</Button>
+              <Button icon={<HistoryOutlined />} onClick={() => setHistoryModalVisible(true)}>历史记录</Button>
             </Tooltip>
             <Tooltip title="清除聊天">
               <Button icon={<ClearOutlined />} onClick={clearChatHistory}>清除聊天</Button>
@@ -1833,6 +1842,12 @@ ${condition === 'Normal' ?
           </Card>
         </Content>
       </Layout>
+      {/* 添加历史记录模态框 */}
+      <HistoryModal
+        visible={historyModalVisible}
+        onClose={() => setHistoryModalVisible(false)}
+        onLoadHistory={handleLoadHistory}
+      />
     </Layout>
 
 
