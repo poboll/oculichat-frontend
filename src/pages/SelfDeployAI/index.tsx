@@ -23,6 +23,9 @@ import { v4 as uuidv4 } from 'uuid';
 // 本地存储键名
 const CHAT_HISTORY_KEY = 'local_oculi_chat_history';
 const KEEP_HISTORY_KEY = 'local_oculi_keep_history_setting';
+// Add a new localStorage key for archived chats
+const ARCHIVED_CHAT_HISTORY_KEY = 'local_oculi_archived_chat_history';
+
 const { Title, Text } = Typography;
 const { Header, Content, Sider } = Layout;
 const { TabPane } = Tabs;
@@ -812,13 +815,38 @@ ${condition === 'Normal' ?
 
   // 清除聊天记录
   const clearChatHistory = () => {
-    setMessages([]);
     try {
+      // Get current chat history
+      const currentHistory = [...messages];
+
+      // Only archive if there are messages
+      if (currentHistory.length > 0) {
+        // Get existing archived chats (if any)
+        const archivedChats = JSON.parse(localStorage.getItem(ARCHIVED_CHAT_HISTORY_KEY) || '[]');
+
+        // Add current chat to archived chats with timestamp and identifier
+        archivedChats.push({
+          id: generateMessageId(),
+          messages: currentHistory,
+          archivedAt: moment().format('YYYY-MM-DD HH:mm:ss'),
+          hasAnalysis: currentHistory.some(m => m.aiAnalysis)
+        });
+
+        // Save updated archived chats
+        localStorage.setItem(ARCHIVED_CHAT_HISTORY_KEY, JSON.stringify(archivedChats));
+      }
+
+      // Clear current messages from UI
+      setMessages([]);
+
+      // Clear current chat from localStorage
       localStorage.removeItem(CHAT_HISTORY_KEY);
+
+      message.success('聊天记录已归档，可从历史记录中恢复');
     } catch (error) {
-      console.error('清除本地存储失败:', error);
+      console.error('归档聊天记录失败:', error);
+      message.error('清除本地存储失败');
     }
-    message.success('聊天记录已清除');
   };
 
 // 自动滚动到底部
