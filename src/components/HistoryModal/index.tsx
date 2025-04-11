@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, List, Card, Typography, Button, Divider, Empty, Tooltip, Tag, Space, message, Popconfirm, Tabs } from 'antd';
+import { Modal, List, Card, Typography, Button, Divider, Empty, Tooltip, Tag, Space, message, Popconfirm } from 'antd';
 import { EyeOutlined, DeleteOutlined, ReloadOutlined, ClockCircleOutlined, InboxOutlined, UndoOutlined } from '@ant-design/icons';
 import moment from 'moment';
 
 const { Text, Title } = Typography;
-const { TabPane } = Tabs;
 
 // Add these constants to match main component
 const CHAT_HISTORY_KEY = 'local_oculi_chat_history';
@@ -17,9 +16,8 @@ interface HistoryModalProps {
 }
 
 const HistoryModal: React.FC<HistoryModalProps> = ({ visible, onClose, onLoadHistory }) => {
-  const [activeHistoryGroups, setActiveHistoryGroups] = useState<any[]>([]);
-  const [archivedHistoryGroups, setArchivedHistoryGroups] = useState<any[]>([]);
-  const [activeTab, setActiveTab] = useState('active');
+  const [allHistoryGroups, setAllHistoryGroups] = useState<any[]>([]);
+  const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   // Load history when modal becomes visible
@@ -29,15 +27,21 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ visible, onClose, onLoadHis
     }
   }, [visible]);
 
-  // Load both active and archived history data
+  // Load both active and archived history data and combine them
   const loadHistoryData = () => {
     setLoading(true);
     try {
       // Load active history
-      loadActiveHistory();
+      const activeGroups = loadActiveHistory();
 
       // Load archived history
-      loadArchivedHistory();
+      const archivedGroups = loadArchivedHistory();
+
+      // Combine and sort by timestamp (newest first)
+      const combined = [...activeGroups, ...archivedGroups]
+        .sort((a, b) => moment(b.timestamp).valueOf() - moment(a.timestamp).valueOf());
+
+      setAllHistoryGroups(combined);
     } catch (error) {
       console.error('加载历史记录失败:', error);
       message.error('加载历史记录失败');
@@ -54,12 +58,14 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ visible, onClose, onLoadHis
       if (historyData) {
         const allMessages = JSON.parse(historyData);
         const groups = groupMessagesByConversation(allMessages);
-        setActiveHistoryGroups(groups);
-      } else {
-        setActiveHistoryGroups([]);
+        // Mark as active
+        groups.forEach(g => g.isArchived = false);
+        return groups;
       }
+      return [];
     } catch (error) {
       console.error('加载活动历史记录失败:', error);
+      return [];
     }
   };
 
@@ -70,16 +76,14 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ visible, onClose, onLoadHis
 
       if (archivedData) {
         const archivedChats = JSON.parse(archivedData);
-        // Sort by archive time (newest first)
-        archivedChats.sort((a: any, b: any) =>
-          moment(b.archivedAt).valueOf() - moment(a.archivedAt).valueOf()
-        );
-        setArchivedHistoryGroups(archivedChats);
-      } else {
-        setArchivedHistoryGroups([]);
+        // Mark as archived
+        archivedChats.forEach(g => g.isArchived = true);
+        return archivedChats;
       }
+      return [];
     } catch (error) {
       console.error('加载归档历史记录失败:', error);
+      return [];
     }
   };
 
@@ -91,7 +95,7 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ visible, onClose, onLoadHis
 
     messages.forEach((msg: any, index: number) => {
       // Use date as grouping basis
-      const msgDate = msg.timestamp.split(' ')[0];
+      const msgDate = msg.timestamp?.split(' ')[0] || '';
 
       // Create new group if new day or new image upload
       if (msgDate !== currentDate || (msg.sender === '用户' && (msg.leftEye || msg.rightEye))) {
@@ -122,27 +126,41 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ visible, onClose, onLoadHis
       }
     });
 
-    // Sort by time (newest first)
-    return groups.sort((a, b) => moment(b.timestamp).valueOf() - moment(a.timestamp).valueOf());
+    return groups;
   };
 
   // Load history to main interface
   const handleLoadHistory = (group: any) => {
     onLoadHistory(group.messages);
+    setSelectedGroupId(group.id);
     message.success('历史记录已加载');
-    onClose();
+    // Don't close the modal - allow user to switch between conversations
   };
 
   // Delete specific history record
-  const handleDeleteHistory = (groupId: string) => {
+  const handleDeleteHistory = (group: any) => {
     try {
-      const updatedGroups = activeHistoryGroups.filter(g => g.id !== groupId);
-      setActiveHistoryGroups(updatedGroups);
+      if (group.isArchived) {
+        // Delete from archived storage
+        const archivedData = localStorage.getItem(ARCHIVED_CHAT_HISTORY_KEY);
+        if (archivedData) {
+          const archivedGroups = JSON.parse(archivedData).filter((g: any) => g.id !== group.id);
+          localStorage.setItem(ARCHIVED_CHAT_HISTORY_KEY, JSON.stringify(archivedGroups));
+        }
+      } else {
+        // Delete from active storage
+        const activeData = localStorage.getItem(CHAT_HISTORY_KEY);
+        if (activeData) {
+          const activeMessages = JSON.parse(activeData);
+          const activeGroups = groupMessagesByConversation(activeMessages);
+          const updatedGroups = activeGroups.filter(g => g.id !== group.id);
+          const updatedMessages = updatedGroups.flatMap(g => g.messages);
+          localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(updatedMessages));
+        }
+      }
 
-      // Update localStorage
-      const allMessages = updatedGroups.flatMap(g => g.messages);
-      localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(allMessages));
-
+      // Update the combined list
+      setAllHistoryGroups(prev => prev.filter(g => g.id !== group.id));
       message.success('历史记录已删除');
     } catch (error) {
       console.error('删除历史记录失败:', error);
@@ -150,42 +168,48 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ visible, onClose, onLoadHis
     }
   };
 
-  // Restore archived history
-  const handleRestoreArchived = (archivedChat: any) => {
+  // Toggle between archive and active status
+  const handleToggleArchiveStatus = (group: any) => {
     try {
-      // Get current active history
-      const activeHistoryData = localStorage.getItem(CHAT_HISTORY_KEY);
-      const activeMessages = activeHistoryData ? JSON.parse(activeHistoryData) : [];
+      if (group.isArchived) {
+        // Restore from archive
+        const archivedData = localStorage.getItem(ARCHIVED_CHAT_HISTORY_KEY);
+        if (archivedData) {
+          const archivedGroups = JSON.parse(archivedData).filter((g: any) => g.id !== group.id);
+          localStorage.setItem(ARCHIVED_CHAT_HISTORY_KEY, JSON.stringify(archivedGroups));
+        }
 
-      // Add archived messages to active history
-      const updatedActiveMessages = [...activeMessages, ...archivedChat.messages];
-      localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(updatedActiveMessages));
+        // Add to active
+        const activeData = localStorage.getItem(CHAT_HISTORY_KEY);
+        const activeMessages = activeData ? JSON.parse(activeData) : [];
+        const updatedMessages = [...activeMessages, ...group.messages];
+        localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(updatedMessages));
+      } else {
+        // Archive from active
+        const activeData = localStorage.getItem(CHAT_HISTORY_KEY);
+        if (activeData) {
+          const activeMessages = JSON.parse(activeData);
+          const activeGroups = groupMessagesByConversation(activeMessages);
+          const updatedGroups = activeGroups.filter(g => g.id !== group.id);
+          const updatedMessages = updatedGroups.flatMap(g => g.messages);
+          localStorage.setItem(CHAT_HISTORY_KEY, JSON.stringify(updatedMessages));
+        }
 
-      // Remove from archived
-      const updatedArchivedChats = archivedHistoryGroups.filter(g => g.id !== archivedChat.id);
-      localStorage.setItem(ARCHIVED_CHAT_HISTORY_KEY, JSON.stringify(updatedArchivedChats));
+        // Add to archive
+        const archivedData = localStorage.getItem(ARCHIVED_CHAT_HISTORY_KEY);
+        const archivedGroups = archivedData ? JSON.parse(archivedData) : [];
+        const groupToArchive = {
+          ...group,
+          archivedAt: moment().format('YYYY-MM-DD HH:mm:ss')
+        };
+        localStorage.setItem(ARCHIVED_CHAT_HISTORY_KEY, JSON.stringify([...archivedGroups, groupToArchive]));
+      }
 
-      // Update state
-      setArchivedHistoryGroups(updatedArchivedChats);
-      loadActiveHistory();
-
-      message.success('归档记录已恢复');
+      // Update UI
+      loadHistoryData();
     } catch (error) {
-      console.error('恢复归档记录失败:', error);
-      message.error('恢复归档记录失败');
-    }
-  };
-
-  // Permanently delete archived history
-  const handleDeleteArchived = (archivedId: string) => {
-    try {
-      const updatedArchivedChats = archivedHistoryGroups.filter(g => g.id !== archivedId);
-      localStorage.setItem(ARCHIVED_CHAT_HISTORY_KEY, JSON.stringify(updatedArchivedChats));
-      setArchivedHistoryGroups(updatedArchivedChats);
-      message.success('归档记录已永久删除');
-    } catch (error) {
-      console.error('删除归档记录失败:', error);
-      message.error('删除归档记录失败');
+      console.error('切换归档状态失败:', error);
+      message.error('操作失败');
     }
   };
 
@@ -214,155 +238,12 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ visible, onClose, onLoadHis
     return null;
   };
 
-  // Render history card
-  const renderHistoryCard = (group: any, isArchived: boolean = false) => {
-    const summary = getDiagnosisSummary(group);
-    return (
-      <Card
-        style={{ width: '100%', borderRadius: 8, boxShadow: '0 1px 4px rgba(0,0,0,0.08)' }}
-        bodyStyle={{ padding: 16 }}
-      >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-          <div>
-            <Text strong style={{ fontSize: 15 }}>
-              {isArchived ?
-                `归档于: ${moment(group.archivedAt).format('YYYY年MM月DD日 HH:mm:ss')}` :
-                moment(group.timestamp).format('YYYY年MM月DD日 HH:mm:ss')}
-            </Text>
-            {group.hasAnalysis && summary && (
-              <Tag color="#315167FF" style={{ marginLeft: 12 }}>
-                {summary.diagnosis}
-                {summary.grade && ` ${summary.grade}级`}
-              </Tag>
-            )}
-          </div>
-          <Space>
-            {isArchived ? (
-              <>
-                <Tooltip title="恢复此记录">
-                  <Button
-                    type="primary"
-                    icon={<UndoOutlined />}
-                    onClick={() => handleRestoreArchived(group)}
-                    style={{ background: '#315167FF', borderColor: '#315167FF' }}
-                  >
-                    恢复
-                  </Button>
-                </Tooltip>
-                <Popconfirm
-                  title="确定要永久删除该记录吗？此操作不可撤销。"
-                  onConfirm={() => handleDeleteArchived(group.id)}
-                  okText="确定"
-                  cancelText="取消"
-                >
-                  <Button danger icon={<DeleteOutlined />}>永久删除</Button>
-                </Popconfirm>
-              </>
-            ) : (
-              <>
-                <Tooltip title="加载此记录">
-                  <Button
-                    type="primary"
-                    icon={<ReloadOutlined />}
-                    onClick={() => handleLoadHistory(group)}
-                    style={{ background: '#315167FF', borderColor: '#315167FF' }}
-                  >
-                    加载
-                  </Button>
-                </Tooltip>
-                <Popconfirm
-                  title="确定要删除该记录吗？"
-                  onConfirm={() => handleDeleteHistory(group.id)}
-                  okText="确定"
-                  cancelText="取消"
-                >
-                  <Button danger icon={<DeleteOutlined />}>删除</Button>
-                </Popconfirm>
-              </>
-            )}
-          </Space>
-        </div>
-
-        {group.hasAnalysis && summary && (
-          <div style={{
-            background: '#f8f9fa',
-            borderRadius: 6,
-            padding: '10px 12px',
-            marginBottom: 12
-          }}>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
-              <div>
-                <Text type="secondary" style={{ fontSize: 13 }}>诊断结果:</Text>
-                <div style={{ fontWeight: 'bold', color: '#315167FF' }}>
-                  {summary.diagnosis}
-                  {summary.grade && ` (${summary.grade}级)`}
-                </div>
-                <div style={{ fontSize: 12, color: '#888' }}>
-                  置信度: {(summary.confidence * 100).toFixed(1)}%
-                </div>
-              </div>
-
-              <Divider type="vertical" style={{ height: 40, margin: '0 4px' }} />
-
-              <div>
-                <Text type="secondary" style={{ fontSize: 13 }}>左眼状态:</Text>
-                <div style={{
-                  fontWeight: 'bold',
-                  color: summary.left_eye === 'normal' ? '#52c41a' :
-                    summary.left_eye === 'mild' ? '#1890ff' :
-                      summary.left_eye === 'moderate' ? '#fa8c16' : '#f5222d'
-                }}>
-                  {summary.left_eye === 'normal' ? '正常' :
-                    summary.left_eye === 'mild' ? '轻度异常' :
-                      summary.left_eye === 'moderate' ? '中度异常' : '重度异常'}
-                </div>
-              </div>
-
-              <Divider type="vertical" style={{ height: 40, margin: '0 4px' }} />
-
-              <div>
-                <Text type="secondary" style={{ fontSize: 13 }}>右眼状态:</Text>
-                <div style={{
-                  fontWeight: 'bold',
-                  color: summary.right_eye === 'normal' ? '#52c41a' :
-                    summary.right_eye === 'mild' ? '#1890ff' :
-                      summary.right_eye === 'moderate' ? '#fa8c16' : '#f5222d'
-                }}>
-                  {summary.right_eye === 'normal' ? '正常' :
-                    summary.right_eye === 'mild' ? '轻度异常' :
-                      summary.right_eye === 'moderate' ? '中度异常' : '重度异常'}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <Text type="secondary">
-            {(group.messages?.length || 0)} 条消息
-            {group.hasAnalysis ? "（包含AI分析结果）" : "（无分析结果）"}
-          </Text>
-          <Tooltip title="查看详细内容">
-            <Button
-              type="link"
-              icon={<EyeOutlined />}
-              style={{ color: '#315167FF' }}
-              onClick={() => handleLoadHistory(group)}
-            >
-              查看详情
-            </Button>
-          </Tooltip>
-        </div>
-      </Card>
-    );
-  };
-
   return (
     <Modal
       title={
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <ClockCircleOutlined style={{ marginRight: 10, color: '#315167FF' }} />
-          <span>历史诊断记录</span>
+          <span>历史记录</span>
         </div>
       }
       open={visible}
@@ -372,61 +253,159 @@ const HistoryModal: React.FC<HistoryModalProps> = ({ visible, onClose, onLoadHis
       style={{ top: 20 }}
       bodyStyle={{ maxHeight: 'calc(100vh - 200px)', overflowY: 'auto', padding: '12px 24px' }}
     >
-      <Tabs
-        activeKey={activeTab}
-        onChange={setActiveTab}
-        type="card"
-        items={[
-          {
-            key: 'active',
-            label: (
-              <span>
-                <ClockCircleOutlined /> 活动记录
-              </span>
-            ),
-            children: activeHistoryGroups.length > 0 ? (
-              <List
-                dataSource={activeHistoryGroups}
-                renderItem={(group) => (
-                  <List.Item>
-                    {renderHistoryCard(group)}
-                  </List.Item>
-                )}
-              />
-            ) : (
-              <Empty
-                description="暂无活动历史记录"
-                image={Empty.PRESENTED_IMAGE_SIMPLE}
-                style={{ margin: '40px 0' }}
-              />
-            )
-          },
-          {
-            key: 'archived',
-            label: (
-              <span>
-                <InboxOutlined /> 归档记录 {archivedHistoryGroups.length > 0 && `(${archivedHistoryGroups.length})`}
-              </span>
-            ),
-            children: archivedHistoryGroups.length > 0 ? (
-              <List
-                dataSource={archivedHistoryGroups}
-                renderItem={(group) => (
-                  <List.Item>
-                    {renderHistoryCard(group, true)}
-                  </List.Item>
-                )}
-              />
-            ) : (
-              <Empty
-                description="暂无归档历史记录"
-                image={Empty.PRESENTED_IMAGE_SIMPLE}
-                style={{ margin: '40px 0' }}
-              />
-            )
-          }
-        ]}
-      />
+      <div style={{ display: 'flex', marginBottom: 16 }}>
+        <div style={{ marginRight: 12 }}>
+          <Tag color="#1890ff">活动</Tag>
+          <Tag color="#722ed1">归档</Tag>
+        </div>
+        <Text type="secondary">选择一个对话即可加载，可随时切换不同对话</Text>
+      </div>
+
+      {allHistoryGroups.length > 0 ? (
+        <List
+          dataSource={allHistoryGroups}
+          renderItem={(group) => {
+            const summary = getDiagnosisSummary(group);
+            const isSelected = selectedGroupId === group.id;
+
+            return (
+              <List.Item>
+                <Card
+                  style={{
+                    width: '100%',
+                    borderRadius: 8,
+                    boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
+                    borderLeft: isSelected ? '4px solid #315167FF' : 'none',
+                    background: isSelected ? '#f8fAff' : 'white'
+                  }}
+                  bodyStyle={{ padding: 16 }}
+                  onClick={() => handleLoadHistory(group)}
+                  hoverable
+                >
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
+                    <div>
+                      <Tag color={group.isArchived ? '#722ed1' : '#1890ff'} style={{ marginRight: 8 }}>
+                        {group.isArchived ? '归档' : '活动'}
+                      </Tag>
+                      <Text strong style={{ fontSize: 15 }}>
+                        {moment(group.timestamp).format('YYYY年MM月DD日 HH:mm')}
+                      </Text>
+                      {group.hasAnalysis && summary && (
+                        <Tag color="#315167FF" style={{ marginLeft: 12 }}>
+                          {summary.diagnosis}
+                          {summary.grade && ` ${summary.grade}级`}
+                        </Tag>
+                      )}
+                    </div>
+                    <Space>
+                      <Tooltip title={group.isArchived ? "恢复到活动记录" : "归档此记录"}>
+                        <Button
+                          type="text"
+                          icon={group.isArchived ? <UndoOutlined /> : <InboxOutlined />}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleToggleArchiveStatus(group);
+                          }}
+                        />
+                      </Tooltip>
+                      <Popconfirm
+                        title="确定要删除该记录吗？"
+                        onConfirm={(e) => {
+                          e?.stopPropagation();
+                          handleDeleteHistory(group);
+                        }}
+                        onCancel={(e) => e?.stopPropagation()}
+                        okText="确定"
+                        cancelText="取消"
+                      >
+                        <Button
+                          danger
+                          type="text"
+                          icon={<DeleteOutlined />}
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      </Popconfirm>
+                    </Space>
+                  </div>
+
+                  {group.hasAnalysis && summary && (
+                    <div style={{
+                      background: '#f8f9fa',
+                      borderRadius: 6,
+                      padding: '10px 12px',
+                      marginBottom: 12
+                    }}>
+                      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px' }}>
+                        <div>
+                          <Text type="secondary" style={{ fontSize: 13 }}>诊断结果:</Text>
+                          <div style={{ fontWeight: 'bold', color: '#315167FF' }}>
+                            {summary.diagnosis}
+                            {summary.grade && ` (${summary.grade}级)`}
+                          </div>
+                          <div style={{ fontSize: 12, color: '#888' }}>
+                            置信度: {(summary.confidence * 100).toFixed(1)}%
+                          </div>
+                        </div>
+
+                        <Divider type="vertical" style={{ height: 40, margin: '0 4px' }} />
+
+                        <div>
+                          <Text type="secondary" style={{ fontSize: 13 }}>左眼状态:</Text>
+                          <div style={{
+                            fontWeight: 'bold',
+                            color: summary.left_eye === 'normal' ? '#52c41a' :
+                              summary.left_eye === 'mild' ? '#1890ff' :
+                                summary.left_eye === 'moderate' ? '#fa8c16' : '#f5222d'
+                          }}>
+                            {summary.left_eye === 'normal' ? '正常' :
+                              summary.left_eye === 'mild' ? '轻度异常' :
+                                summary.left_eye === 'moderate' ? '中度异常' : '重度异常'}
+                          </div>
+                        </div>
+
+                        <Divider type="vertical" style={{ height: 40, margin: '0 4px' }} />
+
+                        <div>
+                          <Text type="secondary" style={{ fontSize: 13 }}>右眼状态:</Text>
+                          <div style={{
+                            fontWeight: 'bold',
+                            color: summary.right_eye === 'normal' ? '#52c41a' :
+                              summary.right_eye === 'mild' ? '#1890ff' :
+                                summary.right_eye === 'moderate' ? '#fa8c16' : '#f5222d'
+                          }}>
+                            {summary.right_eye === 'normal' ? '正常' :
+                              summary.right_eye === 'mild' ? '轻度异常' :
+                                summary.right_eye === 'moderate' ? '中度异常' : '重度异常'}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <Text type="secondary">
+                      {(group.messages?.length || 0)} 条消息
+                      {group.hasAnalysis ? "（包含AI分析结果）" : "（无分析结果）"}
+                    </Text>
+
+                    {isSelected && (
+                      <Tag color="#315167FF" style={{ marginLeft: 'auto' }}>
+                        已加载
+                      </Tag>
+                    )}
+                  </div>
+                </Card>
+              </List.Item>
+            );
+          }}
+        />
+      ) : (
+        <Empty
+          description="暂无历史记录"
+          image={Empty.PRESENTED_IMAGE_SIMPLE}
+          style={{ margin: '40px 0' }}
+        />
+      )}
     </Modal>
   );
 };
