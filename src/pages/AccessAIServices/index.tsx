@@ -1,15 +1,50 @@
-import React, { useState, useEffect } from 'react';
-import { Card, message, Typography, Layout, Button, Switch, Space, Tooltip, Spin, Avatar } from 'antd';
-import { RobotOutlined, UserOutlined, ClearOutlined, QuestionCircleOutlined, ExportOutlined } from '@ant-design/icons';
+import React, { useState, useEffect, useRef } from 'react';
+import { Card, message, Typography, Layout, Button, Switch, Space, Tooltip, Spin, Avatar, Divider, Row, Col, Tag } from 'antd';
+import { RobotOutlined, UserOutlined, ClearOutlined, QuestionCircleOutlined, ExportOutlined,
+  MedicineBoxOutlined, BulbOutlined, HeartOutlined, SafetyOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import ChatBox from '@/components/ChatBox';
 
-const { Title, Text } = Typography;
+const { Title, Text, Paragraph } = Typography;
 const { Header, Content } = Layout;
 
 // 本地存储键名
 const CHAT_HISTORY_KEY = 'oculi_chat_history';
 const KEEP_HISTORY_KEY = 'oculi_keep_history_setting';
+
+// 常见问题预设
+const COMMON_QUESTIONS = [
+  "什么是糖尿病视网膜病变？",
+  "眼底检查怎么做？有什么作用？",
+  "高度近视的患者需要注意什么？",
+  "青光眼的早期症状有哪些？",
+  "眼底出血应该如何治疗？",
+  "如何预防视网膜脱离？"
+];
+
+// 平台功能列表
+const PLATFORM_FEATURES = [
+  {
+    title: "智能问诊",
+    icon: <RobotOutlined style={{ fontSize: 24, color: '#1890ff' }} />,
+    description: "基于先进AI医疗大模型，为您提供准确的眼科问题咨询服务"
+  },
+  {
+    title: "眼底分析",
+    icon: <BulbOutlined style={{ fontSize: 24, color: '#52c41a' }} />,
+    description: "上传眼底照片，AI自动识别眼底病变，辅助医生进行精准诊断"
+  },
+  {
+    title: "健康管理",
+    icon: <HeartOutlined style={{ fontSize: 24, color: '#fa8c16' }} />,
+    description: "提供眼健康长期追踪管理，定期提醒复查，维护眼部健康"
+  },
+  {
+    title: "专家连线",
+    icon: <MedicineBoxOutlined style={{ fontSize: 24, color: '#722ed1' }} />,
+    description: "连接全国眼科名医资源，提供线上咨询服务和诊疗建议"
+  }
+];
 
 /**
  * 智能AI问诊对话组件
@@ -22,6 +57,8 @@ const SelfDeployAIPage: React.FC = () => {
   const [loading, setLoading] = useState(false);
   // 是否保留历史上下文
   const [keepHistory, setKeepHistory] = useState(true);
+  // 聊天容器引用
+  const chatContainerRef = useRef<HTMLDivElement>(null);
 
   // 从本地存储加载历史记录和设置
   useEffect(() => {
@@ -77,7 +114,7 @@ const SelfDeployAIPage: React.FC = () => {
       // 调用AI接口获取响应
       const response = await getAIResponse(userInput);
       // 添加AI响应到历史记录
-      setMessages((prev) => [...prev, { sender: 'AI', content: response, timestamp }]);
+      setMessages((prev) => [...prev, { sender: 'AI', content: response, timestamp: moment().format('YYYY-MM-DD HH:mm:ss') }]);
     } catch (error) {
       // 错误处理
       message.error('获取AI响应时出错');
@@ -182,17 +219,134 @@ const SelfDeployAIPage: React.FC = () => {
   };
 
   /**
+   * 渲染欢迎介绍页面
+   * 当没有消息时显示的详细介绍和功能说明
+   */
+  const renderWelcomePage = () => {
+    return (
+      <div style={{ padding: '20px 10px' }}>
+        <div style={{ textAlign: 'center', marginBottom: 30 }}>
+          <Title level={2} style={{ color: '#1890ff' }}>
+            欢迎使用智能眼科咨询平台
+          </Title>
+          <Paragraph style={{ fontSize: 16 }}>
+            基于先进医疗大模型技术，为您提供专业的眼科咨询和眼底诊断服务
+          </Paragraph>
+        </div>
+
+        <Divider orientation="left">
+          <Space>
+            <MedicineBoxOutlined />
+            <span>平台特色</span>
+          </Space>
+        </Divider>
+
+        <Row gutter={[24, 24]} style={{ marginBottom: 30 }}>
+          {PLATFORM_FEATURES.map((feature, index) => (
+            <Col xs={24} sm={12} md={12} lg={12} xl={6} key={index}>
+              <Card hoverable style={{ height: '100%', textAlign: 'center' }}>
+                <div style={{ marginBottom: 16 }}>
+                  {feature.icon}
+                </div>
+                <Title level={4}>{feature.title}</Title>
+                <Paragraph style={{ color: '#666' }}>{feature.description}</Paragraph>
+              </Card>
+            </Col>
+          ))}
+        </Row>
+
+        <Divider orientation="left">
+          <Space>
+            <SafetyOutlined />
+            <span>平台优势</span>
+          </Space>
+        </Divider>
+
+        <Row style={{ marginBottom: 30 }}>
+          <Col span={24}>
+            <Card>
+              <ul style={{ paddingLeft: 20 }}>
+                <li style={{ marginBottom: 12 }}>
+                  <Text strong>专业知识库</Text> - 基于眼科专业文献和临床指南构建的医学知识库，提供准确、权威的咨询服务
+                </li>
+                <li style={{ marginBottom: 12 }}>
+                  <Text strong>智能对话</Text> - 理解自然语言，支持连续对话，让您的咨询体验更加流畅自然
+                </li>
+                <li style={{ marginBottom: 12 }}>
+                  <Text strong>隐私保护</Text> - 对话内容本地存储，保护您的个人隐私和医疗信息安全
+                </li>
+                <li style={{ marginBottom: 12 }}>
+                  <Text strong>持续更新</Text> - 系统定期更新医学知识库，保持医疗信息的时效性和准确性
+                </li>
+              </ul>
+            </Card>
+          </Col>
+        </Row>
+
+        <Divider orientation="left">
+          <Space>
+            <BulbOutlined />
+            <span>常见问题示例</span>
+          </Space>
+        </Divider>
+
+        <Card style={{ marginBottom: 30 }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
+            {COMMON_QUESTIONS.map((question, index) => (
+              <Tag
+                key={index}
+                color="#1890ff"
+                style={{ cursor: 'pointer', padding: '6px 10px', fontSize: 14 }}
+                onClick={() => handleSendMessage(question)}
+              >
+                {question}
+              </Tag>
+            ))}
+          </div>
+        </Card>
+
+        <div style={{ textAlign: 'center', marginTop: 20 }}>
+          <Button
+            type="primary"
+            size="large"
+            onClick={() => handleSendMessage("您好，我想了解一下这个智能眼科咨询平台能提供哪些服务？")}
+          >
+            开始咨询
+          </Button>
+        </div>
+      </div>
+    );
+  };
+
+  /**
    * 当消息列表更新时，自动滚动到底部
    */
   useEffect(() => {
-    const chatContainer = document.getElementById('chat-container');
-    if (chatContainer) {
-      chatContainer.scrollTop = chatContainer.scrollHeight;
+    if (chatContainerRef.current) {
+      chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
     }
   }, [messages]);
 
   return (
     <Layout style={{ height: '100vh', overflow: 'hidden', background: '#f0f2f5' }}>
+      {/* 添加头部标题栏 */}
+      <Header style={{
+        background: '#fff',
+        padding: '0 24px',
+        boxShadow: '0 1px 4px rgba(0,0,0,0.1)',
+        display: 'flex',
+        alignItems: 'center'
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <MedicineBoxOutlined style={{ fontSize: 24, color: '#1890ff', marginRight: 10 }} />
+          <Title level={3} style={{ margin: 0 }}>智能眼科咨询平台</Title>
+        </div>
+        <Space style={{ marginLeft: 'auto' }}>
+          <Button icon={<ExportOutlined />}>导出对话</Button>
+          <Button type="primary" icon={<QuestionCircleOutlined />}>使用帮助</Button>
+        </Space>
+      </Header>
+
       <Layout style={{ background: '#fff' }}>
         <Content style={{ padding: '20px', display: 'flex', flexDirection: 'column', background: '#f0f2f5' }}>
           {/* 聊天卡片容器 */}
@@ -217,6 +371,7 @@ const SelfDeployAIPage: React.FC = () => {
           >
             {/* 聊天消息容器 */}
             <div
+              ref={chatContainerRef}
               id="chat-container"
               style={{
                 flex: 1,
@@ -269,6 +424,9 @@ const SelfDeployAIPage: React.FC = () => {
                               .replace(/\n/g, '<br>')
                               .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                               .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                              .replace(/#{2} (.*?)(<br>|$)/g, '<h3 style="color:#1890ff;margin:10px 0">$1</h3>')
+                              .replace(/#{1} (.*?)(<br>|$)/g, '<h2 style="color:#1890ff;margin:12px 0">$1</h2>')
+                              .replace(/- (.*?)(<br>|$)/g, '<li style="margin-left:20px">$1</li>')
                           }}
                         />
                       ) : (
@@ -283,10 +441,8 @@ const SelfDeployAIPage: React.FC = () => {
                   </div>
                 ))
               ) : (
-                // 无消息时显示提示
-                <div style={{ textAlign: 'center', padding: '20px' }}>
-                  <Text type="secondary">请开始与AI对话，询问智能问诊相关问题。</Text>
-                </div>
+                // 无消息时显示详细介绍页面
+                renderWelcomePage()
               )}
 
               {/* 加载状态指示器 */}
@@ -327,7 +483,10 @@ const SelfDeployAIPage: React.FC = () => {
             </div>
 
             {/* 输入框组件 */}
-            <ChatBox onSendMessage={handleSendMessage} />
+            <ChatBox
+              onSendMessage={handleSendMessage}
+              placeholder="请输入您的眼科问题，AI助手将为您解答..."
+            />
           </Card>
         </Content>
       </Layout>
