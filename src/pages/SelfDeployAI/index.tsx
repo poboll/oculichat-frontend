@@ -11,7 +11,8 @@ import {
   MergeCellsOutlined,
   EyeOutlined,
   LoadingOutlined,
-  FileExcelOutlined
+  FileExcelOutlined,
+  DownloadOutlined
 } from '@ant-design/icons';
 import moment from 'moment';
 import FileUpload from '@/components/FileUpload';
@@ -1215,7 +1216,17 @@ ${condition === 'Normal' ?
     prevLastMessageRef.current = messages.length > 0 ? {...messages[messages.length - 1]} : null;
   }, [messages]);
 
-
+  // 处理测试数据下载
+  const handleDownloadTestData = () => {
+    // 这里可以改为后端接口地址或者静态资源地址
+    // 假设放在public目录或者其他CDN路径
+    const link = document.createElement('a');
+    link.href = '/test_data.zip';  // 修改为实际的zip包路径
+    link.download = 'test_data.zip';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   return (
     <Layout style={{ height: '100vh', overflow: 'hidden', background: '#f5f7fa' }}>
@@ -1381,26 +1392,143 @@ ${condition === 'Normal' ?
               <BatchAnalysisUpload onBatchComplete={handleBatchComplete} />
             </TabPane>
             <TabPane tab="医学百科" key="wiki">
-              <Card style={{ boxShadow: '0 1px 4px rgba(0,0,0,0.05)', borderRadius: '8px', height: '100%' }}>
+              <Card
+                  style={{
+                    boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
+                    borderRadius: '8px',
+                    height: '100%',
+                    padding: '16px'
+                  }}
+              >
                 <div style={{ height: 'calc(100vh - 220px)', overflowY: 'auto' }}>
-                  <Title level={4}>常见眼底疾病</Title>
-                  <ul>
-                    <li><Text strong>糖尿病视网膜病变</Text> - 由糖尿病引起的视网膜血管损伤</li>
-                    <li><Text strong>年龄相关性黄斑变性</Text> - 影响中心视力的退行性疾病</li>
-                    <li><Text strong>青光眼</Text> - 视神经损伤，通常与眼压升高有关</li>
-                    <li><Text strong>视网膜静脉阻塞</Text> - 视网膜静脉血液流动受阻</li>
-                    <li><Text strong>视网膜色素变性</Text> - 影响周边视力的遗传性疾病</li>
+                  <Title level={3} style={{ color: '#315167FF', marginBottom: '10px' }}>
+                    常见眼底疾病科普
+                  </Title>
+                  <Text style={{ display: 'block', marginBottom: '16px', lineHeight: 1.6 }}>
+                    下列疾病在眼底检查中较为常见，了解它们的基础知识可以帮助您更好地理解诊断结果。不过，
+                    <Text strong>本文内容仅作参考</Text>，若有任何疑问，请咨询专业的眼科医生。
+                  </Text>
+                  <Divider />
+                  <Title level={4} style={{ marginTop: '20px' }}>
+                    <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 1024 1024"
+                        fill="#315167"
+                        style={{ marginRight: '8px', verticalAlign: 'middle' }}
+                    >
+                      <path d="M512 64c247 0 448 201 448 448s-201 448-448 448S64 759 64 512 265 64 512 64zm0 832c212.077 0 384-171.923 384-384S724.077 128 512 128 128 299.923 128 512s171.923 384 384 384z"/>
+                      <path d="M464 336h96v352h-96zM464 656h96v96h-96z"/>
+                    </svg>
+                    常见眼底疾病
+                  </Title>
+                  <ul style={{ paddingLeft: '24px', marginTop: '10px' }}>
+                    <li style={{ marginBottom: '8px' }}>
+                      <Text strong>糖尿病视网膜病变 (DR)</Text>
+                      <br/>
+                      <Text type="secondary">由糖尿病引起的视网膜血管损伤，可出现微血管瘤、出血点、渗出等病变。</Text>
+                    </li>
+                    <li style={{ marginBottom: '8px' }}>
+                      <Text strong>年龄相关性黄斑变性 (AMD)</Text>
+                      <br/>
+                      <Text type="secondary">影响中心视力的退行性疾病，多见于老年人，分干性和湿性两种。</Text>
+                    </li>
+                    <li style={{ marginBottom: '8px' }}>
+                      <Text strong>青光眼</Text>
+                      <br/>
+                      <Text type="secondary">通常与眼压升高有关，表现为视神经损伤和视野缺损，严重时可导致失明。</Text>
+                    </li>
+                    <li style={{ marginBottom: '8px' }}>
+                      <Text strong>视网膜静脉阻塞</Text>
+                      <br/>
+                      <Text type="secondary">血栓或其他原因导致视网膜静脉血流受阻，导致视力下降、出血、水肿等症状。</Text>
+                    </li>
+                    <li style={{ marginBottom: '8px' }}>
+                      <Text strong>视网膜色素变性 (RP)</Text>
+                      <br/>
+                      <Text type="secondary">通常为遗传性疾病，影响周边视力，夜视能力下降，可能逐渐发展到中心视力。</Text>
+                    </li>
+                  </ul>
+
+                  <Divider />
+
+                  <Title level={4} style={{ marginTop: '20px' }}>
+                    <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 1024 1024"
+                        fill="#315167"
+                        style={{ marginRight: '8px', verticalAlign: 'middle' }}
+                    >
+                      <path d="M928 444h-52.9C859 242.7 689.5 96 487 96c-13.2 0-24 10.8-24 24v376l-120 120c-9.4 9.4-9.4 24.6 0 34l240 240c9.4 9.4 24.6 9.4 34 0l240-240c9.4-9.4 9.4-24.6 0-34L728 496V176c0-13.2-10.8-24-24-24-202.5 0-372 146.7-388.1 348H96c-17.7 0-32 14.3-32 32 0 9.6 4.3 19.6 11.7 26.3l360 280.5c8.9 6.9 21.8 5.9 29-2.2l74.5-82.7c3.8-4.2 9.4-6.8 15.2-6.8h106.2c5.8 0 11.3 2.6 15.2 6.8l74.5 82.7c7.2 8.1 20.1 9 29 2.2l360-280.5c7.4-6.7 11.7-16.7 11.7-26.3.2-17.6-14.1-32-31.8-32z"/>
+                    </svg>
+                    眼底检查术语解释
+                  </Title>
+                  <ul style={{ paddingLeft: '24px', marginTop: '10px' }}>
+                    <li style={{ marginBottom: '8px' }}>
+                      <Text strong>视盘 (Optic Disc)</Text>
+                      <br/>
+                      <Text type="secondary">视神经纤维聚集之处，形态和颜色改变可能提示青光眼等疾病。</Text>
+                    </li>
+                    <li style={{ marginBottom: '8px' }}>
+                      <Text strong>黄斑 (Macula)</Text>
+                      <br/>
+                      <Text type="secondary">负责中心视力，黄斑病变可显著影响阅读和精细视力。</Text>
+                    </li>
+                    <li style={{ marginBottom: '8px' }}>
+                      <Text strong>视网膜血管 (Retinal Vessels)</Text>
+                      <br/>
+                      <Text type="secondary">供给视网膜营养和氧气，血管形态异常可能提示糖尿病、高血压等病变。</Text>
+                    </li>
+                    <li style={{ marginBottom: '8px' }}>
+                      <Text strong>出血点 (Hemorrhage)</Text>
+                      <br/>
+                      <Text type="secondary">视网膜表面或深层出血，常见于糖尿病、高血压及其他血管异常。</Text>
+                    </li>
+                    <li style={{ marginBottom: '8px' }}>
+                      <Text strong>渗出物 (Exudates)</Text>
+                      <br/>
+                      <Text type="secondary">血管渗漏导致的脂质或蛋白质沉积，常伴随糖尿病视网膜病变。</Text>
+                    </li>
                   </ul>
                   <Divider />
-                  <Title level={4}>眼底检查术语解释</Title>
-                  <ul>
-                    <li><Text strong>视盘</Text> - 视神经纤维汇集的地方</li>
-                    <li><Text strong>黄斑</Text> - 负责中心视力的区域</li>
-                    <li><Text strong>视网膜血管</Text> - 为视网膜提供血液供应的血管</li>
-                    <li><Text strong>出血点</Text> - 视网膜上的小出血区域</li>
-                    <li><Text strong>渗出物</Text> - 由血管渗漏引起的沉积物</li>
-                  </ul>
+                  <Text type="secondary" style={{ fontSize: '12px' }}>
+                    以上信息仅供参考，如有任何疑问，请咨询专业眼科医生。
+                  </Text>
                 </div>
+              </Card>
+            </TabPane>
+
+            {/* 新增：测试数据下载 Tab */}
+            <TabPane
+                tab={
+                  <span>
+                  <DownloadOutlined />
+                  测试数据下载
+                </span>
+                }
+                key="download"
+            >
+              <Card
+                  style={{
+                    boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
+                    borderRadius: '8px',
+                    padding: '16px'
+                  }}
+              >
+                <Title level={4} style={{ marginBottom: '16px', color: '#315167FF' }}>
+                  测试数据集下载
+                </Title>
+                <Text style={{ display: 'block', marginBottom: '16px' }}>
+                  这里提供了一份测试数据集（ZIP压缩包），包含若干示例眼底图像及其对应的标注文件，可用于离线测试或模型调试。
+                </Text>
+                <Button
+                    type="primary"
+                    icon={<DownloadOutlined />}
+                    onClick={handleDownloadTestData}
+                >
+                  下载测试数据包
+                </Button>
               </Card>
             </TabPane>
           </Tabs>
