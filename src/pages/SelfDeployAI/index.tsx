@@ -1,4 +1,4 @@
-
+import marked from 'marked';
 import React, { useState, useEffect, useRef } from 'react';
 import { Card, message, Typography, Layout, Avatar, Empty, Divider, Spin, Button, Tabs, Space, Tooltip, Switch } from 'antd';
 import {
@@ -172,7 +172,11 @@ const SelfDeployAIPage: React.FC = () => {
       message.error('上传合并图片到服务器失败，但不影响本地使用');
     }
   };
+
+
   // 导出诊断报告
+
+
   const exportReport = () => {
     if (messages.length === 0) {
       message.info('暂无诊断结果可导出');
@@ -180,16 +184,353 @@ const SelfDeployAIPage: React.FC = () => {
     }
 
     // 找最近的一次分析结果
-    let reportContent = '';
     let hasAnalysis = false;
+    let analysis = null;
+    let content = '';
 
     for (let i = messages.length - 1; i >= 0; i--) {
       if (messages[i].aiAnalysis) {
-        // 找到了分析结果
-        const analysis = messages[i].aiAnalysis;
-        const content = messages[i].content;
+        hasAnalysis = true;
+        analysis = messages[i].aiAnalysis;
+        content = messages[i].content;
+        break;
+      }
+    }
 
-        reportContent = `
+    if (!hasAnalysis) {
+      message.info('暂无分析结果可导出');
+      return;
+    }
+
+    // 显示加载提示
+    message.loading({ content: '正在准备报告...', key: 'pdfExport' });
+
+    // 首先尝试使用打印PDF方式
+    const printPDF = () => {
+      // 创建打印窗口内容
+      const printWindow = window.open('', '_blank');
+      if (!printWindow) {
+        message.error({ content: '无法创建打印窗口，请检查浏览器设置', key: 'pdfExport' });
+        fallbackToText();
+        return;
+      }
+
+      // 获取合适的诊断名称
+      const getDiagnosisName = (label) => {
+        return label === 'Normal' ? '正常眼底' :
+          label === 'Diabetes' ? '糖尿病视网膜病变' :
+            label === 'Glaucoma' ? '青光眼' :
+              label === 'Cataract' ? '白内障' :
+                label === 'AMD' ? '年龄相关性黄斑变性' :
+                  label === 'Hypertension' ? '高血压性视网膜病变' :
+                    label === 'Myopia' ? '高度近视' : label;
+      };
+
+      // 获取眼睛状态描述
+      const getEyeStatusName = (severity) => {
+        return severity === 'normal' ? '正常' :
+          severity === 'mild' ? '轻度异常' :
+            severity === 'moderate' ? '中度异常' : '重度异常';
+      };
+
+      // 构建HTML内容
+      const printContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>眼底诊断报告_${moment().format('YYYYMMDD_HHmmss')}</title>
+        <meta charset="utf-8">
+        <style>
+          body {
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+          }
+          .page {
+            page-break-after: always;
+            position: relative;
+          }
+          .page:last-child {
+            page-break-after: avoid;
+          }
+          .header {
+            text-align: center;
+            margin-bottom: 20px;
+          }
+          .header h1 {
+            color: #315167;
+            margin-bottom: 5px;
+          }
+          .header p {
+            color: #666;
+            margin-top: 5px;
+          }
+          .section {
+            margin-bottom: 20px;
+          }
+          .section-title {
+            color: #315167;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+            margin-bottom: 15px;
+          }
+          table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+          }
+          th, td {
+            padding: 8px;
+            border: 1px solid #ddd;
+          }
+          th {
+            background-color: #f5f9ff;
+            font-weight: bold;
+            text-align: left;
+          }
+          tr:nth-child(even) {
+            background-color: #f9f9f9;
+          }
+          .metrics {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+          }
+          .metric-card {
+            flex: 1;
+            text-align: center;
+            padding: 15px;
+            background-color: #f5f9ff;
+            border-radius: 5px;
+            margin-right: 10px;
+          }
+          .metric-card:last-child {
+            margin-right: 0;
+          }
+          .metric-title {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+          }
+          .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #315167;
+          }
+          .metric-unit {
+            font-size: 12px;
+            color: #999;
+          }
+          .text-box {
+            background-color: #f5f9ff;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+          }
+          .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+            margin-top: 30px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+          }
+          .findings {
+            margin-top: 10px;
+          }
+          .finding-tag {
+            display: inline-block;
+            background-color: #e6f7ff;
+            border: 1px solid #91d5ff;
+            color: #1890ff;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 13px;
+            margin-right: 6px;
+            margin-bottom: 6px;
+          }
+          .importance-bar {
+            width: 100%;
+            height: 10px;
+            background: #f0f0f0;
+            border-radius: 5px;
+            margin-top: 5px;
+            margin-bottom: 12px;
+            overflow: hidden;
+          }
+          .importance-fill {
+            height: 100%;
+            background: #315167;
+            border-radius: 5px;
+          }
+          img {
+            max-width: 100%;
+            border: 1px solid #eee;
+            border-radius: 5px;
+          }
+          .image-caption {
+            text-align: center;
+            margin-top: 5px;
+            font-size: 12px;
+            color: #666;
+          }
+          @media print {
+            @page {
+              size: A4;
+              margin: 20mm;
+            }
+            body {
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
+            }
+            .no-break {
+              break-inside: avoid;
+            }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="page">
+          <div class="header">
+            <h1>眼底诊断报告</h1>
+            <p>生成时间：${moment().format('YYYY-MM-DD HH:mm:ss')}</p>
+          </div>
+
+          <div class="section">
+            <h2 class="section-title">分析结果</h2>
+            <table>
+              <tr>
+                <th width="25%">主要诊断</th>
+                <td>${getDiagnosisName(analysis.main_class.label)} (置信度: ${(analysis.main_class.confidence * 100).toFixed(2)}%)</td>
+              </tr>
+              <tr>
+                <th>分级</th>
+                <td>${analysis.main_class.grade}级</td>
+              </tr>
+              <tr>
+                <th>左眼状态</th>
+                <td>${getEyeStatusName(analysis.left_eye.severity)} (置信度: ${(analysis.left_eye.confidence * 100).toFixed(2)}%)</td>
+              </tr>
+              <tr>
+                <th>右眼状态</th>
+                <td>${getEyeStatusName(analysis.right_eye.severity)} (置信度: ${(analysis.right_eye.confidence * 100).toFixed(2)}%)</td>
+              </tr>
+              <tr>
+                <th>预测年龄</th>
+                <td>${analysis.age_prediction}岁</td>
+              </tr>
+              <tr>
+                <th>预测性别</th>
+                <td>${analysis.gender_prediction === 'Male' ? '男性' : '女性'}</td>
+              </tr>
+            </table>
+          </div>
+
+          <div class="section">
+            <h2 class="section-title">病灶测量</h2>
+            <div class="metrics">
+              <div class="metric-card">
+                <div class="metric-title">微血管瘤</div>
+                <div class="metric-value">${analysis.measurements?.microaneurysm_count ?? '未测量'}</div>
+                <div class="metric-unit">个</div>
+              </div>
+              <div class="metric-card">
+                <div class="metric-title">出血点</div>
+                <div class="metric-value">${analysis.measurements?.hemorrhage_count ?? '未测量'}</div>
+                <div class="metric-unit">处</div>
+              </div>
+              <div class="metric-card">
+                <div class="metric-title">硬性渗出</div>
+                <div class="metric-value">${analysis.measurements?.exudate_count ?? '未测量'}</div>
+                <div class="metric-unit">处</div>
+              </div>
+            </div>
+          </div>
+
+          ${analysis.feature_importance?.factors && analysis.feature_importance.factors.length > 0 ? `
+            <div class="section no-break">
+              <h2 class="section-title">特征重要性</h2>
+              ${analysis.feature_importance.factors.map((factor, index) => `
+                <div style="margin-bottom: 8px;">
+                  <div style="display: flex; justify-content: space-between;">
+                    <span>${factor.name}</span>
+                    <span><b>${(factor.value * 100).toFixed(1)}%</b></span>
+                  </div>
+                  <div class="importance-bar">
+                    <div class="importance-fill" style="width: ${factor.value * 100}%; background: ${
+        index === 0 ? '#315167' : index === 1 ? '#4a7ba3' : '#769ebf'
+      };"></div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          ` : ''}
+
+          ${mergedImageUrl ? `
+            <div class="section no-break">
+              <h2 class="section-title">眼底图像</h2>
+              <img src="${mergedImageUrl}" alt="眼底图像" />
+              <div class="image-caption">左右眼合并图像</div>
+            </div>
+          ` : ''}
+        </div>
+
+        <div class="page">
+          <div class="section no-break">
+            <h2 class="section-title">诊断解读</h2>
+            <div class="text-box">
+              <p>${analysis.explanation.text}</p>
+              ${analysis.explanation.findings && analysis.explanation.findings.length > 0 ? `
+                <div class="findings">
+                  <strong>关键发现：</strong>
+                  <div style="margin-top: 8px;">
+                    ${analysis.explanation.findings.map(finding => `
+                      <span class="finding-tag">${finding}</span>
+                    `).join('')}
+                  </div>
+                </div>
+              ` : ''}
+            </div>
+          </div>
+
+          <div class="section no-break">
+            <h2 class="section-title">诊断建议</h2>
+            <div class="text-box" style="background-color: #f9f9f9;">
+              <p>${content.replace(/\n/g, '<br>')}</p>
+            </div>
+          </div>
+
+          <div class="footer">
+            <p>本报告由AI辅助生成，仅供参考。最终诊断请以医生诊断为准。</p>
+          </div>
+        </div>
+
+        <script>
+          // 自动触发打印
+          window.onload = function() {
+            setTimeout(function() {
+              window.print();
+            }, 1000);
+          };
+        </script>
+      </body>
+      </html>
+    `;
+
+      printWindow.document.write(printContent);
+      printWindow.document.close();
+
+      message.success({
+        content: '请在打开的窗口中选择"另存为PDF"完成导出',
+        key: 'pdfExport',
+        duration: 5
+      });
+    };
+
+    // 文本导出备用方案
+    const fallbackToText = () => {
+      const reportContent = `
 # 眼底诊断报告
 生成时间：${moment().format('YYYY-MM-DD HH:mm:ss')}
 
@@ -207,15 +548,13 @@ const SelfDeployAIPage: React.FC = () => {
 硬性渗出: ${analysis.measurements?.exudate_count ?? '未测量'}处
 
 ## 特征重要性
-${analysis.feature_importance?.factors?.map(f =>
-          `- ${f.name}: ${(f.value * 100).toFixed(1)}%`
-        ).join('\n') || '无特征重要性数据'}
+${analysis.feature_importance?.factors?.map(f => `- ${f.name}: ${(f.value * 100).toFixed(1)}%`).join('\n') || '无特征重要性数据'}
 
 ## 可视化分析
 - 左眼分析图: ${analysis.visualizations?.left_eye ? '已生成' : '无'}
 - 右眼分析图: ${analysis.visualizations?.right_eye ? '已生成' : '无'}
 - 包含视图: ${analysis.visualizations?.left_eye?.filtered_views ?
-          Object.keys(analysis.visualizations.left_eye.filtered_views).join(', ') : '无'}
+        Object.keys(analysis.visualizations.left_eye.filtered_views).join(', ') : '无'}
 
 ## 诊断解读
 ${analysis.explanation.text}
@@ -223,31 +562,32 @@ ${analysis.explanation.text}
 
 ## 诊断建议
 ${content}
-
 `;
-        hasAnalysis = true;
-        break;
-      }
-    }
 
-    if (!hasAnalysis) {
-      message.info('暂无分析结果可导出');
-      return;
-    }
+      const blob = new Blob([reportContent], {type: 'text/plain'});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `眼底诊断报告_${moment().format('YYYYMMDD_HHmmss')}.txt`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
 
-    // 创建下载链接
-    const blob = new Blob([reportContent], {type: 'text/plain'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `眼底诊断报告_${moment().format('YYYYMMDD_HHmmss')}.txt`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+      message.info('已导出为文本格式');
+    };
 
-    message.success('诊断报告已导出');
+    // 执行打印导出
+    printPDF();
   };
+
+
+
+
+
+
+
+
 
   // 从本地存储加载历史记录和设置
   useEffect(() => {
@@ -917,7 +1257,12 @@ ${condition === 'Normal' ?
             </Tooltip>
           </Space>
         </div>
+
+
       </Header>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
       <Layout style={{ background: '#fff' }}>
         <Sider width={380} theme="light" style={{
           padding: '20px',
