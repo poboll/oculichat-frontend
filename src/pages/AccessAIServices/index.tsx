@@ -1,26 +1,71 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Card, message, Typography, Layout, Button, Switch, Space, Tooltip, Spin, Avatar, Divider, Row, Col, Tag } from 'antd';
+import { Card, message, Typography, Layout, Button, Switch, Space, Tooltip, Spin, Avatar, Divider, Row, Col, Tag, Tabs, Menu, Dropdown } from 'antd';
 import { RobotOutlined, UserOutlined, ClearOutlined, QuestionCircleOutlined, ExportOutlined,
-  MedicineBoxOutlined, BulbOutlined, HeartOutlined, SafetyOutlined } from '@ant-design/icons';
+  MedicineBoxOutlined, BulbOutlined, HeartOutlined, SafetyOutlined, TagsOutlined,
+  MenuOutlined, SendOutlined, DownOutlined, FileTextOutlined,
+  EyeOutlined, MedicineBoxTwoTone, ExperimentOutlined } from '@ant-design/icons';
 import moment from 'moment';
 import ChatBox from '@/components/ChatBox';
 
 const { Title, Text, Paragraph } = Typography;
-const { Header, Content } = Layout;
+const { Header, Content, Sider } = Layout;
+const { TabPane } = Tabs;
 
 // 本地存储键名
 const CHAT_HISTORY_KEY = 'oculi_chat_history';
 const KEEP_HISTORY_KEY = 'oculi_keep_history_setting';
 
-// 常见问题预设
-const COMMON_QUESTIONS = [
-  "什么是糖尿病视网膜病变？",
-  "眼底检查怎么做？有什么作用？",
-  "高度近视的患者需要注意什么？",
-  "青光眼的早期症状有哪些？",
-  "眼底出血应该如何治疗？",
-  "如何预防视网膜脱离？"
-];
+// 提示词分类
+const PROMPT_CATEGORIES = {
+  COMMON: '常见问题',
+  SYMPTOMS: '症状咨询',
+  DISEASES: '疾病查询',
+  EXAMINATION: '检查咨询',
+  TREATMENT: '治疗方案',
+  MEDICATION: '药物咨询'
+};
+
+// 提示词预设列表 - 按类别组织
+const PROMPT_PRESETS = {
+  [PROMPT_CATEGORIES.COMMON]: [
+    { id: 'c1', text: "智能眼科问诊能提供哪些服务？" },
+    { id: 'c2', text: "何时需要就医？" },
+    { id: 'c3', text: "如何预防眼部疾病?" },
+    { id: 'c4', text: "戴眼镜对眼睛有影响吗？" }
+  ],
+  [PROMPT_CATEGORIES.SYMPTOMS]: [
+    { id: 's1', text: "眼睛干涩是什么原因？" },
+    { id: 's2', text: "视力突然下降是什么原因？" },
+    { id: 's3', text: "眼前有飘浮物是怎么回事？" },
+    { id: 's4', text: "看东西变形是什么病？" },
+    { id: 's5', text: "眼睛红血丝多是什么原因？" }
+  ],
+  [PROMPT_CATEGORIES.DISEASES]: [
+    { id: 'd1', text: "什么是糖尿病视网膜病变？" },
+    { id: 'd2', text: "青光眼的早期症状有哪些？" },
+    { id: 'd3', text: "白内障什么时候需要手术？" },
+    { id: 'd4', text: "黄斑变性有什么治疗方法？" },
+    { id: 'd5', text: "视网膜脱离的症状和原因？" }
+  ],
+  [PROMPT_CATEGORIES.EXAMINATION]: [
+    { id: 'e1', text: "眼底检查怎么做？有什么作用？" },
+    { id: 'e2', text: "OCT检查是什么？有什么用途？" },
+    { id: 'e3', text: "眼压检查有必要定期做吗？" },
+    { id: 'e4', text: "视野检查能检查什么问题？" }
+  ],
+  [PROMPT_CATEGORIES.TREATMENT]: [
+    { id: 't1', text: "眼底激光治疗是怎么做的？" },
+    { id: 't2', text: "抗VEGF注射治疗适用于哪些病症？" },
+    { id: 't3', text: "玻璃体切除术后注意事项？" },
+    { id: 't4', text: "青光眼手术有哪些类型？" }
+  ],
+  [PROMPT_CATEGORIES.MEDICATION]: [
+    { id: 'm1', text: "常用眼药水有哪些类型？" },
+    { id: 'm2', text: "散瞳滴眼液的作用和注意事项？" },
+    { id: 'm3', text: "抗青光眼药物有哪些？" },
+    { id: 'm4', text: "人工泪液应该怎么选择？" }
+  ]
+};
 
 // 平台功能列表
 const PLATFORM_FEATURES = [
@@ -59,6 +104,14 @@ const SelfDeployAIPage: React.FC = () => {
   const [keepHistory, setKeepHistory] = useState(true);
   // 聊天容器引用
   const chatContainerRef = useRef<HTMLDivElement>(null);
+  // 侧边栏折叠状态
+  const [siderCollapsed, setSiderCollapsed] = useState(false);
+  // 当前选择的提示词分类
+  const [activeCategory, setActiveCategory] = useState<string>(Object.keys(PROMPT_CATEGORIES)[0]);
+  // 输入框引用 - 如果ChatBox组件支持ref功能
+  const inputRef = useRef<any>(null);
+  // 输入框暂存内容
+  const [inputValue, setInputValue] = useState('');
 
   // 从本地存储加载历史记录和设置
   useEffect(() => {
@@ -96,6 +149,25 @@ const SelfDeployAIPage: React.FC = () => {
       console.error('保存设置失败:', error);
     }
   }, [keepHistory]);
+
+  /**
+   * 处理提示词预设的点击
+   * @param promptText 选择的提示词文本
+   * @param sendImmediately 是否立即发送(默认为true)
+   */
+  const handlePromptClick = (promptText: string, sendImmediately: boolean = true) => {
+    if (sendImmediately) {
+      // 直接发送消息
+      handleSendMessage(promptText);
+    } else {
+      // 仅填入输入框
+      setInputValue(promptText);
+      // 如果ChatBox组件支持设置输入值的方法，则调用
+      if (inputRef.current && inputRef.current.setValue) {
+        inputRef.current.setValue(promptText);
+      }
+    }
+  };
 
   /**
    * 处理用户发送的消息
@@ -219,6 +291,94 @@ const SelfDeployAIPage: React.FC = () => {
   };
 
   /**
+   * 渲染提示词预设区域
+   * 侧边栏中的提示词分类和预设列表
+   */
+  const renderPromptPresets = () => {
+    return (
+      <div>
+        <Tabs
+          activeKey={activeCategory}
+          onChange={setActiveCategory}
+          tabPosition="top"
+          size="small"
+          style={{ marginBottom: 16 }}
+        >
+          {Object.entries(PROMPT_CATEGORIES).map(([key, label]) => (
+            <TabPane
+              tab={
+                <span style={{ fontSize: '13px' }}>
+                  {label}
+                </span>
+              }
+              key={key}
+            >
+              <div style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '8px',
+                maxHeight: '70vh',
+                overflowY: 'auto',
+                padding: '0 5px'
+              }}>
+                {PROMPT_PRESETS[label]?.map((prompt) => (
+                  <Tag
+                    key={prompt.id}
+                    color="#4a7ba3"
+                    style={{
+                      cursor: 'pointer',
+                      padding: '8px 12px',
+                      fontSize: '14px',
+                      margin: '4px 0',
+                      borderRadius: '4px',
+                      textAlign: 'left',
+                      lineHeight: '1.4'
+                    }}
+                    onClick={() => handlePromptClick(prompt.text)}
+                  >
+                    {prompt.text}
+                  </Tag>
+                ))}
+              </div>
+            </TabPane>
+          ))}
+        </Tabs>
+      </div>
+    );
+  };
+
+  /**
+   * 渲染提示词下拉菜单
+   * 用于移动端或紧凑布局时的提示词选择
+   */
+  const renderPromptDropdown = () => {
+    const menu = (
+      <Menu style={{ maxHeight: '400px', overflow: 'auto' }}>
+        {Object.entries(PROMPT_CATEGORIES).map(([categoryKey, categoryLabel]) => (
+          <Menu.SubMenu key={categoryKey} title={categoryLabel}>
+            {PROMPT_PRESETS[categoryLabel]?.map((prompt) => (
+              <Menu.Item
+                key={prompt.id}
+                onClick={() => handlePromptClick(prompt.text)}
+              >
+                {prompt.text}
+              </Menu.Item>
+            ))}
+          </Menu.SubMenu>
+        ))}
+      </Menu>
+    );
+
+    return (
+      <Dropdown overlay={menu} trigger={['click']}>
+        <Button icon={<TagsOutlined />} style={{ marginRight: 8 }}>
+          提示词 <DownOutlined />
+        </Button>
+      </Dropdown>
+    );
+  };
+
+  /**
    * 渲染欢迎介绍页面
    * 当没有消息时显示的详细介绍和功能说明
    */
@@ -226,7 +386,7 @@ const SelfDeployAIPage: React.FC = () => {
     return (
       <div style={{ padding: '20px 10px' }}>
         <div style={{ textAlign: 'center', marginBottom: 30 }}>
-          <Title level={2} style={{ color: '#1890ff' }}>
+          <Title level={2} style={{ color: '#315167' }}>
             欢迎使用智能眼科咨询平台
           </Title>
           <Paragraph style={{ fontSize: 16 }}>
@@ -286,23 +446,25 @@ const SelfDeployAIPage: React.FC = () => {
         <Divider orientation="left">
           <Space>
             <BulbOutlined />
-            <span>常见问题示例</span>
+            <span>使用提示</span>
           </Space>
         </Divider>
 
         <Card style={{ marginBottom: 30 }}>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 10 }}>
-            {COMMON_QUESTIONS.map((question, index) => (
-              <Tag
-                key={index}
-                color="#1890ff"
-                style={{ cursor: 'pointer', padding: '6px 10px', fontSize: 14 }}
-                onClick={() => handleSendMessage(question)}
-              >
-                {question}
-              </Tag>
-            ))}
-          </div>
+          <Paragraph>
+            <strong>您可以通过以下方式使用本平台：</strong>
+          </Paragraph>
+          <ul style={{ paddingLeft: 20 }}>
+            <li style={{ marginBottom: 8 }}>
+              直接在输入框中输入您的眼科问题
+            </li>
+            <li style={{ marginBottom: 8 }}>
+              从左侧<Text strong>提示词预设</Text>中选择常见问题
+            </li>
+            <li style={{ marginBottom: 8 }}>
+              根据AI回答继续深入咨询，系统会记住对话上下文
+            </li>
+          </ul>
         </Card>
 
         <div style={{ textAlign: 'center', marginTop: 20 }}>
@@ -338,16 +500,56 @@ const SelfDeployAIPage: React.FC = () => {
         alignItems: 'center'
       }}>
         <div style={{ display: 'flex', alignItems: 'center' }}>
-          <MedicineBoxOutlined style={{ fontSize: 24, color: '#1890ff', marginRight: 10 }} />
+          <MedicineBoxTwoTone style={{ fontSize: 24, marginRight: 10 }} />
           <Title level={3} style={{ margin: 0 }}>智能眼科咨询平台</Title>
         </div>
         <Space style={{ marginLeft: 'auto' }}>
-          <Button icon={<ExportOutlined />}>导出对话</Button>
-          <Button type="primary" icon={<QuestionCircleOutlined />}>使用帮助</Button>
+          <Button
+            icon={<MenuOutlined />}
+            onClick={() => setSiderCollapsed(!siderCollapsed)}
+            style={{ marginRight: 8 }}
+          >
+            提示词
+          </Button>
+          <Button icon={<FileTextOutlined />} style={{ marginRight: 8 }}>
+            导出记录
+          </Button>
+          <Button type="primary" icon={<EyeOutlined />}>
+            眼底分析
+          </Button>
         </Space>
       </Header>
 
       <Layout style={{ background: '#fff' }}>
+        {/* 左侧提示词预设侧边栏 */}
+        <Sider
+          theme="light"
+          width={280}
+          collapsible
+          collapsed={siderCollapsed}
+          collapsedWidth={0}
+          trigger={null}
+          style={{
+            borderRight: '1px solid #f0f0f0',
+            height: 'calc(100vh - 64px)',
+            overflow: 'hidden',
+            position: 'relative'
+          }}
+        >
+          <div style={{ padding: '16px 10px' }}>
+            <div style={{ marginBottom: 16 }}>
+              <Title level={4} style={{ margin: 0 }}>
+                <TagsOutlined style={{ marginRight: 8 }} />
+                提示词预设
+              </Title>
+              <Text type="secondary" style={{ fontSize: 12 }}>
+                点击问题可直接发送咨询
+              </Text>
+            </div>
+            {renderPromptPresets()}
+          </div>
+        </Sider>
+
         <Content style={{ padding: '20px', display: 'flex', flexDirection: 'column', background: '#f0f2f5' }}>
           {/* 聊天卡片容器 */}
           <Card
@@ -408,7 +610,7 @@ const SelfDeployAIPage: React.FC = () => {
                         <Avatar
                           icon={msg.sender === '用户' ? <UserOutlined /> : <RobotOutlined />}
                           style={{
-                            backgroundColor: msg.sender === '用户' ? '#1890ff' : '#52c41a',
+                            backgroundColor: msg.sender === '用户' ? '#315167' : '#52c41a',
                             marginRight: 8
                           }}
                           size="small"
@@ -424,8 +626,8 @@ const SelfDeployAIPage: React.FC = () => {
                               .replace(/\n/g, '<br>')
                               .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
                               .replace(/\*(.*?)\*/g, '<em>$1</em>')
-                              .replace(/#{2} (.*?)(<br>|$)/g, '<h3 style="color:#1890ff;margin:10px 0">$1</h3>')
-                              .replace(/#{1} (.*?)(<br>|$)/g, '<h2 style="color:#1890ff;margin:12px 0">$1</h2>')
+                              .replace(/#{2} (.*?)(<br>|$)/g, '<h3 style="color:#315167;margin:10px 0">$1</h3>')
+                              .replace(/#{1} (.*?)(<br>|$)/g, '<h2 style="color:#315167;margin:12px 0">$1</h2>')
                               .replace(/- (.*?)(<br>|$)/g, '<li style="margin-left:20px">$1</li>')
                           }}
                         />
@@ -457,16 +659,25 @@ const SelfDeployAIPage: React.FC = () => {
               )}
             </div>
 
+
+
+
+
+
+
             {/* 控制按钮区域 */}
             <div style={{ display: 'flex', alignItems: 'center', marginBottom: '10px' }}>
               {/* 清除对话按钮 */}
               <Button
                 icon={<ClearOutlined />}
                 onClick={clearChatHistory}
-                style={{ marginRight: 'auto' }}
+                style={{ marginRight: 8 }}
               >
                 清除对话
               </Button>
+
+              {/* 提示词下拉菜单 - 移动端友好版本 */}
+              {renderPromptDropdown()}
 
               {/* 上下文控制开关 */}
               <div style={{ display: 'flex', alignItems: 'center', marginLeft: 'auto' }}>
@@ -484,8 +695,10 @@ const SelfDeployAIPage: React.FC = () => {
 
             {/* 输入框组件 */}
             <ChatBox
+              ref={inputRef}
               onSendMessage={handleSendMessage}
               placeholder="请输入您的眼科问题，AI助手将为您解答..."
+              initialValue={inputValue}
             />
           </Card>
         </Content>
