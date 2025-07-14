@@ -48,7 +48,7 @@
     "@ant-design/pro-table": "^3.20.1",
     "@ant-design/use-emotion-css": "1.0.4",
     "@umijs/route-utils": "^2.2.2",
-    "antd": "^5.26.3",
+    "antd": "^5.26.4",
     "antd-img-crop": "^4.25.0",
     "classnames": "^2.5.1",
     "lib": "link:@ant-design/pro-table/lib",
