@@ -51,8 +51,8 @@ dependencies:
     specifier: ^9.16.1
     version: 9.16.1(react-dom@18.3.1)(react@18.3.1)
   rc-table:
-    specifier: ^7.51.1
-    version: 7.51.1(react-dom@18.3.1)(react@18.3.1)
+    specifier: ^7.52.1
+    version: 7.52.1(react-dom@18.3.1)(react@18.3.1)
   rc-util:
     specifier: ^5.44.4
     version: 5.44.4(react-dom@18.3.1)(react@18.3.1)
@@ -75,8 +75,8 @@ dependencies:
     specifier: ^1.1.0
     version: 1.1.0
   react-syntax-highlighter:
-    specifier: ^15.6.3
-    version: 15.6.3(react@18.3.1)
+    specifier: ^15.6.6
+    version: 15.6.6(react@18.3.1)
   uuid:
     specifier: ^11.1.0
     version: 11.1.0
@@ -203,7 +203,7 @@ packages:
       '@umijs/bundler-utils': 4.4.11
       '@umijs/plugins': 4.4.11(@babel/core@7.28.3)(@types/react-dom@18.3.7)(@types/react@18.3.24)(antd@5.27.1)(dva@2.5.0-beta.2)(rc-field-form@2.7.0)(react-dom@18.3.1)(react@18.3.1)
       '@umijs/utils': 4.4.11
-      ahooks: 3.9.4(react-dom@18.3.1)(react@18.3.1)
+      ahooks: 3.9.5(react-dom@18.3.1)(react@18.3.1)
       antd-mobile-alita: 2.3.4(react-dom@18.3.1)(react@18.3.1)
       antd-mobile-icons: 0.2.2
       babel-plugin-import: 1.13.8
@@ -517,7 +517,7 @@ packages:
       '@chenshuai2144/sketch-color': 1.0.9(react@18.3.1)
       antd: 4.24.16(react-dom@18.3.1)(react@18.3.1)
       classnames: 2.5.1
-      dayjs: 1.11.13
+      dayjs: 1.11.18
       lodash: 4.17.21
       lodash-es: 4.17.21
       rc-util: 5.44.4(react-dom@18.3.1)(react@18.3.1)
@@ -540,7 +540,7 @@ packages:
       '@chenshuai2144/sketch-color': 1.0.9(react@18.3.1)
       antd: 5.27.1(moment@2.30.1)(react-dom@18.3.1)(react@18.3.1)
       classnames: 2.5.1
-      dayjs: 1.11.13
+      dayjs: 1.11.18
       lodash: 4.17.21
       lodash-es: 4.17.21
       rc-util: 5.44.4(react-dom@18.3.1)(react@18.3.1)
@@ -566,7 +566,7 @@ packages:
       '@umijs/use-params': 1.0.9(react@18.3.1)
       antd: 4.24.16(react-dom@18.3.1)(react@18.3.1)
       classnames: 2.5.1
-      dayjs: 1.11.13
+      dayjs: 1.11.18
       lodash: 4.17.21
       lodash-es: 4.17.21
       rc-field-form: 2.7.0(react-dom@18.3.1)(react@18.3.1)
@@ -593,7 +593,7 @@ packages:
       '@umijs/use-params': 1.0.9(react@18.3.1)
       antd: 5.27.1(moment@2.30.1)(react-dom@18.3.1)(react@18.3.1)
       classnames: 2.5.1
-      dayjs: 1.11.13
+      dayjs: 1.11.18
       lodash: 4.17.21
       lodash-es: 4.17.21
       rc-field-form: 2.7.0(react-dom@18.3.1)(react@18.3.1)
@@ -671,7 +671,7 @@ packages:
       '@babel/runtime': 7.28.3
       antd: 4.24.16(react-dom@18.3.1)(react@18.3.1)
       classnames: 2.5.1
-      dayjs: 1.11.13
+      dayjs: 1.11.18
       rc-resize-observer: 1.4.3(react-dom@18.3.1)(react@18.3.1)
       rc-util: 4.21.1
       react: 18.3.1
@@ -696,7 +696,7 @@ packages:
       '@babel/runtime': 7.28.3
       antd: 5.27.1(moment@2.30.1)(react-dom@18.3.1)(react@18.3.1)
       classnames: 2.5.1
-      dayjs: 1.11.13
+      dayjs: 1.11.18
       rc-resize-observer: 1.4.3(react-dom@18.3.1)(react@18.3.1)
       rc-util: 4.21.1
       react: 18.3.1
@@ -715,7 +715,7 @@ packages:
       '@babel/runtime': 7.28.3
       '@ctrl/tinycolor': 3.6.1
       antd: 4.24.16(react-dom@18.3.1)(react@18.3.1)
-      dayjs: 1.11.13
+      dayjs: 1.11.18
       rc-util: 5.44.4(react-dom@18.3.1)(react@18.3.1)
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
@@ -733,7 +733,7 @@ packages:
       '@babel/runtime': 7.28.3
       '@ctrl/tinycolor': 3.6.1
       antd: 5.27.1(moment@2.30.1)(react-dom@18.3.1)(react@18.3.1)
-      dayjs: 1.11.13
+      dayjs: 1.11.18
       rc-util: 5.44.4(react-dom@18.3.1)(react@18.3.1)
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
@@ -786,7 +786,7 @@ packages:
       '@dnd-kit/utilities': 3.2.2(react@18.3.1)
       antd: 4.24.16(react-dom@18.3.1)(react@18.3.1)
       classnames: 2.5.1
-      dayjs: 1.11.13
+      dayjs: 1.11.18
       lodash: 4.17.21
       lodash-es: 4.17.21
       rc-field-form: 2.7.0(react-dom@18.3.1)(react@18.3.1)
@@ -818,7 +818,7 @@ packages:
       '@dnd-kit/utilities': 3.2.2(react@18.3.1)
       antd: 5.27.1(moment@2.30.1)(react-dom@18.3.1)(react@18.3.1)
       classnames: 2.5.1
-      dayjs: 1.11.13
+      dayjs: 1.11.18
       lodash: 4.17.21
       lodash-es: 4.17.21
       rc-field-form: 2.7.0(react-dom@18.3.1)(react@18.3.1)
@@ -839,7 +839,7 @@ packages:
       '@babel/runtime': 7.28.3
       antd: 4.24.16(react-dom@18.3.1)(react@18.3.1)
       classnames: 2.5.1
-      dayjs: 1.11.13
+      dayjs: 1.11.18
       lodash: 4.17.21
       lodash-es: 4.17.21
       rc-util: 5.44.4(react-dom@18.3.1)(react@18.3.1)
@@ -861,7 +861,7 @@ packages:
       '@babel/runtime': 7.28.3
       antd: 5.27.1(moment@2.30.1)(react-dom@18.3.1)(react@18.3.1)
       classnames: 2.5.1
-      dayjs: 1.11.13
+      dayjs: 1.11.18
       lodash: 4.17.21
       lodash-es: 4.17.21
       rc-util: 5.44.4(react-dom@18.3.1)(react@18.3.1)
@@ -1075,7 +1075,7 @@ packages:
     dependencies:
       '@babel/compat-data': 7.28.0
       '@babel/helper-validator-option': 7.27.1
-      browserslist: 4.25.3
+      browserslist: 4.25.4
       lru-cache: 5.1.1
       semver: 6.3.1
 
@@ -4549,6 +4549,10 @@ packages:
       pretty-format: 29.7.0
     dev: true
 
+  /@types/js-cookie@3.0.6:
+    resolution: {integrity: sha512-wkw9yd1kEXOPnvEeEV1Go1MmxtBJL0RR79aOTAApecWFVu7w0NNXNqhcWgvw2YgZDYadliXkl14pa3WXw5jlCQ==}
+    dev: true
+
   /@types/jsdom@20.0.1:
     resolution: {integrity: sha512-d0r18sZPmMQr1eG35u12FZfhIXNrnsPU/g5wvRKCUf/tOGilKKwYMYGqh33BNR6ba+2gkHw1EUiHoN3mn7E5IQ==}
     dependencies:
@@ -5916,7 +5920,7 @@ packages:
     dependencies:
       chalk: 4.1.2
       cosmiconfig: 9.0.0(typescript@4.9.5)
-      dayjs: 1.11.13
+      dayjs: 1.11.18
       glob: 7.2.3
       lodash: 4.17.21
       memoizee: 0.4.17
@@ -5994,11 +5998,11 @@ packages:
       '@tanstack/react-query-devtools': 4.40.1(@tanstack/react-query@4.40.1)(react-dom@18.3.1)(react@18.3.1)
       '@umijs/bundler-utils': 4.4.11
       '@umijs/valtio': 1.0.4(@types/react@18.3.24)(react@18.3.1)
-      antd-dayjs-webpack-plugin: 1.0.6(dayjs@1.11.13)
+      antd-dayjs-webpack-plugin: 1.0.6(dayjs@1.11.18)
       axios: 0.27.2
       babel-plugin-import: 1.13.8
       babel-plugin-styled-components: 2.1.4(@babel/core@7.28.3)(styled-components@6.1.1)
-      dayjs: 1.11.13
+      dayjs: 1.11.18
       dva-core: 2.0.4(redux@4.2.1)
       dva-immer: 1.0.2(dva@2.5.0-beta.2)
       dva-loading: 3.0.25(dva-core@2.0.4)
@@ -6041,11 +6045,11 @@ packages:
       '@tanstack/react-query-devtools': 4.40.1(@tanstack/react-query@4.40.1)(react-dom@18.3.1)(react@18.3.1)
       '@umijs/bundler-utils': 4.4.12
       '@umijs/valtio': 1.0.4(@types/react@18.3.24)(react@18.3.1)
-      antd-dayjs-webpack-plugin: 1.0.6(dayjs@1.11.13)
+      antd-dayjs-webpack-plugin: 1.0.6(dayjs@1.11.18)
       axios: 0.27.2
       babel-plugin-import: 1.13.8
       babel-plugin-styled-components: 2.1.4(@babel/core@7.28.3)(styled-components@6.1.1)
-      dayjs: 1.11.13
+      dayjs: 1.11.18
       dva-core: 2.0.4(redux@4.2.1)
       dva-immer: 1.0.2(dva@2.5.0-beta.2)
       dva-loading: 3.0.25(dva-core@2.0.4)
@@ -6088,11 +6092,11 @@ packages:
       '@tanstack/react-query-devtools': 4.40.1(@tanstack/react-query@4.40.1)(react-dom@18.3.1)(react@18.3.1)
       '@umijs/bundler-utils': 4.4.12
       '@umijs/valtio': 1.0.4(@types/react@18.3.24)(react@18.3.1)
-      antd-dayjs-webpack-plugin: 1.0.6(dayjs@1.11.13)
+      antd-dayjs-webpack-plugin: 1.0.6(dayjs@1.11.18)
       axios: 0.27.2
       babel-plugin-import: 1.13.8
       babel-plugin-styled-components: 2.1.4(@babel/core@7.28.3)(styled-components@6.1.1)
-      dayjs: 1.11.13
+      dayjs: 1.11.18
       dva-core: 2.0.4(redux@4.2.1)
       dva-immer: 1.0.2(dva@2.5.0-beta.2)
       dva-loading: 3.0.25(dva-core@2.0.4)
@@ -6824,15 +6828,16 @@ packages:
       indent-string: 4.0.0
     dev: true
 
-  /ahooks@3.9.4(react-dom@18.3.1)(react@18.3.1):
-    resolution: {integrity: sha512-NkbX0mamCz4aBX27mZnObbzqcM9S4fzpjVf/6yOvmHh+McBo74xQw5Yz5ry4q2cLMkfNUjhe2q3M5RpjfMVu4g==}
+  /ahooks@3.9.5(react-dom@18.3.1)(react@18.3.1):
+    resolution: {integrity: sha512-TrjXie49Q8HuHKTa84Fm9A+famMDAG1+7a9S9Gq6RQ0h90Jgqmiq3CkObuRjWT/C4d6nRZCw35Y2k2fmybb5eA==}
     engines: {node: '>=18'}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
       react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
     dependencies:
       '@babel/runtime': 7.28.3
-      dayjs: 1.11.13
+      '@types/js-cookie': 3.0.6
+      dayjs: 1.11.18
       intersection-observer: 0.12.2
       js-cookie: 3.0.5
       lodash: 4.17.21
@@ -6889,7 +6894,7 @@ packages:
     resolution: {integrity: sha512-B/gBuNg5SiMTrPkC+A2+cW0RszwxYmn6VYxB/inlBStS5nx6xHIt/ehKRhIMhqusl7a8LjQoZnjCs5vhwxOQ1g==}
     dependencies:
       fast-deep-equal: 3.1.3
-      fast-uri: 3.0.6
+      fast-uri: 3.1.0
       json-schema-traverse: 1.0.0
       require-from-string: 2.0.2
 
@@ -6974,12 +6979,12 @@ packages:
     engines: {node: '>=12'}
     dev: true
 
-  /antd-dayjs-webpack-plugin@1.0.6(dayjs@1.11.13):
+  /antd-dayjs-webpack-plugin@1.0.6(dayjs@1.11.18):
     resolution: {integrity: sha512-UlK3BfA0iE2c5+Zz/Bd2iPAkT6cICtrKG4/swSik5MZweBHtgmu1aUQCHvICdiv39EAShdZy/edfP6mlkS/xXg==}
     peerDependencies:
       dayjs: '*'
     dependencies:
-      dayjs: 1.11.13
+      dayjs: 1.11.18
     dev: true
 
   /antd-img-crop@4.25.0(antd@5.27.1)(react-dom@18.3.1)(react@18.3.1):
@@ -7104,7 +7109,7 @@ packages:
       '@rc-component/trigger': 2.3.0(react-dom@18.3.1)(react@18.3.1)
       classnames: 2.5.1
       copy-to-clipboard: 3.3.3
-      dayjs: 1.11.13
+      dayjs: 1.11.18
       rc-cascader: 3.34.0(react-dom@18.3.1)(react@18.3.1)
       rc-checkbox: 3.5.0(react-dom@18.3.1)(react@18.3.1)
       rc-collapse: 3.9.0(react-dom@18.3.1)(react@18.3.1)
@@ -7120,7 +7125,7 @@ packages:
       rc-motion: 2.9.5(react-dom@18.3.1)(react@18.3.1)
       rc-notification: 5.6.4(react-dom@18.3.1)(react@18.3.1)
       rc-pagination: 5.1.0(react-dom@18.3.1)(react@18.3.1)
-      rc-picker: 4.11.3(dayjs@1.11.13)(moment@2.30.1)(react-dom@18.3.1)(react@18.3.1)
+      rc-picker: 4.11.3(dayjs@1.11.18)(moment@2.30.1)(react-dom@18.3.1)(react@18.3.1)
       rc-progress: 4.0.0(react-dom@18.3.1)(react@18.3.1)
       rc-rate: 2.13.1(react-dom@18.3.1)(react@18.3.1)
       rc-resize-observer: 1.4.3(react-dom@18.3.1)(react@18.3.1)
@@ -7446,8 +7451,8 @@ packages:
     peerDependencies:
       postcss: ^8.1.0
     dependencies:
-      browserslist: 4.25.3
-      caniuse-lite: 1.0.30001737
+      browserslist: 4.25.4
+      caniuse-lite: 1.0.30001739
       fraction.js: 4.3.7
       normalize-range: 0.1.2
       picocolors: 1.1.1
@@ -7459,8 +7464,8 @@ packages:
     resolution: {integrity: sha512-eM9d/swFopRt5gdJ7jrpCwgvEMIayITpojhkkSMRsFHYuH5bkSQ4p/9qTEHtmNudUZh22Tehu7I6CxAW0IXTKA==}
     hasBin: true
     dependencies:
-      browserslist: 4.25.3
-      caniuse-lite: 1.0.30001737
+      browserslist: 4.25.4
+      caniuse-lite: 1.0.30001739
       normalize-range: 0.1.2
       num2fraction: 1.2.2
       picocolors: 0.2.1
@@ -7950,22 +7955,22 @@ packages:
       pako: 1.0.11
     dev: true
 
-  /browserslist@4.25.3:
-    resolution: {integrity: sha512-cDGv1kkDI4/0e5yON9yM5G/0A5u8sf5TnmdX5C9qHzI9PPu++sQ9zjm1k9NiOrf3riY4OkK0zSGqfvJyJsgCBQ==}
+  /browserslist@4.25.4:
+    resolution: {integrity: sha512-4jYpcjabC606xJ3kw2QwGEZKX0Aw7sgQdZCvIK9dhVSPh76BKo+C+btT1RRofH7B+8iNpEbgGNVWiLki5q93yg==}
     engines: {node: ^6 || ^7 || ^8 || ^9 || ^10 || ^11 || ^12 || >=13.7}
     hasBin: true
     dependencies:
-      caniuse-lite: 1.0.30001737
-      electron-to-chromium: 1.5.208
+      caniuse-lite: 1.0.30001739
+      electron-to-chromium: 1.5.211
       node-releases: 2.0.19
-      update-browserslist-db: 1.1.3(browserslist@4.25.3)
+      update-browserslist-db: 1.1.3(browserslist@4.25.4)
 
   /browserslist@4.5.4:
     resolution: {integrity: sha512-rAjx494LMjqKnMPhFkuLmLp8JWEX0o8ADTGeAbOqaF+XCvYLreZrG5uVjnPBlAQ8REZK4pzXGvp0bWgrFtKaag==}
     hasBin: true
     dependencies:
-      caniuse-lite: 1.0.30001737
-      electron-to-chromium: 1.5.208
+      caniuse-lite: 1.0.30001739
+      electron-to-chromium: 1.5.211
       node-releases: 1.1.77
     dev: true
 
@@ -8138,8 +8143,8 @@ packages:
     resolution: {integrity: sha512-dU+Tx2fsypxTgtLoE36npi3UqcjSSMNYfkqgmoEhtZrraP5VWq0K7FkWVTYa8eMPtnU/G2txVsfdCJTn9uzpuQ==}
     dev: true
 
-  /caniuse-lite@1.0.30001737:
-    resolution: {integrity: sha512-BiloLiXtQNrY5UyF0+1nSJLXUENuhka2pzy2Fx5pGxqavdrxSCW4U6Pn/PoG3Efspi2frRbHpBV2XsrPE6EDlw==}
+  /caniuse-lite@1.0.30001739:
+    resolution: {integrity: sha512-y+j60d6ulelrNSwpPyrHdl+9mJnQzHBr08xm48Qno0nSk4h3Qojh+ziv2qE6rXf4k3tadF4o1J/1tAbVm1NtnA==}
 
   /carlo@0.9.46:
     resolution: {integrity: sha512-FwZ/wxjqe+5RgzF2SRsPSWsVB9+McAVRWW0tRkmbh7fBjrf3HFZZbcr8vr61p1K+NBaAPv57DRjxgIyfbHmd7g==}
@@ -8698,7 +8703,7 @@ packages:
   /core-js-compat@3.45.1:
     resolution: {integrity: sha512-tqTt5T4PzsMIZ430XGviK4vzYSoeNJ6CXODi6c/voxOT6IZqBht5/EKaSNnYiEjjRYxjVz7DQIsOsY0XNi8PIA==}
     dependencies:
-      browserslist: 4.25.3
+      browserslist: 4.25.4
     dev: true
 
   /core-js-pure@3.45.1:
@@ -9158,8 +9163,8 @@ packages:
     deprecated: 0.x is no longer supported. Please upgrade to 4.x or higher.
     dev: true
 
-  /dayjs@1.11.13:
-    resolution: {integrity: sha512-oaMBel6gjolK862uaPQOVTA7q3TZhuSvuMQAAglQDOWYO9A91IrAOUJEyKVlqJlHE0vq5p5UXxzdPfMH/x6xNg==}
+  /dayjs@1.11.18:
+    resolution: {integrity: sha512-zFBQ7WFRvVRhKcWoUh+ZA1g2HVgUbsZm9sbddh8EC5iv93sui8DVVz1Npvz+r6meo9VKfa8NyLWBsQK1VvIKPA==}
 
   /debug@0.7.4:
     resolution: {integrity: sha512-EohAb3+DSHSGx8carOSKJe8G0ayV5/i609OD0J2orCkuyae7SyZSz2aoLmQF2s0Pj5gITDebwPH7GFBlqOUQ1Q==}
@@ -9675,8 +9680,8 @@ packages:
     requiresBuild: true
     dev: true
 
-  /electron-to-chromium@1.5.208:
-    resolution: {integrity: sha512-ozZyibehoe7tOhNaf16lKmljVf+3npZcJIEbJRVftVsmAg5TeA1mGS9dVCZzOwr2xT7xK15V0p7+GZqSPgkuPg==}
+  /electron-to-chromium@1.5.211:
+    resolution: {integrity: sha512-IGBvimJkotaLzFnwIVgW9/UD/AOJ2tByUmeOrtqBfACSbAw5b1G0XpvdaieKyc7ULmbwXVx+4e4Be8pOPBrYkw==}
 
   /elliptic@6.6.1:
     resolution: {integrity: sha512-RaddvvMatK2LJHqFJ+YA4WysVN5Ita9E35botqIYspQ4TkRAlCicdzKOjlyv/1Za5RyTNn7di//eEV0uTAfe3g==}
@@ -10967,8 +10972,8 @@ packages:
     resolution: {integrity: sha512-W+KJc2dmILlPplD/H4K9l9LcAHAfPtP6BY84uVLXQ6Evcz9Lcg33Y2z1IVblT6xdY54PXYVHEv+0Wpq8Io6zkA==}
     dev: true
 
-  /fast-uri@3.0.6:
-    resolution: {integrity: sha512-Atfo14OibSv5wAp4VWNsFYE1AchQRTv9cBGWET4pZWHzYshFSS9NQI6I57rdKn9croWVMbYFbLhJ+yJvmZIIHw==}
+  /fast-uri@3.1.0:
+    resolution: {integrity: sha512-iPeeDKJSWf4IEOasVVrknXpaBV0IApz/gp7S2bb7Z4Lljbl2MGJRqInZiUrQwV16cpzw/D3S5j5Julj/gT52AA==}
 
   /fastest-levenshtein@1.0.16:
     resolution: {integrity: sha512-eRnCtTTtGZFpQCwhJiUOuxPQWRXVKYDn0b2PeHfXL6/Zi53SLAzAHfVhVWK2AryC/WH05kGfxhFIPvTF0SXQzg==}
@@ -16024,8 +16029,8 @@ packages:
     engines: {node: '>=6.0.0'}
     dependencies:
       autoprefixer: 9.8.8
-      browserslist: 4.25.3
-      caniuse-lite: 1.0.30001737
+      browserslist: 4.25.4
+      caniuse-lite: 1.0.30001739
       css-blank-pseudo: 0.1.4
       css-has-pseudo: 0.10.0
       css-prefers-color-scheme: 3.1.1
@@ -16079,7 +16084,7 @@ packages:
       '@csstools/postcss-stepped-value-functions': 1.0.1(postcss@8.5.6)
       '@csstools/postcss-unset-value': 1.0.2(postcss@8.5.6)
       autoprefixer: 10.4.21(postcss@8.5.6)
-      browserslist: 4.25.3
+      browserslist: 4.25.4
       css-blank-pseudo: 3.0.3(postcss@8.5.6)
       css-has-pseudo: 3.0.4(postcss@8.5.6)
       css-prefers-color-scheme: 6.0.3(postcss@8.5.6)
@@ -17238,7 +17243,7 @@ packages:
       '@babel/runtime': 7.28.3
       classnames: 2.5.1
       date-fns: 2.30.0
-      dayjs: 1.11.13
+      dayjs: 1.11.18
       moment: 2.30.1
       rc-trigger: 5.3.4(react-dom@18.3.1)(react@18.3.1)
       rc-util: 5.44.4(react-dom@18.3.1)(react@18.3.1)
@@ -17247,7 +17252,7 @@ packages:
       shallowequal: 1.1.0
     dev: true
 
-  /rc-picker@4.11.3(dayjs@1.11.13)(moment@2.30.1)(react-dom@18.3.1)(react@18.3.1):
+  /rc-picker@4.11.3(dayjs@1.11.18)(moment@2.30.1)(react-dom@18.3.1)(react@18.3.1):
     resolution: {integrity: sha512-MJ5teb7FlNE0NFHTncxXQ62Y5lytq6sh5nUw0iH8OkHL/TjARSEvSHpr940pWgjGANpjCwyMdvsEV55l5tYNSg==}
     engines: {node: '>=8.x'}
     peerDependencies:
@@ -17270,7 +17275,7 @@ packages:
       '@babel/runtime': 7.28.3
       '@rc-component/trigger': 2.3.0(react-dom@18.3.1)(react@18.3.1)
       classnames: 2.5.1
-      dayjs: 1.11.13
+      dayjs: 1.11.18
       moment: 2.30.1
       rc-overflow: 1.4.1(react-dom@18.3.1)(react@18.3.1)
       rc-resize-observer: 1.4.3(react-dom@18.3.1)(react@18.3.1)
@@ -17553,6 +17558,23 @@ packages:
       rc-virtual-list: 3.19.1(react-dom@18.3.1)(react@18.3.1)
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
+
+  /rc-table@7.52.1(react-dom@18.3.1)(react@18.3.1):
+    resolution: {integrity: sha512-ZmnwajqCkAj8fcJ9DeA0NdM57Z5qa3KqHIyIBvNLGdcuwL6rqUupxITr+y0k1vrqYpeHp8nDcuG5pet+9q2WcQ==}
+    engines: {node: '>=8.x'}
+    peerDependencies:
+      react: '>=16.9.0'
+      react-dom: '>=16.9.0'
+    dependencies:
+      '@babel/runtime': 7.28.3
+      '@rc-component/context': 1.4.0(react-dom@18.3.1)(react@18.3.1)
+      classnames: 2.5.1
+      rc-resize-observer: 1.4.3(react-dom@18.3.1)(react@18.3.1)
+      rc-util: 5.44.4(react-dom@18.3.1)(react@18.3.1)
+      rc-virtual-list: 3.19.1(react-dom@18.3.1)(react@18.3.1)
+      react: 18.3.1
+      react-dom: 18.3.1(react@18.3.1)
+    dev: false
 
   /rc-tabs@12.5.10(react-dom@18.3.1)(react@18.3.1):
     resolution: {integrity: sha512-Ay0l0jtd4eXepFH9vWBvinBjqOpqzcsJTerBGwJy435P2S90Uu38q8U/mvc1sxUEVOXX5ZCFbxcWPnfG3dH+tQ==}
@@ -17850,7 +17872,7 @@ packages:
     dependencies:
       '@babel/code-frame': 7.27.1
       address: 1.2.2
-      browserslist: 4.25.3
+      browserslist: 4.25.4
       chalk: 4.1.2
       cross-spawn: 7.0.6
       detect-port-alt: 1.1.6
@@ -18327,8 +18349,8 @@ packages:
       set-cookie-parser: 2.7.1
     dev: true
 
-  /react-syntax-highlighter@15.6.3(react@18.3.1):
-    resolution: {integrity: sha512-HebdyA9r20hgmA0q8RyRJ4c/vB4E6KL2HeWb5MNjU3iJEiT2w9jfU2RJsmI6f3Cy3SGE5tm0AIkBzM/E7e9/lQ==}
+  /react-syntax-highlighter@15.6.6(react@18.3.1):
+    resolution: {integrity: sha512-DgXrc+AZF47+HvAPEmn7Ua/1p10jNoVZVI/LoPiYdtY+OM+/nG5yefLHKJwdKqY1adMuHFbeyBaG9j64ML7vTw==}
     peerDependencies:
       react: '>= 0.14.0'
     dependencies:
@@ -21323,13 +21345,13 @@ packages:
     engines: {node: '>=4'}
     dev: true
 
-  /update-browserslist-db@1.1.3(browserslist@4.25.3):
+  /update-browserslist-db@1.1.3(browserslist@4.25.4):
     resolution: {integrity: sha512-UxhIZQ+QInVdunkDAaiazvvT/+fXL5Osr0JZlJulepYu6Jd7qJtDZjlur0emRlT71EN3ScPoE7gvsuIKKNavKw==}
     hasBin: true
     peerDependencies:
       browserslist: '>= 4.21.0'
     dependencies:
-      browserslist: 4.25.3
+      browserslist: 4.25.4
       escalade: 3.2.0
       picocolors: 1.1.1
 
@@ -21715,7 +21737,7 @@ packages:
       '@webassemblyjs/wasm-parser': 1.14.1
       acorn: 8.15.0
       acorn-import-phases: 1.0.4(acorn@8.15.0)
-      browserslist: 4.25.3
+      browserslist: 4.25.4
       chrome-trace-event: 1.0.4
       enhanced-resolve: 5.18.3
       es-module-lexer: 1.7.0
